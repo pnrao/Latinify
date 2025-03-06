@@ -1,12 +1,12 @@
 // content.js
 (function () {
     // Mapping of Devanagari Unicode characters to ITRANS
+    // Mapping of Devanagari Unicode characters to ITRANS
     const devanagariToITRANS = {
         // Vowels
         'अ': 'a', 'आ': 'aa', 'इ': 'i', 'ई': 'ii', 'उ': 'u', 'ऊ': 'uu',
         'ऋ': 'RRi', 'ॠ': 'RRI', 'ऌ': 'LLi', 'ॡ': 'LLI',
         'ए': 'e', 'ऐ': 'ai', 'ओ': 'o', 'औ': 'au',
-
 
         // Consonants
         'क': 'kₐ', 'ख': 'khₐ', 'ग': 'gₐ', 'घ': 'ghₐ', 'ङ': 'gnₐ',
@@ -16,6 +16,7 @@
         'प': 'pₐ', 'फ': 'phₐ', 'ब': 'bₐ', 'भ': 'bhₐ', 'म': 'mₐ',
         'य': 'yₐ', 'र': 'rₐ', 'ल': 'lₐ', 'व': 'vₐ', 'श': 'shₐ',
         'ष': 'Shₐ', 'स': 'sₐ', 'ह': 'hₐ', 'ळ': 'Lₐ',
+        'ज़': 'zₐ', 'फ़': 'fₐ',
 
         // Conjunct Consonants (Special Cases)
         'क्ष': 'kshₐ',
@@ -52,12 +53,28 @@
         while (i < text.length) {
             const char = text[i];
             let foundMatch = false;
+            // Check for Matras (Vowel signs)
+            if (i < text.length - 1 && ['ा', 'ि', 'ी', 'ु', 'ू', 'े', 'ै', 'ो', 'ौ', 'ृ', 'ॄ', 'ॢ', 'ॣ'].includes(text[i + 1])) {
+                // Get the consonant
+                if (devanagariToITRANS[char]) {
+                    const consonant = devanagariToITRANS[char];
+                    if (consonant && consonant.endsWith('ₐ')) {
+                        result += consonant.slice(0, -1); //Remove trailing 'ₐ'
+                    } else {
+                        result += consonant; //Not a consonant
+                    }
+                }
+                // Append matra
+                result += devanagariToITRANS[text[i + 1]];
+                i += 2; // Skip the matra
+                foundMatch = true;
+            }
             // Handle consonants followed by halant (virama)
-            if (i < text.length - 1 && text[i + 1] === '्') {
+            if (!foundMatch && i < text.length - 1 && text[i + 1] === '्') {
                 // Get the consonant without the inherent 'a'
                 if (devanagariToITRANS[char]) {
                     const consonant = devanagariToITRANS[char];
-                    if (consonant && consonant.endsWith('a')) {
+                    if (consonant && consonant.endsWith('ₐ')) {
                         result += consonant.slice(0, -1);
                     } else {
                         result += consonant;
