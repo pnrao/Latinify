@@ -4,8 +4,9 @@
     const devanagariToITRANS = {
         // Vowels
         'अ': 'a', 'आ': 'aa', 'इ': 'i', 'ई': 'ii', 'उ': 'u', 'ऊ': 'uu',
-        'ए': 'e', 'ऐ': 'ai', 'ओ': 'o', 'औ': 'au', 'ऋ': 'RRi', 'ॠ': 'RRI',
-        'ऌ': 'LLi', 'ॡ': 'LLI',
+        'ऋ': 'RRi', 'ॠ': 'RRI', 'ऌ': 'LLi', 'ॡ': 'LLI',
+        'ए': 'e', 'ऐ': 'ai', 'ओ': 'o', 'औ': 'au',
+
 
         // Consonants
         'क': 'ka', 'ख': 'kha', 'ग': 'ga', 'घ': 'gha', 'ङ': 'gna',
@@ -20,7 +21,7 @@
         'क्ष': 'ksha',
         'ज्ञ': 'gya',
 
-        // Matras (vowel signs)
+        // Matras (Vowel signs)
         'ा': 'aa', 'ि': 'i', 'ी': 'ii', 'ु': 'u', 'ू': 'uu',
         'े': 'e', 'ै': 'ai', 'ो': 'o', 'ौ': 'au', 'ृ': 'RRi',
         'ॄ': 'RRI', 'ॢ': 'LLi', 'ॣ': 'LLI',
@@ -34,7 +35,7 @@
 
         // Others
         '।': '|', '॥': '||',
-        ' ': ' ' //Add support for spaces
+        ' ': ' '
     };
 
     // Function to transliterate Devanagari text to ITRANS
@@ -48,44 +49,44 @@
         // Improved transliteration algorithm
         let result = '';
         let i = 0;
-
         while (i < text.length) {
             const char = text[i];
-
-            // Check if current character is in our mapping
-            if (devanagariToITRANS.hasOwnProperty(char)) {
-                // Handle consonants followed by halant (virama)
-                if (i < text.length - 1 && text[i + 1] === '्') {
-                    // Get the consonant without the inherent 'a'
+            let foundMatch = false;
+            // Handle consonants followed by halant (virama)
+            if (i < text.length - 1 && text[i + 1] === '्') {
+                // Get the consonant without the inherent 'a'
+                if (devanagariToITRANS[char]) {
                     const consonant = devanagariToITRANS[char];
                     if (consonant && consonant.endsWith('a')) {
                         result += consonant.slice(0, -1);
                     } else {
                         result += consonant;
                     }
-                    i += 2; // Skip the halant
                 }
-                // Handle special conjuncts manually
-                else if (char === 'क' && i < text.length - 2 && text[i + 1] === '्' && text[i + 2] === 'ष') {
-                    result += 'ksha';
-                    i += 3;
+                i += 2; // Skip the halant
+                foundMatch = true;
+            }
+            // Check for special two-character sequences first:
+            if (!foundMatch && i + 1 < text.length) {
+                const twoChar = text.substring(i, i + 2);
+                if (devanagariToITRANS[twoChar]) {
+                    result += devanagariToITRANS[twoChar];
+                    i += 2;
+                    foundMatch = true;
                 }
-                else if (char === 'ज' && i < text.length - 2 && text[i + 1] === '्' && text[i + 2] === 'ञ') {
-                    result += 'gya';
-                    i += 3;
-                }
-                // Regular character
-                else {
-                    result += devanagariToITRANS[char];
-                    i++;
-                }
-            } else {
-                // Non-Devanagari character
+            }
+            // Regular character
+            if (!foundMatch && devanagariToITRANS[char]) {
+                result += devanagariToITRANS[char];
+                i++;
+                foundMatch = true;
+            }
+            // Non-Devanagari character
+            if (!foundMatch) {
                 result += char;
                 i++;
             }
         }
-
         return result;
     }
 
