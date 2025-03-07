@@ -22,3 +22,9 @@ This Chrome extension helps by converting text in Indic scripts to ITRANS.
 - This extension does not detect the language. Doing so would require capabilities beyond a lightweight extension.
 - Schwa deletion for Hindi and Marathi is left as an exercise to the reader. For example, धड़कनें could be transliterated to dhₐDₐkne (verb) or dhₐDkₐne (noun). Without deeper linguistic analysis, it's not possible to determine which ₐ should be deleted. Sanskrit, usually written in Devanagari, retains the schwa.
 - Terminal consonants in Kannada that are not affixed with a vowel sign should ideally be transliterated to 'aa', but are treated the same as non-terminal consonants.
+
+## Privacy
+
+- No data is collected.
+- No data is sent to any remote server.
+- All text replacements are done locally by the extension.
