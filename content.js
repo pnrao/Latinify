@@ -1,7 +1,6 @@
 // content.js
 (function () {
     // Mapping of Devanagari Unicode characters to ITRANS
-    // Mapping of Devanagari Unicode characters to ITRANS
     const devanagariToITRANS = {
         // Vowels
         'अ': 'a', 'आ': 'aa', 'इ': 'i', 'ई': 'ii', 'उ': 'u', 'ऊ': 'uu',
@@ -24,18 +23,19 @@
 
         // Matras (Vowel signs)
         'ा': 'aa', 'ि': 'i', 'ी': 'ii', 'ु': 'u', 'ू': 'uu',
-        'े': 'e', 'ै': 'ai', 'ो': 'o', 'ौ': 'au', 'ृ': 'RRi',
+        'े': 'e', 'ै': 'ai', 'ो': 'o', 'ौ': 'au', 'ृ': 'ri',
         'ॄ': 'RRI', 'ॢ': 'LLi', 'ॣ': 'LLI',
 
         // Additional marks
-        '्': '', 'ं': 'ᵐ', 'ः': 'H', 'ँ': 'ⁿ',
+        '्': '', 'ं': 'ⁿ', 'ः': 'H', 'ँ': 'ⁿ',
+        '़': '', // Nukta
 
         // Numerals
         '०': '0', '१': '1', '२': '2', '३': '3', '४': '4',
         '५': '5', '६': '6', '७': '7', '८': '8', '९': '9',
 
         // Others
-        '।': '|', '॥': '||',
+        '।': '. ', '॥': '. ',
         ' ': ' '
     };
 
@@ -53,16 +53,33 @@
         while (i < text.length) {
             const char = text[i];
             let foundMatch = false;
-            // Check for Matras (Vowel signs)
-            if (i < text.length - 1 && ['ा', 'ि', 'ी', 'ु', 'ू', 'े', 'ै', 'ो', 'ौ', 'ृ', 'ॄ', 'ॢ', 'ॣ'].includes(text[i + 1])) {
-                // Get the consonant
-                if (devanagariToITRANS[char]) {
-                    const consonant = devanagariToITRANS[char];
-                    if (consonant && consonant.endsWith('ₐ')) {
-                        result += consonant.slice(0, -1); //Remove trailing 'ₐ'
+            // Handle Nukta first
+            if (i < text.length - 1 && text[i + 1] === '़') {
+                if (char === 'ज') {
+                    if (i + 2 < text.length && ['ा', 'ि', 'ी', 'ु', 'ू', 'े', 'ै', 'ो', 'ौ', 'ृ', 'ॄ', 'ॢ', 'ॣ'].includes(text[i + 2])) {
+                        result += 'z';
                     } else {
-                        result += consonant; //Not a consonant
+                        result += 'zₐ';
                     }
+                    i += 2; // Skip the consonant and the nukta
+                    foundMatch = true;
+                } else if (char === 'फ') {
+                    if (i + 2 < text.length && ['ा', 'ि', 'ी', 'ु', 'ू', 'े', 'ै', 'ो', 'ौ', 'ृ', 'ॄ', 'ॢ', 'ॣ'].includes(text[i + 2])) {
+                        result += 'f';
+                    } else {
+                        result += 'fₐ';
+                    }
+                    i += 2; // Skip the consonant and the nukta
+                    foundMatch = true;
+                }
+            }
+            // Check for Matras (Vowel signs)
+            if (!foundMatch && i < text.length - 1 && ['ा', 'ि', 'ी', 'ु', 'ू', 'े', 'ै', 'ो', 'ौ', 'ृ', 'ॄ', 'ॢ', 'ॣ'].includes(text[i + 1])) {
+                // Remove the trailing 'ₐ' if present
+                if (devanagariToITRANS[char] && devanagariToITRANS[char].endsWith('ₐ')) {
+                    result += devanagariToITRANS[char].slice(0, -1);
+                } else {
+                    result += devanagariToITRANS[char];
                 }
                 // Append matra
                 result += devanagariToITRANS[text[i + 1]];
