@@ -213,11 +213,12 @@
     // Wait for DOM to be fully loaded
     function initTransliteration() {
         if (document.body) {
-            console.log("Devanagari to ITRANS: Starting transliteration...");
+            const startTime = performance.now();
             processNode(document.body);
 
             // Set up a MutationObserver to handle dynamically added content
             const observer = new MutationObserver((mutations) => {
+                const dynamicStartTime = performance.now();
                 mutations.forEach((mutation) => {
                     if (mutation.type === 'childList') {
                         mutation.addedNodes.forEach((node) => {
@@ -227,6 +228,9 @@
                         processNode(mutation.target);
                     }
                 });
+                const dynamicTime = performance.now() - dynamicStartTime;
+                // console.log(`Transliteration (dynamic): ${dynamicTime.toFixed(2)}ms`);
+                // ^ this time too short, so not logging it
             });
 
             // Start observing the document
@@ -236,7 +240,8 @@
                 characterData: true
             });
 
-            console.log("Devanagari to ITRANS: Observer initialized");
+            const totalTime = performance.now() - startTime;
+            console.log(`Transliteration (at load): ${totalTime.toFixed(2)}ms`);
         } else {
             // If body isn't ready yet, retry after a short delay
             setTimeout(initTransliteration, 10);
