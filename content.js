@@ -1,11 +1,10 @@
-// content.js
 (function () {
     // Mapping of Devanagari Unicode characters to ITRANS
     const devanagariToITRANS = {
         // Vowels
         'अ': 'a', 'आ': 'aa', 'इ': 'i', 'ई': 'ii', 'उ': 'u', 'ऊ': 'uu',
         'ऋ': 'RRi', 'ॠ': 'RRI', 'ऌ': 'LLi', 'ॡ': 'LLI',
-        'ए': 'e', 'ऐ': 'ai', 'ओ': 'o', 'औ': 'au',
+        'ए': 'e', 'ऐ': 'ai', 'ऑ': 'o', 'ओ': 'o', 'औ': 'au',
 
         // Consonants
         'क': 'kₐ', 'ख': 'khₐ', 'ग': 'gₐ', 'घ': 'ghₐ', 'ङ': 'gnₐ',
@@ -29,6 +28,7 @@
         // Additional marks
         '्': '', 'ं': 'ⁿ', 'ः': 'H', 'ँ': 'ⁿ',
         '़': '', // Nukta
+        'ॅ': 'e', 'ॉ': 'o',
 
         // Numerals
         '०': '0', '१': '1', '२': '2', '३': '3', '४': '4',
@@ -60,6 +60,7 @@
 
         // Additional marks
         '್': '', 'ಂ': 'ⁿ', 'ಃ': 'H',
+        'ೆ': 'e', 'ೊ': 'o',
 
         // Numerals
         '೦': '0', '೧': '1', '೨': '2', '೩': '3', '೪': '4',
@@ -70,7 +71,10 @@
         ' ': ' '
     };
 
-    let settings = { devanagari: true, kannada: true };
+    let settings = { devanagari: undefined, kannada: undefined };
+    // When we had set the above to true, it was always transliterating some
+    // sections of the page.The settings were not taking effect.
+    // XXX: I'd like some explanation for this behaviour.
 
     // Function to transliterate text to ITRANS
     function transliterateToITRANS(text) {
@@ -95,7 +99,7 @@
                 // Handle Nukta first for Devanagari
                 if (i < text.length - 1 && text[i + 1] === '़') {
                     if (char === 'ज') {
-                        if (i + 2 < text.length && ['ा', 'ि', 'ी', 'ु', 'ू', 'े', 'ै', 'ो', 'ौ', 'ृ', 'ॄ', 'ॢ', 'ॣ'].includes(text[i + 2])) {
+                        if (i + 2 < text.length && ['ा', 'ि', 'ी', 'ु', 'ू', 'ृ', 'ॄ', 'ॅ', 'े', 'ै', 'ॉ', 'ो', 'ौ', 'ॢ', 'ॣ', 'ೆ', 'ೊ'].includes(text[i + 2])) {
                             result += 'z';
                         } else {
                             result += 'zₐ';
@@ -103,7 +107,7 @@
                         i += 2; // Skip the consonant and the nukta
                         foundMatch = true;
                     } else if (char === 'फ') {
-                        if (i + 2 < text.length && ['ा', 'ि', 'ी', 'ु', 'ू', 'े', 'ै', 'ो', 'ौ', 'ृ', 'ॄ', 'ॢ', 'ॣ'].includes(text[i + 2])) {
+                        if (i + 2 < text.length && ['ा', 'ि', 'ी', 'ु', 'ू', 'ृ', 'ॄ', 'ॅ', 'े', 'ै', 'ॉ', 'ो', 'ौ', 'ॢ', 'ॣ', 'ೆ', 'ೊ'].includes(text[i + 2])) {
                             result += 'f';
                         } else {
                             result += 'fₐ';
@@ -117,7 +121,7 @@
                     }
                 }
                 // Check for Matras (Vowel signs)
-                if (!foundMatch && i < text.length - 1 && ['ा', 'ि', 'ी', 'ु', 'ू', 'े', 'ै', 'ो', 'ौ', 'ृ', 'ॄ', 'ॢ', 'ॣ', 'ಾ', 'ಿ', 'ೀ', 'ು', 'ೂ', 'ೆ', 'ೇ', 'ೈ', 'ೊ', 'ೋ', 'ೌ', 'ೃ', 'ೄ'].includes(text[i + 1])) {
+                if (!foundMatch && i < text.length - 1 && ['ा', 'ि', 'ी', 'ु', 'ू', 'ृ', 'ॄ', 'ॅ', 'े', 'ै', 'ॉ', 'ो', 'ौ', 'ॢ', 'ॣ', 'ಾ', 'ಿ', 'ೀ', 'ು', 'ೂ', 'ೃ', 'ೄ', 'ೆ', 'ೆ', 'ೇ', 'ೈ', 'ೊ', 'ೊ', 'ೋ', 'ೌ',].includes(text[i + 1])) {
                     // Remove the trailing 'ₐ' if present for Devanagari
                     if (devanagariToITRANS[char] && devanagariToITRANS[char].endsWith('ₐ')) {
                         result += devanagariToITRANS[char].slice(0, -1);
@@ -251,9 +255,10 @@
     // Load settings before initializing
     chrome.storage.sync.get(['devanagari', 'kannada'], (result) => {
         settings = {
-            devanagari: result.devanagari !== false,
-            kannada: result.kannada !== false
+            devanagari: result.devanagari !== undefined ? result.devanagari : true,
+            kannada: result.kannada !== undefined ? result.kannada : true
         };
+        // console.log("Devanagari: " + settings.devanagari + ", Kannada: " + settings.kannada);
         initTransliteration();
     });
 
