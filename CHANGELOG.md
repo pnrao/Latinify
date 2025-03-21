@@ -1,25 +1,11 @@
 # Changelog
 
-## [1.1] - 2025-03-20
+## 1.1 - 2025-03-20
 
-### Added
+- NEW: Settings to toggle per-script transliteration
+- CHANGE: Icon to be vivid
+- FIX: Handling of chandra
 
-- Settings to toggle per-script transliteration
-
-### Changed
-
-- Icon to be vivid
-
-### Fixed
-
-- Handling of chandra
-
-## [1.0] - 2025-03-11
-
-### Added
+## 1.0 - 2025-03-11
 
 - Initial release of the transliteration script for Devanagari and Kannada scripts.
-
-### Changed
-
-### Fixed
