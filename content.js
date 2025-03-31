@@ -16,6 +16,9 @@
         'ष': 'Shₐ', 'स': 'sₐ', 'ह': 'hₐ', 'ळ': 'Lₐ',
         'ज़': 'zₐ', 'फ़': 'fₐ',
 
+        // nukta consonants
+        'क़': 'qₐ', 'ख़': 'qhₐ', 'ग़': 'gₐ', 'ज़': 'zₐ', 'ड़': 'rₐ', 'ढ़': 'rhₐ', 'फ़': 'fₐ', 'य़': 'yyₐ',
+
         // Conjunct Consonants (Special Cases)
         'क्ष': 'kshₐ',
         'ज्ञ': 'gyₐ',
@@ -53,6 +56,7 @@
         'ಪ': 'pa', 'ಫ': 'pha', 'ಬ': 'ba', 'ಭ': 'bha', 'ಮ': 'ma',
         'ಯ': 'ya', 'ರ': 'ra', 'ಲ': 'la', 'ವ': 'va', 'ಶ': 'sha',
         'ಷ': 'Sha', 'ಸ': 'sa', 'ಹ': 'ha', 'ಳ': 'La', 'ೞ': 'LLa',
+        'ೞ': 'fa',
 
         // Matras (Vowel signs)
         'ಾ': 'aa', 'ಿ': 'i', 'ೀ': 'ii', 'ು': 'u', 'ೂ': 'uu',
@@ -78,116 +82,78 @@
 
     // Function to transliterate text to ITRANS
     function transliterateToITRANS(text) {
-        if (!text || typeof text !== 'string') return text;
+        if (!text || typeof text !== 'string') {
+            // console.log("nontext = " + typeof text);
+            return text;
+        }
+        if (settings.devanagari == false && settings.kannada == false)
+            return text;
 
-        // Check if text contains Devanagari or Kannada
-        const indicPattern = /[\u0900-\u097F\u0C80-\u0CFF]/;
-        if (!indicPattern.test(text)) return text;
-
-        // Improved transliteration algorithm
-        let result = '';
-        let i = 0;
-        while (i < text.length) {
-            const char = text[i];
-            let foundMatch = false;
-
-            // Only transliterate if script is enabled
-            const isDevanagari = /[\u0900-\u097F]/.test(char);
-            const isKannada = /[\u0C80-\u0CFF]/.test(char);
-
-            if ((!isDevanagari || settings.devanagari) && (!isKannada || settings.kannada)) {
-                // Handle Nukta first for Devanagari
-                if (i < text.length - 1 && text[i + 1] === '़') {
-                    if (char === 'ज') {
-                        if (i + 2 < text.length && ['ा', 'ि', 'ी', 'ु', 'ू', 'ृ', 'ॄ', 'ॅ', 'े', 'ै', 'ॉ', 'ो', 'ौ', 'ॢ', 'ॣ', 'ೆ', 'ೊ'].includes(text[i + 2])) {
-                            result += 'z';
-                        } else {
-                            result += 'zₐ';
-                        }
-                        i += 2; // Skip the consonant and the nukta
-                        foundMatch = true;
-                    } else if (char === 'फ') {
-                        if (i + 2 < text.length && ['ा', 'ि', 'ी', 'ु', 'ू', 'ृ', 'ॄ', 'ॅ', 'े', 'ै', 'ॉ', 'ो', 'ौ', 'ॢ', 'ॣ', 'ೆ', 'ೊ'].includes(text[i + 2])) {
-                            result += 'f';
-                        } else {
-                            result += 'fₐ';
-                        }
-                        i += 2; // Skip the consonant and the nukta
-                        foundMatch = true;
-                    } else {
-                        result += devanagariToITRANS[text[i]];
-                        i += 2;
-                        foundMatch = true;
+        let replacement = [];
+        for (let i = 0; i < text.length; i++) {
+            if (settings.devanagari && text[i] >= '\u0900' && text[i] <= '\u097F') {
+                if (text[i] >= '\u0904' && text[i] <= '\u0939') { // discrete letter
+                    replacement.push(devanagariToITRANS[text[i]]);
+                } else if (text[i] >= '\u093E' && text[i] <= '\u094F') { // matra or halant
+                    if (replacement.at(-1).endsWith('ₐ')) {
+                        replacement[replacement.length - 1] = replacement.at(-1).slice(0, -1);
                     }
-                }
-                // Check for Matras (Vowel signs)
-                if (!foundMatch && i < text.length - 1 && ['ा', 'ि', 'ी', 'ु', 'ू', 'ृ', 'ॄ', 'ॅ', 'े', 'ै', 'ॉ', 'ो', 'ौ', 'ॢ', 'ॣ', 'ಾ', 'ಿ', 'ೀ', 'ು', 'ೂ', 'ೃ', 'ೄ', 'ೆ', 'ೆ', 'ೇ', 'ೈ', 'ೊ', 'ೊ', 'ೋ', 'ೌ',].includes(text[i + 1])) {
-                    // Remove the trailing 'ₐ' if present for Devanagari
-                    if (devanagariToITRANS[char] && devanagariToITRANS[char].endsWith('ₐ')) {
-                        result += devanagariToITRANS[char].slice(0, -1);
-                        // Remove the trailing 'a' if present for Kannada
-                    } else if (kannadaToITRANS[char] && kannadaToITRANS[char].endsWith('a')) {
-                        result += kannadaToITRANS[char].slice(0, -1);
-                    } else {
-                        result += devanagariToITRANS[char] || kannadaToITRANS[char];
+                    replacement.push(devanagariToITRANS[text[i]]);
+                } else if (text[i] == '\u093C') { // nukta
+                    switch (replacement.at(-1)) {
+                        case 'kₐ':
+                            replacement[replacement.length - 1] = 'qₐ';
+                            break;
+                        case 'khₐ':
+                            replacement[replacement.length - 1] = 'qhₐ';
+                            break;
+                        case 'jₐ':
+                            replacement[replacement.length - 1] = 'zₐ';
+                            break;
+                        case 'phₐ':
+                            replacement[replacement.length - 1] = 'fₐ';
+                            break;
+                        default:
+                            // words like पढ़ाई, चौड़ा seem to be pronounced as if the nukta is not there
+                            break;
                     }
-                    // Append matra
-                    result += devanagariToITRANS[text[i + 1]] || kannadaToITRANS[text[i + 1]];
-                    i += 2; // Skip the matra
-                    foundMatch = true;
+                } else {
+                    replacement.push(devanagariToITRANS[text[i]]);
                 }
-                // Handle consonants followed by halant (virama)
-                if (!foundMatch && i < text.length - 1 && (text[i + 1] === '्' || text[i + 1] === '್')) {
-                    // Get the consonant without the inherent 'ₐ' for Devanagari
-                    if (devanagariToITRANS[char]) {
-                        const consonant = devanagariToITRANS[char];
-                        if (consonant && consonant.endsWith('ₐ')) {
-                            result += consonant.slice(0, -1);
-                        } else {
-                            result += consonant;
-                        }
-                        // Get the consonant without the inherent 'a' for Kannada
-                    } else if (kannadaToITRANS[char]) {
-                        const consonant = kannadaToITRANS[char];
-                        if (consonant && consonant.endsWith('a')) {
-                            result += consonant.slice(0, -1);
-                        } else {
-                            result += consonant;
-                        }
+            } else if (settings.kannada && text[i] >= '\u0C80' && text[i] <= '\u0CFF') {
+                if (text[i] >= '\u0C85' && text[i] <= '\u0CB9') { // discrete letter
+                    replacement.push(kannadaToITRANS[text[i]]);
+                } else if (text[i] >= '\u0CBE' && text[i] <= '\u0CCD') { // matra or halant
+                    if (replacement.at(-1).endsWith('a')) {
+                        replacement[replacement.length - 1] = replacement.at(-1).slice(0, -1);
                     }
-                    i += 2; // Skip the halant
-                    foundMatch = true;
-                }
-                // Check for special two-character sequences first:
-                if (!foundMatch && i + 1 < text.length) {
-                    const twoChar = text.substring(i, i + 2);
-                    if (devanagariToITRANS[twoChar]) {
-                        result += devanagariToITRANS[twoChar];
-                        i += 2;
-                        foundMatch = true;
-                    } else if (kannadaToITRANS[twoChar]) {
-                        result += kannadaToITRANS[twoChar];
-                        i += 2;
-                        foundMatch = true;
+                    replacement.push(kannadaToITRANS[text[i]]);
+                } else if (text[i] == '\u0CBC') { // nukta
+                    // XXX: I haven't seen nukta in Kannada, so guessing at this
+                    switch (replacement.at(-1)) {
+                        case 'ka':
+                            replacement[replacement.length - 1] = 'qa';
+                            break;
+                        case 'kha':
+                            replacement[replacement.length - 1] = 'qha';
+                            break;
+                        case 'ja':
+                            replacement[replacement.length - 1] = 'za';
+                            break;
+                        case 'pha':
+                            replacement[replacement.length - 1] = 'fa';
+                            break;
+                        default:
+                            break;
                     }
-                }
-                // Regular character
-                if (!foundMatch && (devanagariToITRANS[char] || kannadaToITRANS[char])) {
-                    result += devanagariToITRANS[char] || kannadaToITRANS[char];
-                    i++;
-                    foundMatch = true;
-                }
-                // Non-Devanagari and Non-Kannada character
-                if (!foundMatch) {
-                    result += char;
-                    i++;
+                } else {
+                    replacement.push(kannadaToITRANS[text[i]]);
                 }
             } else {
-                result += char;
-                i++;
+                replacement.push(text[i]);
             }
         }
-        return result;
+        return replacement.join("");
     }
 
     // Function to process text nodes

@@ -13,7 +13,8 @@ This Chrome extension helps by converting text in Indic scripts to the Latin scr
 ## Features
 
 - All transliteration is done locally. Fast.
-- Avoids replacements like ǝ, ~, .N, RRi, etc., making the transliterated text easier for a lay reader. The goal of ITRANS is to convert Latin text faithfully to Indic scripts, whereas the goal of this extension is readability in the Latin script.
+- The goal of ITRANS is to convert Latin text faithfully to Indic scripts, whereas the goal of this extension is readability in the Latin script. At the expense of one-to-one correspondence (strict ITRANS), we prefer common conventions.
+- Avoids replacements like ǝ, ~, .N, RRi, etc., making the transliterated text easier for a lay reader.
 - Schwa is denoted as ₐ in Devanagari, making it easier to ignore.
 - Schwa is denoted as 'a' in Kannada, as it is usually pronounced.
 - Nasal signs are denoted as ⁿ or ᵐ, depending on the script and the letter.
