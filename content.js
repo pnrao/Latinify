@@ -80,6 +80,47 @@
     // sections of the page.The settings were not taking effect.
     // XXX: I'd like some explanation for this behaviour.
 
+    function appendTransliteratedChar(sourceText, i, replacementText, mapping, matraStart, matraEnd, nukta) {
+        const prevLetter = replacementText.length > 0 ? replacementText[replacementText.length - 1] : '';
+        if (sourceText[i] >= matraStart && sourceText[i] <= matraEnd) {
+            if (replacementText.length > 0 && (prevLetter.endsWith('ₐ') || prevLetter.endsWith('a'))) {
+                replacementText[replacementText.length - 1] = prevLetter.slice(0, -1);
+            }
+            replacementText.push(mapping[sourceText[i]]);
+        } else if (sourceText[i] == nukta) {
+            switch (prevLetter) {
+                case 'kₐ':
+                    replacementText[replacementText.length - 1] = 'qₐ';
+                    break;
+                case 'khₐ':
+                    replacementText[replacementText.length - 1] = 'qhₐ';
+                    break;
+                case 'jₐ':
+                    replacementText[replacementText.length - 1] = 'zₐ';
+                    break;
+                case 'phₐ':
+                    replacementText[replacementText.length - 1] = 'fₐ';
+                    break;
+                case 'ka':
+                    replacementText[replacementText.length - 1] = 'qa';
+                    break;
+                case 'kha':
+                    replacementText[replacementText.length - 1] = 'qha';
+                    break;
+                case 'ja':
+                    replacementText[replacementText.length - 1] = 'za';
+                    break;
+                case 'pha':
+                    replacementText[replacementText.length - 1] = 'fa';
+                    break;
+                default:
+                    // words like पढ़ाई, चौड़ा seem to be pronounced as if the nukta is not there
+                    break;
+            }
+        } else { // discrete letter
+            replacementText.push(mapping[sourceText[i]] || sourceText[i]);
+        }
+    }
     // Function to transliterate text to ITRANS
     function transliterateToITRANS(text) {
         if (!text || typeof text !== 'string') {
@@ -92,63 +133,9 @@
         let replacement = [];
         for (let i = 0; i < text.length; i++) {
             if (settings.devanagari && text[i] >= '\u0900' && text[i] <= '\u097F') {
-                if (text[i] >= '\u0904' && text[i] <= '\u0939') { // discrete letter
-                    replacement.push(devanagariToITRANS[text[i]]);
-                } else if (text[i] >= '\u093E' && text[i] <= '\u094F') { // matra or halant
-                    if (replacement.at(-1).endsWith('ₐ')) {
-                        replacement[replacement.length - 1] = replacement.at(-1).slice(0, -1);
-                    }
-                    replacement.push(devanagariToITRANS[text[i]]);
-                } else if (text[i] == '\u093C') { // nukta
-                    switch (replacement.at(-1)) {
-                        case 'kₐ':
-                            replacement[replacement.length - 1] = 'qₐ';
-                            break;
-                        case 'khₐ':
-                            replacement[replacement.length - 1] = 'qhₐ';
-                            break;
-                        case 'jₐ':
-                            replacement[replacement.length - 1] = 'zₐ';
-                            break;
-                        case 'phₐ':
-                            replacement[replacement.length - 1] = 'fₐ';
-                            break;
-                        default:
-                            // words like पढ़ाई, चौड़ा seem to be pronounced as if the nukta is not there
-                            break;
-                    }
-                } else {
-                    replacement.push(devanagariToITRANS[text[i]]);
-                }
+                appendTransliteratedChar(text, i, replacement, devanagariToITRANS, '\u093E', '\u094F', '\u093C');
             } else if (settings.kannada && text[i] >= '\u0C80' && text[i] <= '\u0CFF') {
-                if (text[i] >= '\u0C85' && text[i] <= '\u0CB9') { // discrete letter
-                    replacement.push(kannadaToITRANS[text[i]]);
-                } else if (text[i] >= '\u0CBE' && text[i] <= '\u0CCD') { // matra or halant
-                    if (replacement.at(-1).endsWith('a')) {
-                        replacement[replacement.length - 1] = replacement.at(-1).slice(0, -1);
-                    }
-                    replacement.push(kannadaToITRANS[text[i]]);
-                } else if (text[i] == '\u0CBC') { // nukta
-                    // XXX: I haven't seen nukta in Kannada, so guessing at this
-                    switch (replacement.at(-1)) {
-                        case 'ka':
-                            replacement[replacement.length - 1] = 'qa';
-                            break;
-                        case 'kha':
-                            replacement[replacement.length - 1] = 'qha';
-                            break;
-                        case 'ja':
-                            replacement[replacement.length - 1] = 'za';
-                            break;
-                        case 'pha':
-                            replacement[replacement.length - 1] = 'fa';
-                            break;
-                        default:
-                            break;
-                    }
-                } else {
-                    replacement.push(kannadaToITRANS[text[i]]);
-                }
+                appendTransliteratedChar(text, i, replacement, kannadaToITRANS, '\u0CBE', '\u0CCD', '\u0CBC');
             } else {
                 replacement.push(text[i]);
             }
@@ -224,7 +211,6 @@
             devanagari: result.devanagari !== undefined ? result.devanagari : true,
             kannada: result.kannada !== undefined ? result.kannada : true
         };
-        // console.log("Devanagari: " + settings.devanagari + ", Kannada: " + settings.kannada);
         initTransliteration();
     });
 

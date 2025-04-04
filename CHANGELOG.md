@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3 - unreleased
+
+- CHANGE: Transliteration modularized to accommodate more scripts
+
 ## 1.2 - 2025-04-01
 
 - CHANGE: Transliteration logic

@@ -22,7 +22,7 @@ This Chrome extension helps by converting text in Indic scripts to the Latin scr
 ## Limitations
 
 - This extension does not detect the language. Doing so would require capabilities beyond a lightweight extension.
-- Schwa deletion for Hindi and Marathi is left as an exercise to the reader. Sanskrit, often written in Devanagari, retains the schwa. For example, धड़कनें in Hindi could be transliterated to dhₐD**ₐ**kne (verb) or dhₐDk**ₐ**ne (noun). Without deeper linguistic analysis, it's not possible to determine which ₐ should be deleted.
+- Schwa deletion for Hindi and Marathi is left as an exercise to the reader. Sanskrit, often written in Devanagari, retains the schwa. For example, धड़कनें in Hindi could be transliterated to dhaD**a**kneⁿ (verb) or dhaDk**a**neⁿ (noun). Without deeper linguistic analysis, it's not possible to determine which ₐ should be deleted.
 - Terminal consonants in Kannada that are not affixed with a vowel sign should ideally be transliterated to 'aa', but are treated the same as non-terminal consonants.
 
 ## Privacy
