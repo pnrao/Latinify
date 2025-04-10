@@ -158,6 +158,10 @@
         }
     }
 
+    function wrapWordWithSpan(word, script) {
+        return `<span class="transliterated-${script}">${word}</span>`;
+    }
+
     // Function to transliterate text to ITRANS
     function transliterateToITRANS(text) {
         if (!text || typeof text !== 'string') {
@@ -168,30 +172,75 @@
         }
 
         let replacement = [];
+        let currentScript = null;
+        let currentWord = [];
+
+        function flushCurrentWord() {
+            if (currentWord.length > 0) {
+                replacement.push(wrapWordWithSpan(currentWord.join(""), currentScript));
+                currentWord = [];
+            }
+        }
+
         for (let i = 0; i < text.length; i++) {
             if (settings.devanagari && text[i] >= DEVANAGARI_START && text[i] <= DEVANAGARI_END) {
-                appendTransliteratedChar(text, i, replacement, devanagariToITRANS, DEVANAGARI_MODIFIER_START, DEVANAGARI_MODIFIER_END, DEVANAGARI_NUKTA);
+                if (currentScript !== 'devanagari') {
+                    flushCurrentWord();
+                    currentScript = 'devanagari';
+                }
+                appendTransliteratedChar(text, i, currentWord, devanagariToITRANS, DEVANAGARI_MODIFIER_START, DEVANAGARI_MODIFIER_END, DEVANAGARI_NUKTA);
             } else if (settings.kannada && text[i] >= KANNADA_START && text[i] <= KANNADA_END) {
-                appendTransliteratedChar(text, i, replacement, kannadaToITRANS, KANNADA_MODIFIER_START, KANNADA_MODIFIER_END, KANNADA_NUKTA);
+                if (currentScript !== 'kannada') {
+                    flushCurrentWord();
+                    currentScript = 'kannada';
+                }
+                appendTransliteratedChar(text, i, currentWord, kannadaToITRANS, KANNADA_MODIFIER_START, KANNADA_MODIFIER_END, KANNADA_NUKTA);
             } else if (settings.telugu && text[i] >= TELUGU_START && text[i] <= TELUGU_END) {
-                appendTransliteratedChar(text, i, replacement, teluguToITRANS, TELUGU_MODIFIER_START, TELUGU_MODIFIER_END, TELUGU_NUKTA);
+                if (currentScript !== 'telugu') {
+                    flushCurrentWord();
+                    currentScript = 'telugu';
+                }
+                appendTransliteratedChar(text, i, currentWord, teluguToITRANS, TELUGU_MODIFIER_START, TELUGU_MODIFIER_END, TELUGU_NUKTA);
             } else {
+                flushCurrentWord();
+                currentScript = null;
                 replacement.push(text[i]);
             }
         }
-        return replacement.join("");
+        flushCurrentWord();
+
+        return replacement.join('');
     }
 
     // Function to process text nodes
     function processNode(node) {
         if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim()) {
+            if (node.parentNode && node.parentNode.classList && node.parentNode.classList.contains('transliterated')) {
+                return; // Skip already processed nodes
+            }
             const transliteratedText = transliterateToITRANS(node.nodeValue);
             if (node.nodeValue !== transliteratedText) {
-                node.nodeValue = transliteratedText;
+                const span = document.createElement('span');
+                span.className = 'transliterated';
+                span.innerHTML = transliteratedText;
+                node.replaceWith(span);
             }
         } else if (node.nodeType === Node.ELEMENT_NODE && !SKIPPED_NODES.includes(node.nodeName.toLowerCase())) {
             Array.from(node.childNodes).forEach(processNode);
         }
+    }
+
+    function throttle(func, limit) {
+        let inThrottle;
+        return function () {
+            const args = arguments;
+            const context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(() => (inThrottle = false), limit);
+            }
+        };
     }
 
     // Wait for DOM to be fully loaded
@@ -201,21 +250,28 @@
             processNode(document.body);
 
             // Set up a MutationObserver to handle dynamically added content
-            const observer = new MutationObserver((mutations) => {
-                const dynamicStartTime = performance.now();
-                mutations.forEach((mutation) => {
-                    if (mutation.type === 'childList') {
-                        mutation.addedNodes.forEach((node) => {
-                            processNode(node);
-                        });
-                    } else if (mutation.type === 'characterData') {
-                        processNode(mutation.target);
-                    }
-                });
-                const dynamicTime = performance.now() - dynamicStartTime;
-                // console.log(`Transliteration (dynamic): ${dynamicTime.toFixed(2)}ms`);
-                // ^ this time too short, so not logging it
-            });
+            const observer = new MutationObserver(
+                throttle((mutations) => {
+                    const dynamicStartTime = performance.now();
+                    observer.disconnect(); // Temporarily disconnect the observer
+                    mutations.forEach((mutation) => {
+                        if (mutation.type === 'childList') {
+                            mutation.addedNodes.forEach((node) => {
+                                processNode(node);
+                            });
+                        } else if (mutation.type === 'characterData') {
+                            processNode(mutation.target);
+                        }
+                    });
+                    observer.observe(document.body, {
+                        childList: true,
+                        subtree: true,
+                        characterData: true
+                    }); // Reconnect the observer
+                    const dynamicTime = performance.now() - dynamicStartTime;
+                    console.log(`Transliteration (dynamic): ${dynamicTime.toFixed(2)}ms`);
+                }, 200) // Throttle to process mutations every 200ms
+            );
 
             // Start observing the document
             observer.observe(document.body, {

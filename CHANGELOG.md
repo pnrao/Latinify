@@ -2,6 +2,7 @@
 
 ## 1.3 - unreleased
 
+- NEW: squiggly underlines to indicate the original script
 - NEW: Telugu script
 - CHANGE: Transliteration modularized to accommodate more scripts
 
