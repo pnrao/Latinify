@@ -2,6 +2,7 @@
 
 ## 1.3 - unreleased
 
+- NEW: Telugu script
 - CHANGE: Transliteration modularized to accommodate more scripts
 
 ## 1.2 - 2025-04-01
