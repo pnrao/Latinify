@@ -1,4 +1,19 @@
 (function () {
+    'use strict';
+    const DEVANAGARI_START = '\u0900';
+    const DEVANAGARI_END = '\u097F';
+    const DEVANAGARI_MODIFIER_START = '\u093E';
+    const DEVANAGARI_MODIFIER_END = '\u094F';
+    const DEVANAGARI_NUKTA = '\u093C';
+
+    const KANNADA_START = '\u0C80';
+    const KANNADA_END = '\u0CFF';
+    const KANNADA_MODIFIER_START = '\u0CBE';
+    const KANNADA_MODIFIER_END = '\u0CCD';
+    const KANNADA_NUKTA = '\u0CBC';
+
+    const SKIPPED_NODES = ['script', 'style', 'textarea', 'input'];
+
     // Mapping of Devanagari Unicode characters to ITRANS
     const devanagariToITRANS = {
         // Vowels
@@ -40,6 +55,8 @@
         // Others
         '।': '. ', '॥': '. ',
         ' ': ' '
+
+        // we don't remap ॐ because this is interepreted as a religious symbol, and not part of any word
     };
 
     // Mapping of Kannada Unicode characters to ITRANS
@@ -56,7 +73,6 @@
         'ಪ': 'pa', 'ಫ': 'pha', 'ಬ': 'ba', 'ಭ': 'bha', 'ಮ': 'ma',
         'ಯ': 'ya', 'ರ': 'ra', 'ಲ': 'la', 'ವ': 'va', 'ಶ': 'sha',
         'ಷ': 'Sha', 'ಸ': 'sa', 'ಹ': 'ha', 'ಳ': 'La', 'ೞ': 'LLa',
-        'ೞ': 'fa',
 
         // Matras (Vowel signs)
         'ಾ': 'aa', 'ಿ': 'i', 'ೀ': 'ii', 'ು': 'u', 'ೂ': 'uu',
@@ -80,6 +96,17 @@
     // sections of the page.The settings were not taking effect.
     // XXX: I'd like some explanation for this behaviour.
 
+    function handleNukta(prevLetter, replacementText) {
+        const nuktaReplacements = {
+            'kₐ': 'qₐ', 'khₐ': 'qhₐ', 'jₐ': 'zₐ', 'phₐ': 'fₐ',
+            'ka': 'qa', 'kha': 'qha', 'ja': 'za', 'pha': 'fa'
+            // words like पढ़ाई, चौड़ा seem to be pronounced as if the nukta is not there
+        };
+        if (nuktaReplacements[prevLetter]) {
+            replacementText[replacementText.length - 1] = nuktaReplacements[prevLetter];
+        }
+    }
+
     function appendTransliteratedChar(sourceText, i, replacementText, mapping, matraStart, matraEnd, nukta) {
         const prevLetter = replacementText.length > 0 ? replacementText[replacementText.length - 1] : '';
         if (sourceText[i] >= matraStart && sourceText[i] <= matraEnd) {
@@ -88,54 +115,27 @@
             }
             replacementText.push(mapping[sourceText[i]]);
         } else if (sourceText[i] == nukta) {
-            switch (prevLetter) {
-                case 'kₐ':
-                    replacementText[replacementText.length - 1] = 'qₐ';
-                    break;
-                case 'khₐ':
-                    replacementText[replacementText.length - 1] = 'qhₐ';
-                    break;
-                case 'jₐ':
-                    replacementText[replacementText.length - 1] = 'zₐ';
-                    break;
-                case 'phₐ':
-                    replacementText[replacementText.length - 1] = 'fₐ';
-                    break;
-                case 'ka':
-                    replacementText[replacementText.length - 1] = 'qa';
-                    break;
-                case 'kha':
-                    replacementText[replacementText.length - 1] = 'qha';
-                    break;
-                case 'ja':
-                    replacementText[replacementText.length - 1] = 'za';
-                    break;
-                case 'pha':
-                    replacementText[replacementText.length - 1] = 'fa';
-                    break;
-                default:
-                    // words like पढ़ाई, चौड़ा seem to be pronounced as if the nukta is not there
-                    break;
-            }
+            handleNukta(prevLetter, replacementText);
         } else { // discrete letter
             replacementText.push(mapping[sourceText[i]] || sourceText[i]);
         }
     }
+
     // Function to transliterate text to ITRANS
     function transliterateToITRANS(text) {
         if (!text || typeof text !== 'string') {
-            // console.log("nontext = " + typeof text);
             return text;
         }
-        if (settings.devanagari == false && settings.kannada == false)
+        if (!settings.devanagari && !settings.kannada) {
             return text;
+        }
 
         let replacement = [];
         for (let i = 0; i < text.length; i++) {
-            if (settings.devanagari && text[i] >= '\u0900' && text[i] <= '\u097F') {
-                appendTransliteratedChar(text, i, replacement, devanagariToITRANS, '\u093E', '\u094F', '\u093C');
-            } else if (settings.kannada && text[i] >= '\u0C80' && text[i] <= '\u0CFF') {
-                appendTransliteratedChar(text, i, replacement, kannadaToITRANS, '\u0CBE', '\u0CCD', '\u0CBC');
+            if (settings.devanagari && text[i] >= DEVANAGARI_START && text[i] <= DEVANAGARI_END) {
+                appendTransliteratedChar(text, i, replacement, devanagariToITRANS, DEVANAGARI_MODIFIER_START, DEVANAGARI_MODIFIER_END, DEVANAGARI_NUKTA);
+            } else if (settings.kannada && text[i] >= KANNADA_START && text[i] <= KANNADA_END) {
+                appendTransliteratedChar(text, i, replacement, kannadaToITRANS, KANNADA_MODIFIER_START, KANNADA_MODIFIER_END, KANNADA_NUKTA);
             } else {
                 replacement.push(text[i]);
             }
@@ -145,25 +145,13 @@
 
     // Function to process text nodes
     function processNode(node) {
-        if (node.nodeType === Node.TEXT_NODE) {
-            const originalText = node.nodeValue;
-            if (originalText && originalText.trim()) {
-                const transliteratedText = transliterateToITRANS(originalText);
-                if (originalText !== transliteratedText) {
-                    node.nodeValue = transliteratedText;
-                }
+        if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim()) {
+            const transliteratedText = transliterateToITRANS(node.nodeValue);
+            if (node.nodeValue !== transliteratedText) {
+                node.nodeValue = transliteratedText;
             }
-        } else if (node.nodeType === Node.ELEMENT_NODE) {
-            // Skip script, style, and form elements
-            const nodeName = node.nodeName.toLowerCase();
-            if (nodeName === 'script' || nodeName === 'style' || nodeName === 'textarea' || nodeName === 'input') {
-                return;
-            }
-
-            // Process child nodes
-            for (let i = 0; i < node.childNodes.length; i++) {
-                processNode(node.childNodes[i]);
-            }
+        } else if (node.nodeType === Node.ELEMENT_NODE && !SKIPPED_NODES.includes(node.nodeName.toLowerCase())) {
+            Array.from(node.childNodes).forEach(processNode);
         }
     }
 
