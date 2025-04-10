@@ -13,6 +13,18 @@
             display: block;
             margin: 0.5em 0;
         }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #121212;
+                color: #ffffff;
+            }
+
+            input[type="checkbox"] {
+                accent-color: #bb86fc; /* Optional: Add a custom accent color for checkboxes */
+            }
+        }
     </style>
 </head>
 
