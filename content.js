@@ -12,6 +12,12 @@
     const KANNADA_MODIFIER_END = '\u0CCD';
     const KANNADA_NUKTA = '\u0CBC';
 
+    const TELUGU_START = '\u0C00';
+    const TELUGU_END = '\u0C7F';
+    const TELUGU_MODIFIER_START = '\u0C3E';
+    const TELUGU_MODIFIER_END = '\u0C56';
+    const TELUGU_NUKTA = null; // Telugu does not have a nukta equivalent
+
     const SKIPPED_NODES = ['script', 'style', 'textarea', 'input'];
 
     // Mapping of Devanagari Unicode characters to ITRANS
@@ -91,7 +97,38 @@
         ' ': ' '
     };
 
-    let settings = { devanagari: undefined, kannada: undefined };
+    // Mapping of Telugu Unicode characters to ITRANS
+    const teluguToITRANS = {
+        // Vowels
+        'అ': 'a', 'ఆ': 'aa', 'ఇ': 'i', 'ఈ': 'ii', 'ఉ': 'u', 'ఊ': 'uu',
+        'ఋ': 'RRi', 'ౠ': 'RRI', 'ఎ': 'e', 'ఏ': 'ee', 'ఐ': 'ai', 'ఒ': 'o', 'ఓ': 'oo', 'ఔ': 'au',
+
+        // Consonants
+        'క': 'ka', 'ఖ': 'kha', 'గ': 'ga', 'ఘ': 'gha', 'ఙ': 'nga',
+        'చ': 'cha', 'ఛ': 'Cha', 'జ': 'ja', 'ఝ': 'jha', 'ఞ': 'jna',
+        'ట': 'Ta', 'ఠ': 'Tha', 'డ': 'Da', 'ఢ': 'Dha', 'ణ': 'Na',
+        'త': 'ta', 'థ': 'tha', 'ద': 'da', 'ధ': 'dha', 'న': 'na',
+        'ప': 'pa', 'ఫ': 'pha', 'బ': 'ba', 'భ': 'bha', 'మ': 'ma',
+        'య': 'ya', 'ర': 'ra', 'ల': 'la', 'వ': 'va', 'శ': 'sha',
+        'ష': 'Sha', 'స': 'sa', 'హ': 'ha', 'ళ': 'La', 'క్ష': 'kSha',
+
+        // Matras (Vowel signs)
+        'ా': 'aa', 'ి': 'i', 'ీ': 'ii', 'ు': 'u', 'ూ': 'uu',
+        'ె': 'e', 'ే': 'ee', 'ై': 'ai', 'ొ': 'o', 'ో': 'oo', 'ౌ': 'au',
+
+        // Additional marks
+        '్': '', 'ం': 'ᵐ', 'ః': 'H',
+
+        // Numerals
+        '౦': '0', '౧': '1', '౨': '2', '౩': '3', '౪': '4',
+        '౫': '5', '౬': '6', '౭': '7', '౮': '8', '౯': '9',
+
+        // Others
+        '।': '. ', '॥': '. ',
+        ' ': ' '
+    };
+
+    let settings = { devanagari: undefined, kannada: undefined, telugu: undefined };
     // When we had set the above to true, it was always transliterating some
     // sections of the page.The settings were not taking effect.
     // XXX: I'd like some explanation for this behaviour.
@@ -126,7 +163,7 @@
         if (!text || typeof text !== 'string') {
             return text;
         }
-        if (!settings.devanagari && !settings.kannada) {
+        if (!settings.devanagari && !settings.kannada && !settings.telugu) {
             return text;
         }
 
@@ -136,6 +173,8 @@
                 appendTransliteratedChar(text, i, replacement, devanagariToITRANS, DEVANAGARI_MODIFIER_START, DEVANAGARI_MODIFIER_END, DEVANAGARI_NUKTA);
             } else if (settings.kannada && text[i] >= KANNADA_START && text[i] <= KANNADA_END) {
                 appendTransliteratedChar(text, i, replacement, kannadaToITRANS, KANNADA_MODIFIER_START, KANNADA_MODIFIER_END, KANNADA_NUKTA);
+            } else if (settings.telugu && text[i] >= TELUGU_START && text[i] <= TELUGU_END) {
+                appendTransliteratedChar(text, i, replacement, teluguToITRANS, TELUGU_MODIFIER_START, TELUGU_MODIFIER_END, TELUGU_NUKTA);
             } else {
                 replacement.push(text[i]);
             }
@@ -194,10 +233,11 @@
     }
 
     // Load settings before initializing
-    chrome.storage.sync.get(['devanagari', 'kannada'], (result) => {
+    chrome.storage.sync.get(['devanagari', 'kannada', 'telugu'], (result) => {
         settings = {
             devanagari: result.devanagari !== undefined ? result.devanagari : true,
-            kannada: result.kannada !== undefined ? result.kannada : true
+            kannada: result.kannada !== undefined ? result.kannada : true,
+            telugu: result.telugu !== undefined ? result.telugu : true
         };
         initTransliteration();
     });
