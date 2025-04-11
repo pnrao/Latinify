@@ -214,64 +214,56 @@
 
     // Function to process text nodes
     function processNode(node) {
-        if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim()) {
-            if (node.parentNode && node.parentNode.classList && node.parentNode.classList.contains('transliterated')) {
+        if (node.nodeType === Node.TEXT_NODE && node.nodeValue.length > 0) {
+            if (node.parentNode && node.parentNode.hasAttribute('data-transliterated')) {
+                console.log('Skipping already processed text node:', node.nodeValue);
                 return; // Skip already processed nodes
             }
             const transliteratedText = transliterateToITRANS(node.nodeValue);
             if (node.nodeValue !== transliteratedText) {
+                console.log('Transliterating text node:', node.nodeValue);
                 const span = document.createElement('span');
                 span.className = 'transliterated';
                 span.innerHTML = transliteratedText;
                 node.replaceWith(span);
+            } else {
+                console.log('No transliteration needed for text node:', node.nodeValue);
             }
         } else if (node.nodeType === Node.ELEMENT_NODE && !SKIPPED_NODES.includes(node.nodeName.toLowerCase())) {
+            if (node.hasAttribute('data-transliterated')) {
+                console.log('Skipping already processed element node:', node);
+                return; // Skip already processed nodes
+            }
+            // console.log('Processing element node:', node);
             Array.from(node.childNodes).forEach(processNode);
+            if (node.childNodes.length > 0) {
+                node.setAttribute('data-transliterated', 'true'); // Mark the element as processed only after its children are processed
+            }
         }
     }
 
-    function throttle(func, limit) {
-        let inThrottle;
-        return function () {
-            const args = arguments;
-            const context = this;
-            if (!inThrottle) {
-                func.apply(context, args);
-                inThrottle = true;
-                setTimeout(() => (inThrottle = false), limit);
-            }
-        };
-    }
-
-    // Wait for DOM to be fully loaded
     function initTransliteration() {
         if (document.body) {
             const startTime = performance.now();
+
             processNode(document.body);
 
             // Set up a MutationObserver to handle dynamically added content
-            const observer = new MutationObserver(
-                throttle((mutations) => {
-                    const dynamicStartTime = performance.now();
-                    observer.disconnect(); // Temporarily disconnect the observer
-                    mutations.forEach((mutation) => {
-                        if (mutation.type === 'childList') {
-                            mutation.addedNodes.forEach((node) => {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList') {
+                        mutation.addedNodes.forEach((node) => {
+                            if (node.nodeType === Node.ELEMENT_NODE) {
+                                console.log('Processing dynamically added node:', node);
                                 processNode(node);
-                            });
-                        } else if (mutation.type === 'characterData') {
-                            processNode(mutation.target);
-                        }
-                    });
-                    observer.observe(document.body, {
-                        childList: true,
-                        subtree: true,
-                        characterData: true
-                    }); // Reconnect the observer
-                    const dynamicTime = performance.now() - dynamicStartTime;
-                    console.log(`Transliteration (dynamic): ${dynamicTime.toFixed(2)}ms`);
-                }, 200) // Throttle to process mutations every 200ms
-            );
+                            }
+                        });
+                    } else if (mutation.type === 'characterData') {
+                        console.log('Processing dynamically changed text node:', mutation.target);
+                        processNode(mutation.target);
+                    }
+                });
+            });
 
             // Start observing the document
             observer.observe(document.body, {
@@ -281,9 +273,10 @@
             });
 
             const totalTime = performance.now() - startTime;
-            console.log(`Transliteration (at load): ${totalTime.toFixed(2)}ms`);
+            console.log(`Transliteration (at load) completed in ${totalTime.toFixed(2)}ms.`);
         } else {
             // If body isn't ready yet, retry after a short delay
+            console.log('Document body not ready. Retrying initialization.');
             setTimeout(initTransliteration, 10);
         }
     }
