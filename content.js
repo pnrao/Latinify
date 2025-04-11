@@ -1,5 +1,8 @@
 (function () {
     'use strict';
+    const INDIC_START = '\u0900';
+    const INDIC_END = '\u0DFF';
+
     const DEVANAGARI_START = '\u0900';
     const DEVANAGARI_END = '\u097F';
     const DEVANAGARI_MODIFIER_START = '\u093E';
@@ -212,9 +215,18 @@
         return replacement.join('');
     }
 
+    function hasIndic(text) {
+        for (let char of text) {
+            if (char >= INDIC_START && char <= INDIC_END) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // Function to process text nodes
     function processNode(node) {
-        if (node.nodeType === Node.TEXT_NODE && node.nodeValue.length > 0) {
+        if (node.nodeType === Node.TEXT_NODE && hasIndic(node.nodeValue)) {
             if (node.parentNode && node.parentNode.hasAttribute('data-transliterated')) {
                 console.log('Skipping already processed text node:', node.nodeValue);
                 return; // Skip already processed nodes
@@ -247,6 +259,9 @@
             const startTime = performance.now();
 
             processNode(document.body);
+            const endLoadTime = performance.now();
+            const loadTime = endLoadTime - startTime;
+            console.log(`Transliteration (at load) completed in ${loadTime.toFixed(2)}ms.`);
 
             // Set up a MutationObserver to handle dynamically added content
             const observer = new MutationObserver((mutations) => {
@@ -272,8 +287,8 @@
                 characterData: true
             });
 
-            const totalTime = performance.now() - startTime;
-            console.log(`Transliteration (at load) completed in ${totalTime.toFixed(2)}ms.`);
+            const endMutationObserverTime = performance.now() - startTime;
+            console.log(`Transliteration (mutations) completed in ${endMutationObserverTime.toFixed(2)}ms.`);
         } else {
             // If body isn't ready yet, retry after a short delay
             console.log('Document body not ready. Retrying initialization.');
