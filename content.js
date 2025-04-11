@@ -1,5 +1,6 @@
 (function () {
     'use strict';
+    const LOGGING_ENABLED = false; // Set to false to disable most logging
     const INDIC_START = '\u0900';
     const INDIC_END = '\u0DFF';
 
@@ -136,6 +137,12 @@
     // sections of the page.The settings were not taking effect.
     // XXX: I'd like some explanation for this behaviour.
 
+    function log(...args) {
+        if (LOGGING_ENABLED) {
+            console.log(...args);
+        }
+    }
+
     function handleNukta(prevLetter, replacementText) {
         const nuktaReplacements = {
             'kₐ': 'qₐ', 'khₐ': 'qhₐ', 'jₐ': 'zₐ', 'phₐ': 'fₐ',
@@ -228,25 +235,25 @@
     function processNode(node) {
         if (node.nodeType === Node.TEXT_NODE && hasIndic(node.nodeValue)) {
             if (node.parentNode && node.parentNode.hasAttribute('data-transliterated')) {
-                console.log('Skipping already processed text node:', node.nodeValue);
+                log('Skipping already processed text node:', node.nodeValue);
                 return; // Skip already processed nodes
             }
             const transliteratedText = transliterateToITRANS(node.nodeValue);
             if (node.nodeValue !== transliteratedText) {
-                console.log('Transliterating text node:', node.nodeValue);
+                log('Transliterating text node:', node.nodeValue);
                 const span = document.createElement('span');
                 span.className = 'transliterated';
                 span.innerHTML = transliteratedText;
                 node.replaceWith(span);
             } else {
-                console.log('No transliteration needed for text node:', node.nodeValue);
+                log('No transliteration needed for text node:', node.nodeValue);
             }
         } else if (node.nodeType === Node.ELEMENT_NODE && !SKIPPED_NODES.includes(node.nodeName.toLowerCase())) {
             if (node.hasAttribute('data-transliterated')) {
-                console.log('Skipping already processed element node:', node);
+                log('Skipping already processed element node:', node);
                 return; // Skip already processed nodes
             }
-            // console.log('Processing element node:', node);
+            // log('Processing element node:', node);
             Array.from(node.childNodes).forEach(processNode);
             if (node.childNodes.length > 0) {
                 node.setAttribute('data-transliterated', 'true'); // Mark the element as processed only after its children are processed
@@ -269,12 +276,12 @@
                     if (mutation.type === 'childList') {
                         mutation.addedNodes.forEach((node) => {
                             if (node.nodeType === Node.ELEMENT_NODE) {
-                                console.log('Processing dynamically added node:', node);
+                                log('Processing dynamically added node:', node);
                                 processNode(node);
                             }
                         });
                     } else if (mutation.type === 'characterData') {
-                        console.log('Processing dynamically changed text node:', mutation.target);
+                        log('Processing dynamically changed text node:', mutation.target);
                         processNode(mutation.target);
                     }
                 });
@@ -291,7 +298,7 @@
             console.log(`Transliteration (mutations) completed in ${endMutationObserverTime.toFixed(2)}ms.`);
         } else {
             // If body isn't ready yet, retry after a short delay
-            console.log('Document body not ready. Retrying initialization.');
+            log('Document body not ready. Retrying initialization.');
             setTimeout(initTransliteration, 10);
         }
     }
