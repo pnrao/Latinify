@@ -12,6 +12,28 @@
         label {
             display: block;
             margin: 0.5em 0;
+            cursor: pointer;
+        }
+
+        .script-name {
+            display: inline-block;
+            padding: 0 2px;
+        }
+
+        /* Script-specific styles matching styles.css */
+        .script-devanagari {
+            text-decoration: wavy underline;
+            text-decoration-color: MediumAquamarine;
+        }
+
+        .script-kannada {
+            text-decoration: wavy underline;
+            text-decoration-color: BurlyWood;
+        }
+
+        .script-telugu {
+            text-decoration: wavy underline;
+            text-decoration-color: PaleTurquoise;
         }
 
         /* Dark mode support */
@@ -22,7 +44,7 @@
             }
 
             input[type="checkbox"] {
-                accent-color: #bb86fc; /* Optional: Add a custom accent color for checkboxes */
+                accent-color: #bb86fc;
             }
         }
     </style>
@@ -32,15 +54,15 @@
     <h3>Transliterate</h3>
     <label>
         <input type="checkbox" id="devanagari" checked>
-        Devanagari
+        <span class="script-name script-devanagari">Devanagari</span>
     </label>
     <label>
         <input type="checkbox" id="kannada" checked>
-        Kannada
+        <span class="script-name script-kannada">Kannada</span>
     </label>
     <label>
         <input type="checkbox" id="telugu" checked>
-        Telugu
+        <span class="script-name script-telugu">Telugu</span>
     </label>
     <script src="popup.js"></script>
 </body>
