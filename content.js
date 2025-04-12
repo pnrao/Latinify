@@ -1,6 +1,6 @@
 (function () {
     'use strict';
-    const LOGGING_ENABLED = false; // Set to false to disable most logging
+    const LOGGING_ENABLED = false;
     const INDIC_START = '\u0900';
     const INDIC_END = '\u0DFF';
 
@@ -177,7 +177,11 @@
         if (!text || typeof text !== 'string') {
             return text;
         }
-        if (!settings.devanagari && !settings.kannada && !settings.telugu) {
+
+        // Explicitly check if all settings are false
+        if (settings.devanagari === false && settings.kannada === false &&
+            settings.telugu === false) {
+            log('Skipping transliteration: all scripts disabled');
             return text;
         }
 
@@ -193,19 +197,19 @@
         }
 
         for (let i = 0; i < text.length; i++) {
-            if (settings.devanagari && text[i] >= DEVANAGARI_START && text[i] <= DEVANAGARI_END) {
+            if (settings.devanagari !== false && text[i] >= DEVANAGARI_START && text[i] <= DEVANAGARI_END) {
                 if (currentScript !== 'devanagari') {
                     flushCurrentWord();
                     currentScript = 'devanagari';
                 }
                 appendTransliteratedChar(text, i, currentWord, devanagariToITRANS, DEVANAGARI_MODIFIER_START, DEVANAGARI_MODIFIER_END, DEVANAGARI_NUKTA);
-            } else if (settings.kannada && text[i] >= KANNADA_START && text[i] <= KANNADA_END) {
+            } else if (settings.kannada !== false && text[i] >= KANNADA_START && text[i] <= KANNADA_END) {
                 if (currentScript !== 'kannada') {
                     flushCurrentWord();
                     currentScript = 'kannada';
                 }
                 appendTransliteratedChar(text, i, currentWord, kannadaToITRANS, KANNADA_MODIFIER_START, KANNADA_MODIFIER_END, KANNADA_NUKTA);
-            } else if (settings.telugu && text[i] >= TELUGU_START && text[i] <= TELUGU_END) {
+            } else if (settings.telugu !== false && text[i] >= TELUGU_START && text[i] <= TELUGU_END) {
                 if (currentScript !== 'telugu') {
                     flushCurrentWord();
                     currentScript = 'telugu';
@@ -240,13 +244,27 @@
             }
             const transliteratedText = transliterateToITRANS(node.nodeValue);
             if (node.nodeValue !== transliteratedText) {
-                log('Transliterating text node:', node.nodeValue);
+                log('Transliterating text node:', {
+                    original: node.nodeValue,
+                    transliterated: transliteratedText
+                });
                 const span = document.createElement('span');
                 span.className = 'transliterated';
                 span.innerHTML = transliteratedText;
                 node.replaceWith(span);
             } else {
-                log('No transliteration needed for text node:', node.nodeValue);
+                // Debug log for failed transliteration
+                log('Failed transliteration. Analysis:', {
+                    text: node.nodeValue,
+                    chars: Array.from(node.nodeValue).map(c => ({
+                        char: c,
+                        unicode: c.charCodeAt(0).toString(16),
+                        inDevanagari: c >= DEVANAGARI_START && c <= DEVANAGARI_END,
+                        inKannada: c >= KANNADA_START && c <= KANNADA_END,
+                        inTelugu: c >= TELUGU_START && c <= TELUGU_END,
+                        mapped: devanagariToITRANS[c] || kannadaToITRANS[c] || teluguToITRANS[c]
+                    }))
+                });
             }
         } else if (node.nodeType === Node.ELEMENT_NODE && !SKIPPED_NODES.includes(node.nodeName.toLowerCase())) {
             if (node.hasAttribute('data-transliterated')) {
@@ -306,10 +324,11 @@
     // Load settings before initializing
     chrome.storage.sync.get(['devanagari', 'kannada', 'telugu'], (result) => {
         settings = {
-            devanagari: result.devanagari !== undefined ? result.devanagari : true,
-            kannada: result.kannada !== undefined ? result.kannada : true,
-            telugu: result.telugu !== undefined ? result.telugu : true
+            devanagari: result.devanagari !== false,
+            kannada: result.kannada !== false,
+            telugu: result.telugu !== false
         };
+        log('Settings initialized:', settings);
         initTransliteration();
     });
 
