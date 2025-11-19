@@ -11,51 +11,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Save settings and notify tabs
-    devanagari.addEventListener('change', () => {
-        chrome.storage.sync.set({ devanagari: devanagari.checked });
-        chrome.tabs.query({ active: true }, (tabs) => {
-            tabs.forEach(tab => {
-                chrome.tabs.sendMessage(tab.id, {
-                    type: 'settingsChanged',
-                    settings: {
-                        devanagari: devanagari.checked,
-                        kannada: kannada.checked,
-                        telugu: telugu.checked
-                    }
-                });
-            });
-        });
-    });
+    const updateSettings = () => {
+        const settings = {
+            devanagari: devanagari.checked,
+            kannada: kannada.checked,
+            telugu: telugu.checked
+        };
 
-    kannada.addEventListener('change', () => {
-        chrome.storage.sync.set({ kannada: kannada.checked });
-        chrome.tabs.query({ active: true }, (tabs) => {
-            tabs.forEach(tab => {
-                chrome.tabs.sendMessage(tab.id, {
-                    type: 'settingsChanged',
-                    settings: {
-                        devanagari: devanagari.checked,
-                        kannada: kannada.checked,
-                        telugu: telugu.checked
-                    }
-                });
-            });
-        });
-    });
+        chrome.storage.sync.set(settings);
 
-    telugu.addEventListener('change', () => {
-        chrome.storage.sync.set({ telugu: telugu.checked });
-        chrome.tabs.query({ active: true }, (tabs) => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             tabs.forEach(tab => {
+                // Use a callback to handle potential errors if the content script isn't loaded
                 chrome.tabs.sendMessage(tab.id, {
                     type: 'settingsChanged',
-                    settings: {
-                        devanagari: devanagari.checked,
-                        kannada: kannada.checked,
-                        telugu: telugu.checked
+                    settings: settings
+                }, (response) => {
+                    if (chrome.runtime.lastError) {
+                        // Content script might not be loaded on this tab (e.g. chrome:// pages)
+                        // We can safely ignore this error
+                        console.debug('Could not update settings on tab:', chrome.runtime.lastError.message);
                     }
                 });
             });
         });
-    });
+    };
+
+    devanagari.addEventListener('change', updateSettings);
+    kannada.addEventListener('change', updateSettings);
+    telugu.addEventListener('change', updateSettings);
 });
