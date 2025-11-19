@@ -1,36 +1,10 @@
+/* Styles for transliterated text */
+
+
+/* Script-specific styles */
 .transliterated-devanagari {
     text-decoration: wavy underline;
     text-decoration-color: MediumAquamarine;
-}
-
-.transliterated-bengali {
-    text-decoration: wavy underline;
-    text-decoration-color: PaleGreen;
-}
-
-.transliterated-gurmukhi {
-    text-decoration: wavy underline;
-    text-decoration-color: DarkGoldenrod;
-}
-
-.transliterated-gujarati {
-    text-decoration: wavy underline;
-    text-decoration-color: RosyBrown;
-}
-
-.transliterated-oriya {
-    text-decoration: wavy underline;
-    text-decoration-color: Plum;
-}
-
-.transliterated-tamil {
-    text-decoration: wavy underline;
-    text-decoration-color: LightSteelBlue;
-}
-
-.transliterated-telugu {
-    text-decoration: wavy underline;
-    text-decoration-color: PaleTurquoise;
 }
 
 .transliterated-kannada {
@@ -38,12 +12,30 @@
     text-decoration-color: BurlyWood;
 }
 
-.transliterated-malayalam {
+.transliterated-telugu {
     text-decoration: wavy underline;
-    text-decoration-color: LightSalmon;
+    text-decoration-color: PaleTurquoise;
 }
 
-.transliterated-assamese {
-    text-decoration: wavy underline;
-    text-decoration-color: Plum;
+/* Performance Overlay Styles */
+#latinify-stats-overlay {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 12px;
+    z-index: 2147483647;
+    /* Max z-index to ensure visibility */
+    pointer-events: none;
+    /* Allow clicking through */
+    transition: opacity 0.5s ease-in-out;
+    opacity: 0;
+}
+
+#latinify-stats-overlay.visible {
+    opacity: 1;
 }

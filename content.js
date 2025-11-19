@@ -277,6 +277,33 @@
         }
     }
 
+    let totalTransliterationTime = 0;
+    let overlayTimeout;
+
+    function createOverlay() {
+        let overlay = document.getElementById('latinify-stats-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'latinify-stats-overlay';
+            document.body.appendChild(overlay);
+        }
+        return overlay;
+    }
+
+    function updateOverlay(timeAdded) {
+        if (!settings.showStats) return;
+
+        totalTransliterationTime += timeAdded;
+        const overlay = createOverlay();
+        overlay.textContent = `Transliteration: ${totalTransliterationTime.toFixed()}ms`;
+        overlay.classList.add('visible');
+
+        clearTimeout(overlayTimeout);
+        overlayTimeout = setTimeout(() => {
+            overlay.classList.remove('visible');
+        }, 3000);
+    }
+
     function initTransliteration() {
         if (document.body) {
             const startTime = performance.now();
@@ -285,19 +312,24 @@
             const endLoadTime = performance.now();
             const loadTime = endLoadTime - startTime;
             console.log(`Transliteration (at load) completed in ${loadTime.toFixed(2)}ms.`);
+            updateOverlay(loadTime);
 
             // Set up a MutationObserver to handle dynamically added content
             const observer = new MutationObserver((mutations) => {
+                const mutationStartTime = performance.now();
+                let processed = false;
+
                 mutations.forEach((mutation) => {
                     if (mutation.type === 'childList') {
                         mutation.addedNodes.forEach((node) => {
                             if (node.nodeType === Node.ELEMENT_NODE) {
                                 // Optimization: Ignore our own nodes to prevent loops
-                                if (node.classList.contains('transliterated') || node.hasAttribute('data-transliterated')) {
+                                if (node.classList.contains('transliterated') || node.hasAttribute('data-transliterated') || node.id === 'latinify-stats-overlay') {
                                     return;
                                 }
                                 log('Processing dynamically added node:', node);
                                 processNode(node);
+                                processed = true;
                             }
                         });
                     } else if (mutation.type === 'characterData') {
@@ -307,8 +339,14 @@
                         }
                         log('Processing dynamically changed text node:', mutation.target);
                         processNode(mutation.target);
+                        processed = true;
                     }
                 });
+
+                if (processed) {
+                    const mutationEndTime = performance.now();
+                    updateOverlay(mutationEndTime - mutationStartTime);
+                }
             });
 
             // Start observing the document
@@ -328,11 +366,12 @@
     }
 
     // Load settings before initializing
-    chrome.storage.sync.get(['devanagari', 'kannada', 'telugu'], (result) => {
+    chrome.storage.sync.get(['devanagari', 'kannada', 'telugu', 'showStats'], (result) => {
         settings = {
             devanagari: result.devanagari !== false,
             kannada: result.kannada !== false,
-            telugu: result.telugu !== false
+            telugu: result.telugu !== false,
+            showStats: result.showStats === true
         };
         log('Settings initialized:', settings);
         initTransliteration();
@@ -342,6 +381,12 @@
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.type === 'settingsChanged') {
             settings = message.settings;
+            // Reset total time if stats are disabled then enabled?
+            // Or just keep tracking? Let's keep tracking but only show if enabled.
+            if (!settings.showStats) {
+                const overlay = document.getElementById('latinify-stats-overlay');
+                if (overlay) overlay.classList.remove('visible');
+            }
             processNode(document.body);
         }
     });

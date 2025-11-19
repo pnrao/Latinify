@@ -1,10 +1,13 @@
 # Changelog
 
-## 1.3 - unreleased
+## 1.3 - 2025-11-19
 
+- NEW: Performance overlay to track transliteration time (toggleable in popup)
 - NEW: squiggly underlines to indicate the original script
 - NEW: Telugu script
 - CHANGE: Transliteration modularized to accommodate more scripts
+- FIX: Page freeze/infinite loop on dynamic sites (e.g. Twitter)
+- FIX: "Receiving end does not exist" error in popup
 
 ## 1.2 - 2025-04-01
 
