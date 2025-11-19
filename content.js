@@ -22,7 +22,7 @@
     const TELUGU_MODIFIER_END = '\u0C56';
     const TELUGU_NUKTA = null; // Telugu does not have a nukta equivalent
 
-    const SKIPPED_NODES = ['script', 'style', 'textarea', 'input'];
+    const SKIPPED_NODES = ['script', 'style', 'textarea', 'input', 'noscript', 'iframe', 'object', 'embed', 'audio', 'video', 'select', 'button', 'code', 'pre'];
 
     // Mapping of Devanagari Unicode characters to ITRANS
     const devanagariToITRANS = {
@@ -235,11 +235,21 @@
         return false;
     }
 
+    // Helper to check if a node is editable
+    function isNodeEditable(node) {
+        if (node.isContentEditable) return true;
+        if (node.nodeType === Node.TEXT_NODE && node.parentElement && node.parentElement.isContentEditable) return true;
+        return false;
+    }
+
     // Function to process text nodes
     function processNode(node) {
+        // Skip editable content to avoid interfering with user input
+        if (isNodeEditable(node)) return;
+
         if (node.nodeType === Node.TEXT_NODE && hasIndic(node.nodeValue)) {
             if (node.parentNode && node.parentNode.hasAttribute('data-transliterated')) {
-                log('Skipping already processed text node:', node.nodeValue);
+                // log('Skipping already processed text node:', node.nodeValue);
                 return; // Skip already processed nodes
             }
             const transliteratedText = transliterateToITRANS(node.nodeValue);
@@ -250,25 +260,13 @@
                 });
                 const span = document.createElement('span');
                 span.className = 'transliterated';
+                span.setAttribute('data-transliterated', 'true'); // Mark immediately to prevent re-processing
                 span.innerHTML = transliteratedText;
                 node.replaceWith(span);
-            } else {
-                // Debug log for failed transliteration
-                log('Failed transliteration. Analysis:', {
-                    text: node.nodeValue,
-                    chars: Array.from(node.nodeValue).map(c => ({
-                        char: c,
-                        unicode: c.charCodeAt(0).toString(16),
-                        inDevanagari: c >= DEVANAGARI_START && c <= DEVANAGARI_END,
-                        inKannada: c >= KANNADA_START && c <= KANNADA_END,
-                        inTelugu: c >= TELUGU_START && c <= TELUGU_END,
-                        mapped: devanagariToITRANS[c] || kannadaToITRANS[c] || teluguToITRANS[c]
-                    }))
-                });
             }
         } else if (node.nodeType === Node.ELEMENT_NODE && !SKIPPED_NODES.includes(node.nodeName.toLowerCase())) {
-            if (node.hasAttribute('data-transliterated')) {
-                log('Skipping already processed element node:', node);
+            if (node.hasAttribute('data-transliterated') || node.classList.contains('transliterated')) {
+                // log('Skipping already processed element node:', node);
                 return; // Skip already processed nodes
             }
             // log('Processing element node:', node);
@@ -294,11 +292,19 @@
                     if (mutation.type === 'childList') {
                         mutation.addedNodes.forEach((node) => {
                             if (node.nodeType === Node.ELEMENT_NODE) {
+                                // Optimization: Ignore our own nodes to prevent loops
+                                if (node.classList.contains('transliterated') || node.hasAttribute('data-transliterated')) {
+                                    return;
+                                }
                                 log('Processing dynamically added node:', node);
                                 processNode(node);
                             }
                         });
                     } else if (mutation.type === 'characterData') {
+                        // Ignore changes to our own nodes
+                        if (mutation.target.parentNode && (mutation.target.parentNode.classList.contains('transliterated') || mutation.target.parentNode.hasAttribute('data-transliterated'))) {
+                            return;
+                        }
                         log('Processing dynamically changed text node:', mutation.target);
                         processNode(mutation.target);
                     }
