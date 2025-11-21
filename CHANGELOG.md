@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.3.1 - unreleased
+## 1.3.2 - unreleased
 
 - NEW: Toggle for squiggly lines (decoration)
 - CHANGE: Reduced stats overlay timeout to 500ms

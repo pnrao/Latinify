@@ -377,7 +377,7 @@
     }
 
     // Load settings before initializing
-    chrome.storage.sync.get(['devanagari', 'kannada', 'telugu', 'showStats'], (result) => {
+    chrome.storage.sync.get(['devanagari', 'kannada', 'telugu', 'showSquiggly', 'showStats'], (result) => {
         settings = {
             devanagari: result.devanagari !== false,
             kannada: result.kannada !== false,
