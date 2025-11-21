@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.1 - unreleased
+
+- NEW: Toggle for squiggly lines (decoration)
+- CHANGE: Reduced stats overlay timeout to 500ms
+
 ## 1.3 - 2025-11-19
 
 - NEW: Performance overlay to track transliteration time (toggleable in popup)

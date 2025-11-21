@@ -2,13 +2,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const devanagari = document.getElementById('devanagari');
     const kannada = document.getElementById('kannada');
     const telugu = document.getElementById('telugu');
+    const showSquiggly = document.getElementById('showSquiggly');
     const showStats = document.getElementById('showStats');
 
     // Load saved settings (defaults to true, except stats which defaults to false)
-    chrome.storage.sync.get(['devanagari', 'kannada', 'telugu', 'showStats'], (result) => {
+    chrome.storage.sync.get(['devanagari', 'kannada', 'telugu', 'showSquiggly', 'showStats'], (result) => {
         devanagari.checked = result.devanagari !== false;
         kannada.checked = result.kannada !== false;
         telugu.checked = result.telugu !== false;
+        showSquiggly.checked = result.showSquiggly !== false;
         showStats.checked = result.showStats === true;
     });
 
@@ -18,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             devanagari: devanagari.checked,
             kannada: kannada.checked,
             telugu: telugu.checked,
+            showSquiggly: showSquiggly.checked,
             showStats: showStats.checked
         };
 
@@ -43,5 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
     devanagari.addEventListener('change', updateSettings);
     kannada.addEventListener('change', updateSettings);
     telugu.addEventListener('change', updateSettings);
+    showSquiggly.addEventListener('change', updateSettings);
     showStats.addEventListener('change', updateSettings);
 });

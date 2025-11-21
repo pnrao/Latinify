@@ -132,7 +132,7 @@
         ' ': ' '
     };
 
-    let settings = { devanagari: undefined, kannada: undefined, telugu: undefined };
+    let settings = { devanagari: undefined, kannada: undefined, telugu: undefined, showSquiggly: undefined };
     // When we had set the above to true, it was always transliterating some
     // sections of the page.The settings were not taking effect.
     // XXX: I'd like some explanation for this behaviour.
@@ -191,7 +191,11 @@
 
         function flushCurrentWord() {
             if (currentWord.length > 0) {
-                replacement.push(wrapWordWithSpan(currentWord.join(""), currentScript));
+                if (settings.showSquiggly) {
+                    replacement.push(wrapWordWithSpan(currentWord.join(""), currentScript));
+                } else {
+                    replacement.push(currentWord.join(""));
+                }
                 currentWord = [];
             }
         }
@@ -258,11 +262,18 @@
                     original: node.nodeValue,
                     transliterated: transliteratedText
                 });
-                const span = document.createElement('span');
-                span.className = 'transliterated';
-                span.setAttribute('data-transliterated', 'true'); // Mark immediately to prevent re-processing
-                span.innerHTML = transliteratedText;
-                node.replaceWith(span);
+                if (settings.showSquiggly) {
+                    const span = document.createElement('span');
+                    span.className = 'transliterated';
+                    span.setAttribute('data-transliterated', 'true'); // Mark immediately to prevent re-processing
+                    span.innerHTML = transliteratedText;
+                    node.replaceWith(span);
+                } else {
+                    node.nodeValue = transliteratedText;
+                    // We can't easily mark a text node as processed without a wrapper.
+                    // However, since the text is now Latin, hasIndic() will return false,
+                    // so it won't be processed again anyway.
+                }
             }
         } else if (node.nodeType === Node.ELEMENT_NODE && !SKIPPED_NODES.includes(node.nodeName.toLowerCase())) {
             if (node.hasAttribute('data-transliterated') || node.classList.contains('transliterated')) {
@@ -301,7 +312,7 @@
         clearTimeout(overlayTimeout);
         overlayTimeout = setTimeout(() => {
             overlay.classList.remove('visible');
-        }, 3000);
+        }, 500);
     }
 
     function initTransliteration() {
@@ -371,6 +382,7 @@
             devanagari: result.devanagari !== false,
             kannada: result.kannada !== false,
             telugu: result.telugu !== false,
+            showSquiggly: result.showSquiggly !== false,
             showStats: result.showStats === true
         };
         log('Settings initialized:', settings);
