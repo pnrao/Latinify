@@ -1,39 +1,106 @@
-/* Styles for transliterated text */
-
-
-/* Script-specific styles */
+/* Language colour classes */
 .transliterated-devanagari {
-    text-decoration: wavy underline;
-    text-decoration-color: MediumAquamarine;
+    text-decoration: solid underline;
+    text-decoration-color: green;
+    text-underline-offset: 6px;
+    text-decoration-skip-ink: none;
 }
 
 .transliterated-kannada {
-    text-decoration: wavy underline;
-    text-decoration-color: BurlyWood;
+    text-decoration: solid underline;
+    text-decoration-color: Orange;
+    text-underline-offset: 6px;
+    text-decoration-skip-ink: none;
+}
+
+.transliterated-odia {
+    text-decoration: solid underline;
+    text-decoration-color: Orchid;
+    text-underline-offset: 6px;
+    text-decoration-skip-ink: none;
 }
 
 .transliterated-telugu {
-    text-decoration: wavy underline;
-    text-decoration-color: PaleTurquoise;
+    text-decoration: solid underline;
+    text-decoration-color: Teal;
+    text-underline-offset: 6px;
+    text-decoration-skip-ink: none;
 }
 
-/* Performance Overlay Styles */
+.transliterated-urdu {
+    text-decoration: solid underline;
+    text-decoration-color: green;
+}
+
+.transliterated-bengali {
+    text-decoration: solid underline;
+    text-decoration-color: darkgreen;
+}
+
+.transliterated-punjabi {
+    text-decoration: solid underline;
+    text-decoration-color: Purple;
+}
+
+.transliterated-gujarati {
+    text-decoration: solid underline;
+    text-decoration-color: goldenrod;
+}
+
+.transliterated-marathi {
+    text-decoration: solid underline;
+    text-decoration-color: maroon;
+}
+
+.transliterated-tamil {
+    text-decoration: solid underline;
+    text-decoration-color: tan;
+}
+
+.transliterated-malayalam {
+    text-decoration: solid underline;
+    text-decoration-color: magenta;
+}
+
+.transliterated-assamese {
+    text-decoration: solid underline;
+    text-decoration-color: azure;
+}
+
+.transliterated-kashmiri {
+    text-decoration: solid underline;
+    text-decoration-color: indigo;
+}
+
+.transliterated-sindhi {
+    text-decoration: solid underline;
+    text-decoration-color: sandybrown;
+}
+
+.transliterated-manipuri {
+    text-decoration: solid underline;
+    text-decoration-color: lime;
+}
+
+.transliterated-santali {
+    text-decoration: solid underline;
+    text-decoration-color: amber;
+}
+
+/* Stats overlay */
 #latinify-stats-overlay {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
     color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-family: system-ui, -apple-system, sans-serif;
-    font-size: 12px;
-    z-index: 2147483647;
-    /* Max z-index to ensure visibility */
+    padding: 10px;
+    border-radius: 5px;
+    font-family: monospace;
+    z-index: 10000;
     pointer-events: none;
-    /* Allow clicking through */
-    transition: opacity 0.5s ease-in-out;
     opacity: 0;
+    transition: opacity 0.3s ease-in-out;
 }
 
 #latinify-stats-overlay.visible {

@@ -22,6 +22,12 @@
     const TELUGU_MODIFIER_END = '\u0C56';
     const TELUGU_NUKTA = null; // Telugu does not have a nukta equivalent
 
+    const ODIA_START = '\u0B00';
+    const ODIA_END = '\u0B7F';
+    const ODIA_MODIFIER_START = '\u0B3E';
+    const ODIA_MODIFIER_END = '\u0B57';
+    const ODIA_NUKTA = '\u0B3C';
+
     const SKIPPED_NODES = ['script', 'style', 'textarea', 'input', 'noscript', 'iframe', 'object', 'embed', 'audio', 'video', 'select', 'button', 'code', 'pre'];
 
     // Mapping of Devanagari Unicode characters to ITRANS
@@ -132,7 +138,46 @@
         ' ': ' '
     };
 
-    let settings = { devanagari: undefined, kannada: undefined, telugu: undefined, showSquiggly: undefined };
+    // Mapping of Odia Unicode characters to ITRANS
+    const odiaToITRANS = {
+        // Vowels
+        'ଅ': 'a', 'ଆ': 'aa', 'ଇ': 'i', 'ଈ': 'ii', 'ଉ': 'u', 'ଊ': 'uu',
+        'ଋ': 'RRi', 'ୠ': 'RRI', 'ଌ': 'LLi', 'ୡ': 'LLI',
+        'ଏ': 'e', 'ଐ': 'ai', 'ଓ': 'o', 'ଔ': 'au',
+
+        // Consonants
+        'କ': 'ka', 'ଖ': 'kha', 'ଗ': 'ga', 'ଘ': 'gha', 'ଙ': 'nga',
+        'ଚ': 'cha', 'ଛ': 'Cha', 'ଜ': 'ja', 'ଝ': 'jha', 'ଞ': 'jna',
+        'ଟ': 'Ta', 'ଠ': 'Tha', 'ଡ': 'Da', 'ଢ': 'Dha', 'ଣ': 'Na',
+        'ଡ଼': 'Ra', 'ଢ଼': 'Rha',
+        'ତ': 'ta', 'ଥ': 'tha', 'ଦ': 'da', 'ଧ': 'dha', 'ନ': 'na',
+        'ପ': 'pa', 'ଫ': 'pha', 'ବ': 'ba', 'ଭ': 'bha', 'ମ': 'ma',
+        'ଯ': 'ya', 'ୟ': 'ya', 'ର': 'ra', 'ଲ': 'la', 'ଳ': 'La', 'ଵ': 'va', 'ୱ': 'wa',
+        'ଶ': 'sha', 'ଷ': 'Sha', 'ସ': 'sa', 'ହ': 'ha',
+
+        // Matras (Vowel signs)
+        'ା': 'aa', 'ି': 'i', 'ୀ': 'ii', 'ୁ': 'u', 'ୂ': 'uu',
+        'ୃ': 'RRi', 'ୄ': 'RRI', 'ୢ': 'LLi', 'ୣ': 'LLI',
+        'େ': 'e', 'ୈ': 'ai', 'ୋ': 'o', 'ୌ': 'au',
+
+        // Additional marks
+        '୍': '', 'ଂ': 'ⁿ', 'ଃ': 'H', 'ଁ': 'ⁿ',
+        '଼': '', // Nukta
+        'ଽ': '', // Avagraha
+        '୰': '', // ORIYA ISSHAR (rare) - ignore
+        '୲': '¼', '୳': '½', '୴': '¾', // fractions: 1/4, 1/2, 3/4
+        '୵': ' 1/16', '୶': '⅛', '୷': ' 3/16', // fractions as ASCII strings
+
+        // Numerals
+        '୦': '0', '୧': '1', '୨': '2', '୩': '3', '୪': '4',
+        '୫': '5', '୬': '6', '୭': '7', '୮': '8', '୯': '9',
+
+        // Others
+        '।': '. ', '॥': '. ',
+        ' ': ' '
+    };
+
+    let settings = { devanagari: undefined, kannada: undefined, telugu: undefined, odia: undefined, indicateScript: undefined };
     // When we had set the above to true, it was always transliterating some
     // sections of the page.The settings were not taking effect.
     // XXX: I'd like some explanation for this behaviour.
@@ -180,7 +225,7 @@
 
         // Explicitly check if all settings are false
         if (settings.devanagari === false && settings.kannada === false &&
-            settings.telugu === false) {
+            settings.telugu === false && settings.odia === false) {
             log('Skipping transliteration: all scripts disabled');
             return text;
         }
@@ -191,7 +236,7 @@
 
         function flushCurrentWord() {
             if (currentWord.length > 0) {
-                if (settings.showSquiggly) {
+                if (settings.indicateScript) {
                     replacement.push(wrapWordWithSpan(currentWord.join(""), currentScript));
                 } else {
                     replacement.push(currentWord.join(""));
@@ -219,6 +264,12 @@
                     currentScript = 'telugu';
                 }
                 appendTransliteratedChar(text, i, currentWord, teluguToITRANS, TELUGU_MODIFIER_START, TELUGU_MODIFIER_END, TELUGU_NUKTA);
+            } else if (settings.odia !== false && text[i] >= ODIA_START && text[i] <= ODIA_END) {
+                if (currentScript !== 'odia') {
+                    flushCurrentWord();
+                    currentScript = 'odia';
+                }
+                appendTransliteratedChar(text, i, currentWord, odiaToITRANS, ODIA_MODIFIER_START, ODIA_MODIFIER_END, ODIA_NUKTA);
             } else {
                 flushCurrentWord();
                 currentScript = null;
@@ -262,7 +313,7 @@
                     original: node.nodeValue,
                     transliterated: transliteratedText
                 });
-                if (settings.showSquiggly) {
+                if (settings.indicateScript) {
                     const span = document.createElement('span');
                     span.className = 'transliterated';
                     span.setAttribute('data-transliterated', 'true'); // Mark immediately to prevent re-processing
@@ -381,15 +432,17 @@
     chrome.storage.sync.get({
         devanagari: true,
         kannada: true,
+        odia: true,
         telugu: true,
-        showSquiggly: true,
+        indicateScript: true,
         showStats: false
     }, (result) => {
         settings = {
             devanagari: result.devanagari,
             kannada: result.kannada,
+            odia: result.odia,
             telugu: result.telugu,
-            showSquiggly: result.showSquiggly,
+            indicateScript: result.indicateScript,
             showStats: result.showStats
         };
         log('Settings initialized:', settings);

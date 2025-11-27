@@ -1,10 +1,12 @@
 # Changelog
 
-## 1.3.3 - unreleased
+## 1.4 - 2025-11-27
 
-- FIX: race condition that forced transliteration on static sites
+- NEW: Odia script
 - NEW: Toggle for squiggly lines (decoration)
 - CHANGE: Reduced stats overlay timeout to 500ms
+- CHANGE: Solid lines instead of squiggly, to reduce visual noise
+- FIX: race condition that forced transliteration on static sites
 
 ## 1.3 - 2025-11-19
 

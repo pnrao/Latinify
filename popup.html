@@ -2,11 +2,13 @@
 <html>
 
 <head>
+    <link rel="stylesheet" href="styles.css">
     <style>
         body {
-            width: 200px;
             padding: 1em;
             font-family: system-ui;
+            white-space: nowrap;
+            border: 1px solid #ccc;
         }
 
         label {
@@ -18,22 +20,6 @@
         .script-name {
             display: inline-block;
             padding: 0 2px;
-        }
-
-        /* Script-specific styles matching styles.css */
-        .script-devanagari {
-            text-decoration: wavy underline;
-            text-decoration-color: MediumAquamarine;
-        }
-
-        .script-kannada {
-            text-decoration: wavy underline;
-            text-decoration-color: BurlyWood;
-        }
-
-        .script-telugu {
-            text-decoration: wavy underline;
-            text-decoration-color: PaleTurquoise;
         }
 
         /* Dark mode support */
@@ -54,20 +40,24 @@
     <h3>Transliterate</h3>
     <label>
         <input type="checkbox" id="devanagari" checked>
-        <span class="script-name script-devanagari">Devanagari</span>
+        <span class="script-name transliterated-devanagari">Devanagari</span>
     </label>
     <label>
         <input type="checkbox" id="kannada" checked>
-        <span class="script-name script-kannada">Kannada</span>
+        <span class="script-name transliterated-kannada">Kannada</span>
+    </label>
+    <label>
+        <input type="checkbox" id="odia" checked>
+        <span class="script-name transliterated-odia">Odia</span>
     </label>
     <label>
         <input type="checkbox" id="telugu" checked>
-        <span class="script-name script-telugu">Telugu</span>
+        <span class="script-name transliterated-telugu">Telugu</span>
     </label>
     <hr style="border: 0; border-top: 1px solid #ccc; margin: 10px 0;">
     <label>
-        <input type="checkbox" id="showSquiggly" checked>
-        <span class="script-name">Show Squiggly Lines</span>
+        <input type="checkbox" id="indicateScript" checked>
+        <span class="script-name">Indicate Original Script</span>
     </label>
     <label>
         <input type="checkbox" id="showStats">

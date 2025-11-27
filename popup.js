@@ -2,15 +2,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const devanagari = document.getElementById('devanagari');
     const kannada = document.getElementById('kannada');
     const telugu = document.getElementById('telugu');
-    const showSquiggly = document.getElementById('showSquiggly');
+    const odia = document.getElementById('odia');
+    const indicateScript = document.getElementById('indicateScript');
     const showStats = document.getElementById('showStats');
 
     // Load saved settings (defaults to true, except stats which defaults to false)
-    chrome.storage.sync.get(['devanagari', 'kannada', 'telugu', 'showSquiggly', 'showStats'], (result) => {
+    chrome.storage.sync.get(['devanagari', 'kannada', 'telugu', 'odia', 'indicateScript', 'showStats'], (result) => {
         devanagari.checked = result.devanagari !== false;
         kannada.checked = result.kannada !== false;
         telugu.checked = result.telugu !== false;
-        showSquiggly.checked = result.showSquiggly !== false;
+        odia.checked = result.odia !== false;
+        indicateScript.checked = result.indicateScript !== false;
         showStats.checked = result.showStats === true;
     });
 
@@ -20,7 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
             devanagari: devanagari.checked,
             kannada: kannada.checked,
             telugu: telugu.checked,
-            showSquiggly: showSquiggly.checked,
+            odia: odia.checked,
+            indicateScript: indicateScript.checked,
             showStats: showStats.checked
         };
 
@@ -46,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     devanagari.addEventListener('change', updateSettings);
     kannada.addEventListener('change', updateSettings);
     telugu.addEventListener('change', updateSettings);
-    showSquiggly.addEventListener('change', updateSettings);
+    odia.addEventListener('change', updateSettings);
+    indicateScript.addEventListener('change', updateSettings);
     showStats.addEventListener('change', updateSettings);
 });
