@@ -1,7 +1,8 @@
 # Changelog
 
-## 1.3.2 - unreleased
+## 1.3.3 - unreleased
 
+- FIX: race condition that forced transliteration on static sites
 - NEW: Toggle for squiggly lines (decoration)
 - CHANGE: Reduced stats overlay timeout to 500ms
 

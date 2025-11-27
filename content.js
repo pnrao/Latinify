@@ -377,13 +377,20 @@
     }
 
     // Load settings before initializing
-    chrome.storage.sync.get(['devanagari', 'kannada', 'telugu', 'showSquiggly', 'showStats'], (result) => {
+    // Load settings before initializing
+    chrome.storage.sync.get({
+        devanagari: true,
+        kannada: true,
+        telugu: true,
+        showSquiggly: true,
+        showStats: false
+    }, (result) => {
         settings = {
-            devanagari: result.devanagari !== false,
-            kannada: result.kannada !== false,
-            telugu: result.telugu !== false,
-            showSquiggly: result.showSquiggly !== false,
-            showStats: result.showStats === true
+            devanagari: result.devanagari,
+            kannada: result.kannada,
+            telugu: result.telugu,
+            showSquiggly: result.showSquiggly,
+            showStats: result.showStats
         };
         log('Settings initialized:', settings);
         initTransliteration();
@@ -403,10 +410,4 @@
         }
     });
 
-    // Make sure DOM is loaded before processing
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initTransliteration);
-    } else {
-        initTransliteration();
-    }
 })();
