@@ -1,19 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
     const devanagari = document.getElementById('devanagari');
     const kannada = document.getElementById('kannada');
-    const telugu = document.getElementById('telugu');
-    const odia = document.getElementById('odia');
     const malayalam = document.getElementById('malayalam');
+    const odia = document.getElementById('odia');
+    const telugu = document.getElementById('telugu');
     const indicateScript = document.getElementById('indicateScript');
     const showStats = document.getElementById('showStats');
 
     // Load saved settings (defaults to true, except stats which defaults to false)
-    chrome.storage.sync.get(['devanagari', 'kannada', 'telugu', 'odia', 'malayalam', 'indicateScript', 'showStats'], (result) => {
+    chrome.storage.sync.get(['devanagari', 'kannada', 'malayalam', 'odia', 'telugu', 'indicateScript', 'showStats'], (result) => {
         devanagari.checked = result.devanagari !== false;
         kannada.checked = result.kannada !== false;
-        telugu.checked = result.telugu !== false;
-        odia.checked = result.odia !== false;
         malayalam.checked = result.malayalam !== false;
+        odia.checked = result.odia !== false;
+        telugu.checked = result.telugu !== false;
         indicateScript.checked = result.indicateScript !== false;
         showStats.checked = result.showStats === true;
     });
@@ -23,9 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const settings = {
             devanagari: devanagari.checked,
             kannada: kannada.checked,
-            telugu: telugu.checked,
-            odia: odia.checked,
             malayalam: malayalam.checked,
+            odia: odia.checked,
+            telugu: telugu.checked,
             indicateScript: indicateScript.checked,
             showStats: showStats.checked
         };
@@ -51,9 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     devanagari.addEventListener('change', updateSettings);
     kannada.addEventListener('change', updateSettings);
-    telugu.addEventListener('change', updateSettings);
-    odia.addEventListener('change', updateSettings);
     malayalam.addEventListener('change', updateSettings);
+    odia.addEventListener('change', updateSettings);
+    telugu.addEventListener('change', updateSettings);
     indicateScript.addEventListener('change', updateSettings);
     showStats.addEventListener('change', updateSettings);
 });

@@ -31,7 +31,7 @@
     const MALAYALAM_START = '\u0D00';
     const MALAYALAM_END = '\u0D7F';
     const MALAYALAM_MODIFIER_START = '\u0D3E';
-    const MALAYALAM_MODIFIER_END = '\u0D57';
+    const MALAYALAM_MODIFIER_END = '\u0D63';
     const MALAYALAM_NUKTA = null; // Malayalam does not have a nukta equivalent
 
     const SKIPPED_NODES = ['script', 'style', 'textarea', 'input', 'noscript', 'iframe', 'object', 'embed', 'audio', 'video', 'select', 'button', 'code', 'pre'];
@@ -187,7 +187,7 @@
     const malayalamToITRANS = {
         // Vowels
         'അ': 'a', 'ആ': 'aa', 'ഇ': 'i', 'ഈ': 'ii', 'ഉ': 'u', 'ഊ': 'uu',
-        'ഋ': 'RRi', 'ൠ': 'RRI', 'ഌ': 'LLi', 'ൡ': 'LLI',
+        'ഋ': 'RRi', 'ൠ': 'RRI', 'ഌ': 'LLi', 'ൡ': 'LLI', 'ൟ': 'ii',
         'എ': 'e', 'ഏ': 'ee', 'ഐ': 'ai', 'ഒ': 'o', 'ഓ': 'oo', 'ഔ': 'au',
 
         // Consonants
@@ -200,23 +200,35 @@
         'വ': 'va', 'ശ': 'sha', 'ഷ': 'Sha', 'സ': 'sa', 'ഹ': 'ha',
 
         // Chillu letters (pure consonants, no inherent vowel)
-        'ൺ': 'N', 'ൻ': 'n', 'ർ': 'r', 'ൽ': 'l', 'ൾ': 'L', 'ൿ': 'k',
+        'ൺ': 'N', 'ൻ': 'n', 'ർ': 'r', 'ൎ': 'r', 'ൽ': 'l', 'ൾ': 'L', 'ൿ': 'k',
 
         // Matras (Vowel signs)
         'ാ': 'aa', 'ി': 'i', 'ീ': 'ii', 'ു': 'u', 'ൂ': 'uu',
-        'ൃ': 'ru', 'ൄ': 'RRI',
+        'ൃ': 'ru', 'ൄ': 'RRI', 'ൢ': 'LLi', 'ൣ': 'LLI',
         'െ': 'e', 'േ': 'ee', 'ൈ': 'ai',
         'ൊ': 'o', 'ോ': 'oo', 'ൌ': 'au', 'ൗ': 'au',
 
         // Additional marks
-        '്': '', 'ം': 'ᵐ', 'ഃ': 'H', 'ഁ': 'ⁿ',
+        '്': '', 'ം': 'ᵐ', 'ഃ': 'H', 'ഁ': 'ⁿ', 'ഀ': 'ⁿ', 'ഄ': 'ⁿ', 'ഽ': "'",
 
         // Numerals
         '൦': '0', '൧': '1', '൨': '2', '൩': '3', '൪': '4',
         '൫': '5', '൬': '6', '൭': '7', '൮': '8', '൯': '9',
 
+        // Traditional number symbols
+        '൰': '10', '൱': '100', '൲': '1000',
+
+        // Fractions
+        '൳': '¼', '൴': '½', '൵': '¾',
+        '൶': ' 1/16', '൷': '⅛', '൸': ' 3/16',
+
+        // Archaic fractions
+        '൘': ' 1/160', '൙': ' 1/40', '൚': ' 3/80',
+        '൛': ' 1/20', '൜': ' 1/10', '൝': ' 3/20', '൞': '⅕',
+
         // Others
         '।': '. ', '॥': '. ',
+        '൏': '¶',
         ' ': ' '
     };
 
