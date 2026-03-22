@@ -28,6 +28,12 @@
     const ODIA_MODIFIER_END = '\u0B57';
     const ODIA_NUKTA = '\u0B3C';
 
+    const MALAYALAM_START = '\u0D00';
+    const MALAYALAM_END = '\u0D7F';
+    const MALAYALAM_MODIFIER_START = '\u0D3E';
+    const MALAYALAM_MODIFIER_END = '\u0D57';
+    const MALAYALAM_NUKTA = null; // Malayalam does not have a nukta equivalent
+
     const SKIPPED_NODES = ['script', 'style', 'textarea', 'input', 'noscript', 'iframe', 'object', 'embed', 'audio', 'video', 'select', 'button', 'code', 'pre'];
 
     // Mapping of Devanagari Unicode characters to ITRANS
@@ -177,7 +183,44 @@
         ' ': ' '
     };
 
-    let settings = { devanagari: undefined, kannada: undefined, telugu: undefined, odia: undefined, indicateScript: undefined };
+    // Mapping of Malayalam Unicode characters to ITRANS
+    const malayalamToITRANS = {
+        // Vowels
+        'അ': 'a', 'ആ': 'aa', 'ഇ': 'i', 'ഈ': 'ii', 'ഉ': 'u', 'ഊ': 'uu',
+        'ഋ': 'RRi', 'ൠ': 'RRI', 'ഌ': 'LLi', 'ൡ': 'LLI',
+        'എ': 'e', 'ഏ': 'ee', 'ഐ': 'ai', 'ഒ': 'o', 'ഓ': 'oo', 'ഔ': 'au',
+
+        // Consonants
+        'ക': 'ka', 'ഖ': 'kha', 'ഗ': 'ga', 'ഘ': 'gha', 'ങ': 'nga',
+        'ച': 'cha', 'ഛ': 'Cha', 'ജ': 'ja', 'ഝ': 'jha', 'ഞ': 'jna',
+        'ട': 'Ta', 'ഠ': 'Tha', 'ഡ': 'Da', 'ഢ': 'Dha', 'ണ': 'Na',
+        'ത': 'ta', 'ഥ': 'tha', 'ദ': 'da', 'ധ': 'dha', 'ന': 'na', 'ഩ': 'na',
+        'പ': 'pa', 'ഫ': 'pha', 'ബ': 'ba', 'ഭ': 'bha', 'മ': 'ma',
+        'യ': 'ya', 'ര': 'ra', 'റ': 'Ra', 'ല': 'la', 'ള': 'La', 'ഴ': 'Lha',
+        'വ': 'va', 'ശ': 'sha', 'ഷ': 'Sha', 'സ': 'sa', 'ഹ': 'ha',
+
+        // Chillu letters (pure consonants, no inherent vowel)
+        'ൺ': 'N', 'ൻ': 'n', 'ർ': 'r', 'ൽ': 'l', 'ൾ': 'L', 'ൿ': 'k',
+
+        // Matras (Vowel signs)
+        'ാ': 'aa', 'ി': 'i', 'ീ': 'ii', 'ു': 'u', 'ൂ': 'uu',
+        'ൃ': 'ru', 'ൄ': 'RRI',
+        'െ': 'e', 'േ': 'ee', 'ൈ': 'ai',
+        'ൊ': 'o', 'ോ': 'oo', 'ൌ': 'au', 'ൗ': 'au',
+
+        // Additional marks
+        '്': '', 'ം': 'ᵐ', 'ഃ': 'H', 'ഁ': 'ⁿ',
+
+        // Numerals
+        '൦': '0', '൧': '1', '൨': '2', '൩': '3', '൪': '4',
+        '൫': '5', '൬': '6', '൭': '7', '൮': '8', '൯': '9',
+
+        // Others
+        '।': '. ', '॥': '. ',
+        ' ': ' '
+    };
+
+    let settings = { devanagari: undefined, kannada: undefined, telugu: undefined, odia: undefined, malayalam: undefined, indicateScript: undefined };
     // When we had set the above to true, it was always transliterating some
     // sections of the page.The settings were not taking effect.
     // XXX: I'd like some explanation for this behaviour.
@@ -225,7 +268,7 @@
 
         // Explicitly check if all settings are false
         if (settings.devanagari === false && settings.kannada === false &&
-            settings.telugu === false && settings.odia === false) {
+            settings.telugu === false && settings.odia === false && settings.malayalam === false) {
             log('Skipping transliteration: all scripts disabled');
             return text;
         }
@@ -270,6 +313,12 @@
                     currentScript = 'odia';
                 }
                 appendTransliteratedChar(text, i, currentWord, odiaToITRANS, ODIA_MODIFIER_START, ODIA_MODIFIER_END, ODIA_NUKTA);
+            } else if (settings.malayalam !== false && text[i] >= MALAYALAM_START && text[i] <= MALAYALAM_END) {
+                if (currentScript !== 'malayalam') {
+                    flushCurrentWord();
+                    currentScript = 'malayalam';
+                }
+                appendTransliteratedChar(text, i, currentWord, malayalamToITRANS, MALAYALAM_MODIFIER_START, MALAYALAM_MODIFIER_END, MALAYALAM_NUKTA);
             } else {
                 flushCurrentWord();
                 currentScript = null;
@@ -428,12 +477,12 @@
     }
 
     // Load settings before initializing
-    // Load settings before initializing
     chrome.storage.sync.get({
         devanagari: true,
         kannada: true,
         odia: true,
         telugu: true,
+        malayalam: true,
         indicateScript: true,
         showStats: false
     }, (result) => {
@@ -442,6 +491,7 @@
             kannada: result.kannada,
             odia: result.odia,
             telugu: result.telugu,
+            malayalam: result.malayalam,
             indicateScript: result.indicateScript,
             showStats: result.showStats
         };

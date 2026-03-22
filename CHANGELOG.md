@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5 - unreleased
+
+- NEW: Malayalam script
+
 ## 1.4 - 2025-11-27
 
 - NEW: Odia script

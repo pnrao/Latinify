@@ -2,28 +2,28 @@
 .transliterated-devanagari {
     text-decoration: solid underline;
     text-decoration-color: green;
-    text-underline-offset: 6px;
+    text-underline-offset: 5px;
     text-decoration-skip-ink: none;
 }
 
 .transliterated-kannada {
     text-decoration: solid underline;
     text-decoration-color: Orange;
-    text-underline-offset: 6px;
+    text-underline-offset: 5px;
     text-decoration-skip-ink: none;
 }
 
 .transliterated-odia {
     text-decoration: solid underline;
     text-decoration-color: Orchid;
-    text-underline-offset: 6px;
+    text-underline-offset: 5px;
     text-decoration-skip-ink: none;
 }
 
 .transliterated-telugu {
     text-decoration: solid underline;
     text-decoration-color: Teal;
-    text-underline-offset: 6px;
+    text-underline-offset: 5px;
     text-decoration-skip-ink: none;
 }
 
