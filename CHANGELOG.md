@@ -6,9 +6,12 @@
 - NEW: Gujarati script
 - NEW: Gurmukhi script
 - NEW: Malayalam script
+- NEW: Sinhala script
 - NEW: Tamil script
 - CHANGE: Velar nasal (ङ, ங, etc.) now rendered as ŋ instead of nga
+- CHANGE: Vocalic R and L (ऋ, ऌ, etc.) now rendered as ri/li instead of RRi/LLi
 - FIX: Telugu vocalic R matra (ృ) was not being transliterated
+- FIX: unmapped rarely used characters
 
 ## 1.4 - 2025-11-27
 

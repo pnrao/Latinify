@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const kannada = document.getElementById('kannada');
     const malayalam = document.getElementById('malayalam');
     const odia = document.getElementById('odia');
+    const sinhala = document.getElementById('sinhala');
     const tamil = document.getElementById('tamil');
     const telugu = document.getElementById('telugu');
     const indicateScript = document.getElementById('indicateScript');
@@ -20,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         kannada.checked = result.kannada !== false;
         malayalam.checked = result.malayalam !== false;
         odia.checked = result.odia !== false;
+        sinhala.checked = result.sinhala !== false;
         tamil.checked = result.tamil !== false;
         telugu.checked = result.telugu !== false;
         indicateScript.checked = result.indicateScript !== false;
@@ -36,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
             kannada: kannada.checked,
             malayalam: malayalam.checked,
             odia: odia.checked,
+            sinhala: sinhala.checked,
             tamil: tamil.checked,
             telugu: telugu.checked,
             indicateScript: indicateScript.checked,
@@ -68,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     kannada.addEventListener('change', updateSettings);
     malayalam.addEventListener('change', updateSettings);
     odia.addEventListener('change', updateSettings);
+    sinhala.addEventListener('change', updateSettings);
     tamil.addEventListener('change', updateSettings);
     telugu.addEventListener('change', updateSettings);
     indicateScript.addEventListener('change', updateSettings);

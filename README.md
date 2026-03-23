@@ -13,9 +13,9 @@ This Chrome extension helps by converting text in Indic scripts to the Latin scr
 - Kannada
 - Malayalam
 - Odia
+- Sinhala
 - Tamil
 - Telugu
-- More coming soon...
 
 ## Features
 

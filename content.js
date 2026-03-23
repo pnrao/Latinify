@@ -40,6 +40,12 @@
     const MALAYALAM_MODIFIER_END = '\u0D63';
     const MALAYALAM_NUKTA = null; // Malayalam does not have a nukta equivalent
 
+    const SINHALA_START = '\u0D80';
+    const SINHALA_END = '\u0DFF';
+    const SINHALA_MODIFIER_START = '\u0DCA'; // hal kirima (virama)
+    const SINHALA_MODIFIER_END = '\u0DDF';
+    const SINHALA_NUKTA = null;
+
     const GUJARATI_START = '\u0A80';
     const GUJARATI_END = '\u0AFF';
     const GUJARATI_MODIFIER_START = '\u0ABE';
@@ -65,7 +71,7 @@
     const devanagariToITRANS = {
         // Vowels
         'अ': 'a', 'आ': 'aa', 'इ': 'i', 'ई': 'ii', 'उ': 'u', 'ऊ': 'uu',
-        'ऋ': 'RRi', 'ॠ': 'RRI', 'ऌ': 'LLi', 'ॡ': 'LLI',
+        'ऋ': 'ri', 'ॠ': 'ri', 'ऌ': 'li', 'ॡ': 'li',
         'ए': 'e', 'ऐ': 'ai', 'ऑ': 'o', 'ओ': 'o', 'औ': 'au',
 
         // Consonants
@@ -88,11 +94,12 @@
         // Matras (Vowel signs)
         'ा': 'aa', 'ि': 'i', 'ी': 'ii', 'ु': 'u', 'ू': 'uu',
         'े': 'e', 'ै': 'ai', 'ो': 'o', 'ौ': 'au', 'ृ': 'ri',
-        'ॄ': 'RRI', 'ॢ': 'LLi', 'ॣ': 'LLI',
+        'ॄ': 'ri', 'ॢ': 'li', 'ॣ': 'li',
 
         // Additional marks
         '्': '', 'ं': 'ⁿ', 'ः': 'H', 'ँ': 'ⁿ',
         '़': '', // Nukta
+        'ऽ': "'", // Avagraha
         'ॅ': 'e', 'ॉ': 'o',
 
         // Numerals
@@ -110,7 +117,7 @@
     const kannadaToITRANS = {
         // Vowels
         'ಅ': 'a', 'ಆ': 'aa', 'ಇ': 'i', 'ಈ': 'ii', 'ಉ': 'u', 'ಊ': 'uu',
-        'ಋ': 'RRi', 'ೠ': 'RRI', 'ಎ': 'e', 'ಏ': 'ee', 'ಐ': 'ai', 'ಒ': 'o', 'ಓ': 'oo', 'ಔ': 'au',
+        'ಋ': 'ri', 'ೠ': 'ri', 'ಌ': 'li', 'ೡ': 'li', 'ಎ': 'e', 'ಏ': 'ee', 'ಐ': 'ai', 'ಒ': 'o', 'ಓ': 'oo', 'ಔ': 'au',
 
         // Consonants
         'ಕ': 'ka', 'ಖ': 'kha', 'ಗ': 'ga', 'ಘ': 'gha', 'ಙ': 'gna',
@@ -123,11 +130,11 @@
 
         // Matras (Vowel signs)
         'ಾ': 'aa', 'ಿ': 'i', 'ೀ': 'ii', 'ು': 'u', 'ೂ': 'uu',
-        'ೆ': 'e', 'ೇ': 'ee', 'ೈ': 'ai', 'ೊ': 'o', 'ೋ': 'oo', 'ೌ': 'au', 'ೃ': 'ru', 'ೄ': 'RRI',
+        'ೆ': 'e', 'ೇ': 'ee', 'ೈ': 'ai', 'ೊ': 'o', 'ೋ': 'oo', 'ೌ': 'au', 'ೃ': 'ru', 'ೄ': 'ri',
+        'ೢ': 'li', 'ೣ': 'li',
 
         // Additional marks
-        '್': '', 'ಂ': 'ⁿ', 'ಃ': 'H',
-        'ೆ': 'e', 'ೊ': 'o',
+        '್': '', 'ಂ': 'ⁿ', 'ಃ': 'H', 'ಁ': 'ⁿ', 'ಽ': '\'', 'ೕ': '', 'ೖ': '', 'ೱ': '', 'ೲ': '',
 
         // Numerals
         '೦': '0', '೧': '1', '೨': '2', '೩': '3', '೪': '4',
@@ -142,7 +149,7 @@
     const teluguToITRANS = {
         // Vowels
         'అ': 'a', 'ఆ': 'aa', 'ఇ': 'i', 'ఈ': 'ii', 'ఉ': 'u', 'ఊ': 'uu',
-        'ఋ': 'RRi', 'ౠ': 'RRI', 'ఌ': 'LLi', 'ౡ': 'LLI', 'ఎ': 'e', 'ఏ': 'ee', 'ఐ': 'ai', 'ఒ': 'o', 'ఓ': 'oo', 'ఔ': 'au',
+        'ఋ': 'ri', 'ౠ': 'ri', 'ఌ': 'li', 'ౡ': 'li', 'ఎ': 'e', 'ఏ': 'ee', 'ఐ': 'ai', 'ఒ': 'o', 'ఓ': 'oo', 'ఔ': 'au',
 
         // Chandrabindu, avagraha
         'ఁ': 'ⁿ', 'ఽ': "'",
@@ -159,9 +166,9 @@
 
         // Matras (Vowel signs)
         'ా': 'aa', 'ి': 'i', 'ీ': 'ii', 'ు': 'u', 'ూ': 'uu',
-        'ృ': 'RRi', 'ౄ': 'RRI',
+        'ృ': 'ri', 'ౄ': 'ri',
         'ె': 'e', 'ే': 'ee', 'ై': 'ai', 'ొ': 'o', 'ో': 'oo', 'ౌ': 'au',
-        'ౢ': 'LLi', 'ౣ': 'LLI',
+        'ౢ': 'li', 'ౣ': 'li',
 
         // Additional marks
         '్': '', 'ం': 'ᵐ', 'ః': 'H',
@@ -224,7 +231,7 @@
     const odiaToITRANS = {
         // Vowels
         'ଅ': 'a', 'ଆ': 'aa', 'ଇ': 'i', 'ଈ': 'ii', 'ଉ': 'u', 'ଊ': 'uu',
-        'ଋ': 'RRi', 'ୠ': 'RRI', 'ଌ': 'LLi', 'ୡ': 'LLI',
+        'ଋ': 'ri', 'ୠ': 'ri', 'ଌ': 'li', 'ୡ': 'li',
         'ଏ': 'e', 'ଐ': 'ai', 'ଓ': 'o', 'ଔ': 'au',
 
         // Consonants
@@ -239,7 +246,7 @@
 
         // Matras (Vowel signs)
         'ା': 'aa', 'ି': 'i', 'ୀ': 'ii', 'ୁ': 'u', 'ୂ': 'uu',
-        'ୃ': 'RRi', 'ୄ': 'RRI', 'ୢ': 'LLi', 'ୣ': 'LLI',
+        'ୃ': 'ri', 'ୄ': 'ri', 'ୢ': 'li', 'ୣ': 'li',
         'େ': 'e', 'ୈ': 'ai', 'ୋ': 'o', 'ୌ': 'au',
 
         // Additional marks
@@ -259,11 +266,48 @@
         ' ': ' '
     };
 
+    // Mapping of Sinhala Unicode characters to ITRANS
+    const sinhalaToITRANS = {
+        // Vowels
+        'අ': 'a', 'ආ': 'aa', 'ඇ': 'ae', 'ඈ': 'aae',
+        'ඉ': 'i', 'ඊ': 'ii', 'උ': 'u', 'ඌ': 'uu',
+        'ඍ': 'ri', 'ඎ': 'ri', 'ඏ': 'li', 'ඐ': 'li',
+        'එ': 'e', 'ඒ': 'ee', 'ඓ': 'ai', 'ඔ': 'o', 'ඕ': 'oo', 'ඖ': 'au',
+
+        // Consonants
+        'ක': 'ka', 'ඛ': 'kha', 'ග': 'ga', 'ඝ': 'gha', 'ඞ': 'ŋa', 'ඟ': 'ŋga',
+        'ච': 'cha', 'ඡ': 'Cha', 'ජ': 'ja', 'ඣ': 'jha', 'ඤ': 'ɲa', 'ඥ': 'jna', 'ඦ': 'ɲja',
+        'ට': 'Ta', 'ඨ': 'Tha', 'ඩ': 'Da', 'ඪ': 'Dha', 'ණ': 'Na', 'ඬ': 'NDa',
+        'ත': 'ta', 'ථ': 'tha', 'ද': 'da', 'ධ': 'dha', 'න': 'na', 'ඳ': 'nda',
+        'ප': 'pa', 'ඵ': 'pha', 'බ': 'ba', 'භ': 'bha', 'ම': 'ma', 'ඹ': 'mba',
+        'ය': 'ya', 'ර': 'ra', 'ල': 'la', 'ව': 'va',
+        'ශ': 'sha', 'ෂ': 'Sha', 'ස': 'sa', 'හ': 'ha', 'ළ': 'La', 'ෆ': 'fa',
+
+        // Matras (vowel signs)
+        'ා': 'aa', 'ැ': 'ae', 'ෑ': 'aae',
+        'ි': 'i', 'ී': 'ii', 'ු': 'u', 'ූ': 'uu',
+        'ෘ': 'ri', 'ෙ': 'e', 'ේ': 'ee', 'ෛ': 'ai',
+        'ො': 'o', 'ෝ': 'oo', 'ෞ': 'au', 'ෟ': 'li',
+        '්': '', // hal kirima (virama)
+        'ෲ': 'ri', 'ෳ': 'ri',
+
+        // Additional marks
+        'ඁ': 'ⁿ', 'ං': 'ᵐ', 'ඃ': 'H',
+
+        // Numerals
+        '෦': '0', '෧': '1', '෨': '2', '෩': '3', '෪': '4',
+        '෫': '5', '෬': '6', '෭': '7', '෮': '8', '෯': '9',
+
+        // Others
+        '෴': '. ', '।': '. ', '॥': '. ',
+        ' ': ' '
+    };
+
     // Mapping of Malayalam Unicode characters to ITRANS
     const malayalamToITRANS = {
         // Vowels
         'അ': 'a', 'ആ': 'aa', 'ഇ': 'i', 'ഈ': 'ii', 'ഉ': 'u', 'ഊ': 'uu',
-        'ഋ': 'RRi', 'ൠ': 'RRI', 'ഌ': 'LLi', 'ൡ': 'LLI', 'ൟ': 'ii',
+        'ഋ': 'ri', 'ൠ': 'ri', 'ഌ': 'li', 'ൡ': 'li', 'ൟ': 'ii',
         'എ': 'e', 'ഏ': 'ee', 'ഐ': 'ai', 'ഒ': 'o', 'ഓ': 'oo', 'ഔ': 'au',
 
         // Consonants
@@ -280,7 +324,7 @@
 
         // Matras (Vowel signs)
         'ാ': 'aa', 'ി': 'i', 'ീ': 'ii', 'ു': 'u', 'ൂ': 'uu',
-        'ൃ': 'ru', 'ൄ': 'RRI', 'ൢ': 'LLi', 'ൣ': 'LLI',
+        'ൃ': 'ru', 'ൄ': 'ri', 'ൢ': 'li', 'ൣ': 'li',
         'െ': 'e', 'േ': 'ee', 'ൈ': 'ai',
         'ൊ': 'o', 'ോ': 'oo', 'ൌ': 'au', 'ൗ': 'au',
 
@@ -359,7 +403,7 @@
     const bengaliToITRANS = {
         // Vowels
         'অ': 'a', 'আ': 'aa', 'ই': 'i', 'ঈ': 'ii', 'উ': 'u', 'ঊ': 'uu',
-        'ঋ': 'RRi', 'ৠ': 'RRI', 'ঌ': 'LLi', 'ৡ': 'LLI',
+        'ঋ': 'ri', 'ৠ': 'ri', 'ঌ': 'li', 'ৡ': 'li',
         'এ': 'e', 'ঐ': 'ai', 'ও': 'o', 'ঔ': 'au',
 
         // Consonants
@@ -370,15 +414,16 @@
         'প': 'pₒ', 'ফ': 'phₒ', 'ব': 'bₒ', 'ভ': 'bhₒ', 'ম': 'mₒ',
         'য': 'yₒ', 'র': 'rₒ', 'ল': 'lₒ', 'শ': 'shₒ', 'ষ': 'Shₒ', 'স': 'sₒ', 'হ': 'hₒ',
         '\u09A1\u09BC': 'Rₒ', '\u09A2\u09BC': 'Rhₒ', '\u09AF\u09BC': 'yₒ', // ড় ঢ় য়
+        'ৰ': 'rₒ', 'ৱ': 'wₒ', // Assamese ra, wa
         'ৎ': 't', // khanda ta: terminal consonant without inherent vowel
 
         // Matras (Vowel signs)
         'া': 'aa', 'ি': 'i', 'ী': 'ii', 'ু': 'u', 'ূ': 'uu',
-        'ৃ': 'ri', 'ৄ': 'RRI',
+        'ৃ': 'ri', 'ৄ': 'ri',
         'ে': 'e', 'ৈ': 'ai', 'ো': 'o', 'ৌ': 'au',
 
         // Vocalic L matras (outside matra range, treated as discrete)
-        'ৢ': 'LLi', 'ৣ': 'LLI',
+        'ৢ': 'li', 'ৣ': 'li',
 
         // Additional marks
         '্': '', 'ং': 'ⁿ', 'ঃ': 'H', 'ঁ': 'ⁿ',
@@ -405,7 +450,7 @@
     const gujaratiToITRANS = {
         // Vowels
         'અ': 'a', 'આ': 'aa', 'ઇ': 'i', 'ઈ': 'ii', 'ઉ': 'u', 'ઊ': 'uu',
-        'ઋ': 'RRi', 'ૠ': 'RRI', 'ઌ': 'LLi', 'ૡ': 'LLI',
+        'ઋ': 'ri', 'ૠ': 'ri', 'ઌ': 'li', 'ૡ': 'li',
         'ઍ': 'e', 'એ': 'e', 'ઐ': 'ai', 'ઑ': 'o', 'ઓ': 'o', 'ઔ': 'au',
 
         // Consonants
@@ -415,11 +460,11 @@
         'ત': 'tₐ', 'થ': 'thₐ', 'દ': 'dₐ', 'ધ': 'dhₐ', 'ન': 'nₐ',
         'પ': 'pₐ', 'ફ': 'phₐ', 'બ': 'bₐ', 'ભ': 'bhₐ', 'મ': 'mₐ',
         'ય': 'yₐ', 'ર': 'rₐ', 'લ': 'lₐ', 'ળ': 'Lₐ', 'વ': 'vₐ',
-        'શ': 'shₐ', 'ષ': 'Shₐ', 'સ': 'sₐ', 'હ': 'hₐ',
+        'શ': 'shₐ', 'ષ': 'Shₐ', 'સ': 'sₐ', 'હ': 'hₐ', 'ૹ': 'zhₐ',
 
         // Matras (Vowel signs)
         'ા': 'aa', 'િ': 'i', 'ી': 'ii', 'ુ': 'u', 'ૂ': 'uu',
-        'ૃ': 'ri', 'ૄ': 'RRI', 'ૅ': 'e', 'ૢ': 'LLi', 'ૣ': 'LLI',
+        'ૃ': 'ri', 'ૄ': 'ri', 'ૅ': 'e', 'ૢ': 'li', 'ૣ': 'li',
         'ે': 'e', 'ૈ': 'ai', 'ૉ': 'o', 'ો': 'o', 'ૌ': 'au',
 
         // Additional marks
@@ -436,7 +481,7 @@
         ' ': ' '
     };
 
-    let settings = { bengali: undefined, devanagari: undefined, gujarati: undefined, gurmukhi: undefined, kannada: undefined, tamil: undefined, telugu: undefined, odia: undefined, malayalam: undefined, indicateScript: undefined };
+    let settings = { bengali: undefined, devanagari: undefined, gujarati: undefined, gurmukhi: undefined, kannada: undefined, sinhala: undefined, tamil: undefined, telugu: undefined, odia: undefined, malayalam: undefined, indicateScript: undefined };
     // When we had set the above to true, it was always transliterating some
     // sections of the page.The settings were not taking effect.
     // XXX: I'd like some explanation for this behaviour.
@@ -487,8 +532,9 @@
 
         // Explicitly check if all settings are false
         if (settings.bengali === false && settings.devanagari === false && settings.gujarati === false &&
-            settings.gurmukhi === false && settings.kannada === false && settings.tamil === false &&
-            settings.telugu === false && settings.odia === false && settings.malayalam === false) {
+            settings.gurmukhi === false && settings.kannada === false && settings.sinhala === false &&
+            settings.tamil === false && settings.telugu === false && settings.odia === false &&
+            settings.malayalam === false) {
             log('Skipping transliteration: all scripts disabled');
             return text;
         }
@@ -539,6 +585,12 @@
                     currentScript = 'malayalam';
                 }
                 appendTransliteratedChar(text, i, currentWord, malayalamToITRANS, MALAYALAM_MODIFIER_START, MALAYALAM_MODIFIER_END, MALAYALAM_NUKTA);
+            } else if (settings.sinhala !== false && text[i] >= SINHALA_START && text[i] <= SINHALA_END) {
+                if (currentScript !== 'sinhala') {
+                    flushCurrentWord();
+                    currentScript = 'sinhala';
+                }
+                appendTransliteratedChar(text, i, currentWord, sinhalaToITRANS, SINHALA_MODIFIER_START, SINHALA_MODIFIER_END, SINHALA_NUKTA);
             } else if (settings.gujarati !== false && text[i] >= GUJARATI_START && text[i] <= GUJARATI_END) {
                 if (currentScript !== 'gujarati') {
                     flushCurrentWord();
@@ -732,6 +784,7 @@
         gujarati: true,
         gurmukhi: true,
         kannada: true,
+        sinhala: true,
         tamil: true,
         odia: true,
         telugu: true,
@@ -745,6 +798,7 @@
             gujarati: result.gujarati,
             gurmukhi: result.gurmukhi,
             kannada: result.kannada,
+            sinhala: result.sinhala,
             tamil: result.tamil,
             odia: result.odia,
             telugu: result.telugu,
