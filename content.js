@@ -28,6 +28,12 @@
     const ODIA_MODIFIER_END = '\u0B57';
     const ODIA_NUKTA = '\u0B3C';
 
+    const TAMIL_START = '\u0B80';
+    const TAMIL_END = '\u0BFF';
+    const TAMIL_MODIFIER_START = '\u0BBE';
+    const TAMIL_MODIFIER_END = '\u0BCD';
+    const TAMIL_NUKTA = null;
+
     const MALAYALAM_START = '\u0D00';
     const MALAYALAM_END = '\u0D7F';
     const MALAYALAM_MODIFIER_START = '\u0D3E';
@@ -142,7 +148,7 @@
         'ఁ': 'ⁿ', 'ఽ': "'",
 
         // Consonants
-        'క': 'ka', 'ఖ': 'kha', 'గ': 'ga', 'ఘ': 'gha', 'ఙ': 'nga',
+        'క': 'ka', 'ఖ': 'kha', 'గ': 'ga', 'ఘ': 'gha', 'ఙ': 'gna',
         'చ': 'cha', 'ఛ': 'Cha', 'జ': 'ja', 'ఝ': 'jha', 'ఞ': 'jna',
         'ట': 'Ta', 'ఠ': 'Tha', 'డ': 'Da', 'ఢ': 'Dha', 'ణ': 'Na',
         'త': 'ta', 'థ': 'tha', 'ద': 'da', 'ధ': 'dha', 'న': 'na',
@@ -173,6 +179,42 @@
         ' ': ' '
     };
 
+    // Mapping of Tamil Unicode characters to ITRANS
+    const tamilToITRANS = {
+        // Vowels
+        'அ': 'a', 'ஆ': 'aa', 'இ': 'i', 'ஈ': 'ii', 'உ': 'u', 'ஊ': 'uu',
+        'எ': 'e', 'ஏ': 'ee', 'ஐ': 'ai', 'ஒ': 'o', 'ஓ': 'oo', 'ஔ': 'au',
+
+        // Consonants
+        'க': 'ka', 'ங': 'ŋa',
+        'ச': 'cha', 'ஜ': 'ja', 'ஞ': 'ɲa',
+        'ட': 'Ta', 'ண': 'Na',
+        'த': 'ta', 'ந': 'na', 'ன': 'na',
+        'ப': 'pa', 'ம': 'ma',
+        'ய': 'ya', 'ர': 'ra', 'ற': 'rra', 'ல': 'la', 'ள': 'La', 'ழ': 'Lha', 'வ': 'va',
+        'ஶ': 'sha', 'ஷ': 'Sha', 'ஸ': 'sa', 'ஹ': 'ha',
+
+        // Matras (vowel signs)
+        'ா': 'aa', 'ி': 'i', 'ீ': 'ii', 'ு': 'u', 'ூ': 'uu',
+        'ெ': 'e', 'ே': 'ee', 'ை': 'ai',
+        'ொ': 'o', 'ோ': 'oo', 'ௌ': 'au',
+        '்': '', // pulli (virama)
+
+        // Additional marks
+        'ஂ': 'ᵐ', 'ஃ': 'H',
+        'ௗ': 'au', // au length mark
+        'ௐ': 'OM',
+
+        // Numerals
+        '௦': '0', '௧': '1', '௨': '2', '௩': '3', '௪': '4',
+        '௫': '5', '௬': '6', '௭': '7', '௮': '8', '௯': '9',
+        '௰': '10', '௱': '100', '௲': '1000',
+
+        // Others
+        '।': '. ', '॥': '. ',
+        ' ': ' '
+    };
+
     // Mapping of Odia Unicode characters to ITRANS
     const odiaToITRANS = {
         // Vowels
@@ -181,7 +223,7 @@
         'ଏ': 'e', 'ଐ': 'ai', 'ଓ': 'o', 'ଔ': 'au',
 
         // Consonants
-        'କ': 'ka', 'ଖ': 'kha', 'ଗ': 'ga', 'ଘ': 'gha', 'ଙ': 'nga',
+        'କ': 'ka', 'ଖ': 'kha', 'ଗ': 'ga', 'ଘ': 'gha', 'ଙ': 'gna',
         'ଚ': 'cha', 'ଛ': 'Cha', 'ଜ': 'ja', 'ଝ': 'jha', 'ଞ': 'jna',
         'ଟ': 'Ta', 'ଠ': 'Tha', 'ଡ': 'Da', 'ଢ': 'Dha', 'ଣ': 'Na',
         'ଡ଼': 'Ra', 'ଢ଼': 'Rha',
@@ -220,7 +262,7 @@
         'എ': 'e', 'ഏ': 'ee', 'ഐ': 'ai', 'ഒ': 'o', 'ഓ': 'oo', 'ഔ': 'au',
 
         // Consonants
-        'ക': 'ka', 'ഖ': 'kha', 'ഗ': 'ga', 'ഘ': 'gha', 'ങ': 'nga',
+        'ക': 'ka', 'ഖ': 'kha', 'ഗ': 'ga', 'ഘ': 'gha', 'ങ': 'gna',
         'ച': 'cha', 'ഛ': 'Cha', 'ജ': 'ja', 'ഝ': 'jha', 'ഞ': 'jna',
         'ട': 'Ta', 'ഠ': 'Tha', 'ഡ': 'Da', 'ഢ': 'Dha', 'ണ': 'Na',
         'ത': 'ta', 'ഥ': 'tha', 'ദ': 'da', 'ധ': 'dha', 'ന': 'na', 'ഩ': 'na',
@@ -271,7 +313,7 @@
         'ੳ': '', 'ੲ': '',
 
         // Consonants
-        'ਕ': 'ka', 'ਖ': 'kha', 'ਗ': 'ga', 'ਘ': 'gha', 'ਙ': 'nga',
+        'ਕ': 'ka', 'ਖ': 'kha', 'ਗ': 'ga', 'ਘ': 'gha', 'ਙ': 'gna',
         'ਚ': 'cha', 'ਛ': 'Cha', 'ਜ': 'ja', 'ਝ': 'jha', 'ਞ': 'jna',
         'ਟ': 'Ta', 'ਠ': 'Tha', 'ਡ': 'Da', 'ਢ': 'Dha', 'ਣ': 'Na',
         'ਤ': 'ta', 'ਥ': 'tha', 'ਦ': 'da', 'ਧ': 'dha', 'ਨ': 'na',
@@ -316,7 +358,7 @@
         'এ': 'e', 'ঐ': 'ai', 'ও': 'o', 'ঔ': 'au',
 
         // Consonants
-        'ক': 'kₒ', 'খ': 'khₒ', 'গ': 'gₒ', 'ঘ': 'ghₒ', 'ঙ': 'gnₒ',
+        'ক': 'kₒ', 'খ': 'khₒ', 'গ': 'gₒ', 'ঘ': 'ghₒ', 'ঙ': 'ŋₒ',
         'চ': 'chₒ', 'ছ': 'Chₒ', 'জ': 'jₒ', 'ঝ': 'jhₒ', 'ঞ': 'jnₒ',
         'ট': 'Tₒ', 'ঠ': 'Thₒ', 'ড': 'Dₒ', 'ঢ': 'Dhₒ', 'ণ': 'Nₒ',
         'ত': 'tₒ', 'থ': 'thₒ', 'দ': 'dₒ', 'ধ': 'dhₒ', 'ন': 'nₒ',
@@ -389,7 +431,7 @@
         ' ': ' '
     };
 
-    let settings = { bengali: undefined, devanagari: undefined, gujarati: undefined, gurmukhi: undefined, kannada: undefined, telugu: undefined, odia: undefined, malayalam: undefined, indicateScript: undefined };
+    let settings = { bengali: undefined, devanagari: undefined, gujarati: undefined, gurmukhi: undefined, kannada: undefined, tamil: undefined, telugu: undefined, odia: undefined, malayalam: undefined, indicateScript: undefined };
     // When we had set the above to true, it was always transliterating some
     // sections of the page.The settings were not taking effect.
     // XXX: I'd like some explanation for this behaviour.
@@ -440,8 +482,8 @@
 
         // Explicitly check if all settings are false
         if (settings.bengali === false && settings.devanagari === false && settings.gujarati === false &&
-            settings.gurmukhi === false && settings.kannada === false && settings.telugu === false &&
-            settings.odia === false && settings.malayalam === false) {
+            settings.gurmukhi === false && settings.kannada === false && settings.tamil === false &&
+            settings.telugu === false && settings.odia === false && settings.malayalam === false) {
             log('Skipping transliteration: all scripts disabled');
             return text;
         }
@@ -509,6 +551,12 @@
                 } else {
                     appendTransliteratedChar(text, i, currentWord, gurmukhiToITRANS, GURMUKHI_MODIFIER_START, GURMUKHI_MODIFIER_END, GURMUKHI_NUKTA);
                 }
+            } else if (settings.tamil !== false && text[i] >= TAMIL_START && text[i] <= TAMIL_END) {
+                if (currentScript !== 'tamil') {
+                    flushCurrentWord();
+                    currentScript = 'tamil';
+                }
+                appendTransliteratedChar(text, i, currentWord, tamilToITRANS, TAMIL_MODIFIER_START, TAMIL_MODIFIER_END, TAMIL_NUKTA);
             } else if (settings.bengali !== false && text[i] >= BENGALI_START && text[i] <= BENGALI_END) {
                 if (currentScript !== 'bengali') {
                     flushCurrentWord();
@@ -679,6 +727,7 @@
         gujarati: true,
         gurmukhi: true,
         kannada: true,
+        tamil: true,
         odia: true,
         telugu: true,
         malayalam: true,
@@ -691,6 +740,7 @@
             gujarati: result.gujarati,
             gurmukhi: result.gurmukhi,
             kannada: result.kannada,
+            tamil: result.tamil,
             odia: result.odia,
             telugu: result.telugu,
             malayalam: result.malayalam,

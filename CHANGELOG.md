@@ -2,10 +2,12 @@
 
 ## 1.5 - unreleased
 
-- NEW: Bengali script (Bengali and Assamese)
+- NEW: Bengali script
 - NEW: Gujarati script
-- NEW: Gurmukhi script (Punjabi)
+- NEW: Gurmukhi script
 - NEW: Malayalam script
+- NEW: Tamil script
+- CHANGE: Velar nasal (ङ, ங, etc.) now rendered as ŋ instead of nga
 - FIX: Telugu vocalic R matra (ృ) was not being transliterated
 
 ## 1.4 - 2025-11-27
