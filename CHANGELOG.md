@@ -2,6 +2,7 @@
 
 ## 1.5 - unreleased
 
+- NEW: Gujarati script
 - NEW: Malayalam script
 
 ## 1.4 - 2025-11-27

@@ -34,6 +34,12 @@
     const MALAYALAM_MODIFIER_END = '\u0D63';
     const MALAYALAM_NUKTA = null; // Malayalam does not have a nukta equivalent
 
+    const GUJARATI_START = '\u0A80';
+    const GUJARATI_END = '\u0AFF';
+    const GUJARATI_MODIFIER_START = '\u0ABE';
+    const GUJARATI_MODIFIER_END = '\u0AE3';
+    const GUJARATI_NUKTA = '\u0ABC';
+
     const SKIPPED_NODES = ['script', 'style', 'textarea', 'input', 'noscript', 'iframe', 'object', 'embed', 'audio', 'video', 'select', 'button', 'code', 'pre'];
 
     // Mapping of Devanagari Unicode characters to ITRANS
@@ -232,7 +238,42 @@
         ' ': ' '
     };
 
-    let settings = { devanagari: undefined, kannada: undefined, telugu: undefined, odia: undefined, malayalam: undefined, indicateScript: undefined };
+    // Mapping of Gujarati Unicode characters to ITRANS
+    const gujaratiToITRANS = {
+        // Vowels
+        'અ': 'a', 'આ': 'aa', 'ઇ': 'i', 'ઈ': 'ii', 'ઉ': 'u', 'ઊ': 'uu',
+        'ઋ': 'RRi', 'ૠ': 'RRI', 'ઌ': 'LLi', 'ૡ': 'LLI',
+        'ઍ': 'e', 'એ': 'e', 'ઐ': 'ai', 'ઑ': 'o', 'ઓ': 'o', 'ઔ': 'au',
+
+        // Consonants
+        'ક': 'kₐ', 'ખ': 'khₐ', 'ગ': 'gₐ', 'ઘ': 'ghₐ', 'ઙ': 'gnₐ',
+        'ચ': 'chₐ', 'છ': 'Chₐ', 'જ': 'jₐ', 'ઝ': 'jhₐ', 'ઞ': 'jnₐ',
+        'ટ': 'Tₐ', 'ઠ': 'Thₐ', 'ડ': 'Dₐ', 'ઢ': 'Dhₐ', 'ણ': 'Nₐ',
+        'ત': 'tₐ', 'થ': 'thₐ', 'દ': 'dₐ', 'ધ': 'dhₐ', 'ન': 'nₐ',
+        'પ': 'pₐ', 'ફ': 'phₐ', 'બ': 'bₐ', 'ભ': 'bhₐ', 'મ': 'mₐ',
+        'ય': 'yₐ', 'ર': 'rₐ', 'લ': 'lₐ', 'ળ': 'Lₐ', 'વ': 'vₐ',
+        'શ': 'shₐ', 'ષ': 'Shₐ', 'સ': 'sₐ', 'હ': 'hₐ',
+
+        // Matras (Vowel signs)
+        'ા': 'aa', 'િ': 'i', 'ી': 'ii', 'ુ': 'u', 'ૂ': 'uu',
+        'ૃ': 'ri', 'ૄ': 'RRI', 'ૅ': 'e', 'ૢ': 'LLi', 'ૣ': 'LLI',
+        'ે': 'e', 'ૈ': 'ai', 'ૉ': 'o', 'ો': 'o', 'ૌ': 'au',
+
+        // Additional marks
+        '્': '', 'ં': 'ⁿ', 'ઃ': 'H', 'ઁ': 'ⁿ',
+        '઼': '', // Nukta
+        'ઽ': "'", // Avagraha
+
+        // Numerals
+        '૦': '0', '૧': '1', '૨': '2', '૩': '3', '૪': '4',
+        '૫': '5', '૬': '6', '૭': '7', '૮': '8', '૯': '9',
+
+        // Others
+        '।': '. ', '॥': '. ',
+        ' ': ' '
+    };
+
+    let settings = { devanagari: undefined, gujarati: undefined, kannada: undefined, telugu: undefined, odia: undefined, malayalam: undefined, indicateScript: undefined };
     // When we had set the above to true, it was always transliterating some
     // sections of the page.The settings were not taking effect.
     // XXX: I'd like some explanation for this behaviour.
@@ -279,7 +320,7 @@
         }
 
         // Explicitly check if all settings are false
-        if (settings.devanagari === false && settings.kannada === false &&
+        if (settings.devanagari === false && settings.gujarati === false && settings.kannada === false &&
             settings.telugu === false && settings.odia === false && settings.malayalam === false) {
             log('Skipping transliteration: all scripts disabled');
             return text;
@@ -331,6 +372,12 @@
                     currentScript = 'malayalam';
                 }
                 appendTransliteratedChar(text, i, currentWord, malayalamToITRANS, MALAYALAM_MODIFIER_START, MALAYALAM_MODIFIER_END, MALAYALAM_NUKTA);
+            } else if (settings.gujarati !== false && text[i] >= GUJARATI_START && text[i] <= GUJARATI_END) {
+                if (currentScript !== 'gujarati') {
+                    flushCurrentWord();
+                    currentScript = 'gujarati';
+                }
+                appendTransliteratedChar(text, i, currentWord, gujaratiToITRANS, GUJARATI_MODIFIER_START, GUJARATI_MODIFIER_END, GUJARATI_NUKTA);
             } else {
                 flushCurrentWord();
                 currentScript = null;
@@ -491,6 +538,7 @@
     // Load settings before initializing
     chrome.storage.sync.get({
         devanagari: true,
+        gujarati: true,
         kannada: true,
         odia: true,
         telugu: true,
@@ -500,6 +548,7 @@
     }, (result) => {
         settings = {
             devanagari: result.devanagari,
+            gujarati: result.gujarati,
             kannada: result.kannada,
             odia: result.odia,
             telugu: result.telugu,
