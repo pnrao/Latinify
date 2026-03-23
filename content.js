@@ -40,6 +40,13 @@
     const GUJARATI_MODIFIER_END = '\u0AE3';
     const GUJARATI_NUKTA = '\u0ABC';
 
+    const GURMUKHI_START = '\u0A00';
+    const GURMUKHI_END = '\u0A7F';
+    const GURMUKHI_MODIFIER_START = '\u0A3E';
+    const GURMUKHI_MODIFIER_END = '\u0A4D';
+    const GURMUKHI_NUKTA = '\u0A3C';
+    const GURMUKHI_ADDAK = '\u0A71';
+
     const BENGALI_START = '\u0980';
     const BENGALI_END = '\u09FF';
     const BENGALI_MODIFIER_START = '\u09BE';
@@ -254,6 +261,53 @@
         ' ': ' '
     };
 
+    // Mapping of Gurmukhi Unicode characters to ITRANS
+    const gurmukhiToITRANS = {
+        // Vowels
+        'ਅ': 'a', 'ਆ': 'aa', 'ਇ': 'i', 'ਈ': 'ii', 'ਉ': 'u', 'ਊ': 'uu',
+        'ਏ': 'e', 'ਐ': 'ai', 'ਓ': 'o', 'ਔ': 'au',
+
+        // Carrier letters (silent base; following matra provides the vowel)
+        'ੳ': '', 'ੲ': '',
+
+        // Consonants
+        'ਕ': 'ka', 'ਖ': 'kha', 'ਗ': 'ga', 'ਘ': 'gha', 'ਙ': 'nga',
+        'ਚ': 'cha', 'ਛ': 'Cha', 'ਜ': 'ja', 'ਝ': 'jha', 'ਞ': 'jna',
+        'ਟ': 'Ta', 'ਠ': 'Tha', 'ਡ': 'Da', 'ਢ': 'Dha', 'ਣ': 'Na',
+        'ਤ': 'ta', 'ਥ': 'tha', 'ਦ': 'da', 'ਧ': 'dha', 'ਨ': 'na',
+        'ਪ': 'pa', 'ਫ': 'pha', 'ਬ': 'ba', 'ਭ': 'bha', 'ਮ': 'ma',
+        'ਯ': 'ya', 'ਰ': 'ra', 'ਲ': 'la', 'ਲ਼': 'La', '\u0A33': 'La', // \u0A33 = ਲ਼ precomposed
+        'ਵ': 'va', 'ਸ਼': 'sha', '\u0A36': 'sha', 'ਸ': 'sa', 'ਹ': 'ha', // \u0A36 = ਸ਼ precomposed
+
+        // Nukta consonants (loanwords from Persian/Arabic); decomposed and precomposed forms
+        'ਖ਼': 'qa', '\u0A59': 'qa',   // \u0A59 = ਖ਼ precomposed
+        'ਗ਼': 'Gha', '\u0A5A': 'Gha', // \u0A5A = ਗ਼ precomposed
+        'ਜ਼': 'za', '\u0A5B': 'za',   // \u0A5B = ਜ਼ precomposed
+        'ਰ਼': 'Ra', '\u0A5C': 'Ra',   // \u0A5C = ੜ precomposed
+        'ਫ਼': 'fa', '\u0A5E': 'fa',   // \u0A5E = ਫ਼ precomposed
+
+        // Matras (vowel signs)
+        'ਾ': 'aa', 'ਿ': 'i', 'ੀ': 'ii', 'ੁ': 'u', 'ੂ': 'uu',
+        'ੇ': 'e', 'ੈ': 'ai', 'ੋ': 'o', 'ੌ': 'au',
+        '੍': '',
+
+        // Additional marks
+        'ਁ': 'ⁿ', 'ਂ': 'ⁿ', 'ਃ': 'H', 'ੰ': 'ⁿ',
+        'ੱ': '', // addak (gemination marker; doubling of following consonant not handled)
+        'ੑ': '', '\u0A75': '', '੶': '.', // udaat (tone mark), yakash, abbreviation sign
+
+        // Sacred symbol
+        'ੴ': 'Ik Onkar',
+
+        // Numerals
+        '੦': '0', '੧': '1', '੨': '2', '੩': '3', '੪': '4',
+        '੫': '5', '੬': '6', '੭': '7', '੮': '8', '੯': '9',
+
+        // Others
+        '।': '. ', '॥': '. ',
+        ' ': ' '
+    };
+
     // Mapping of Bengali Unicode characters to ITRANS
     const bengaliToITRANS = {
         // Vowels
@@ -335,7 +389,7 @@
         ' ': ' '
     };
 
-    let settings = { bengali: undefined, devanagari: undefined, gujarati: undefined, kannada: undefined, telugu: undefined, odia: undefined, malayalam: undefined, indicateScript: undefined };
+    let settings = { bengali: undefined, devanagari: undefined, gujarati: undefined, gurmukhi: undefined, kannada: undefined, telugu: undefined, odia: undefined, malayalam: undefined, indicateScript: undefined };
     // When we had set the above to true, it was always transliterating some
     // sections of the page.The settings were not taking effect.
     // XXX: I'd like some explanation for this behaviour.
@@ -350,7 +404,8 @@
         const nuktaReplacements = {
             'kₐ': 'qₐ', 'khₐ': 'qhₐ', 'jₐ': 'zₐ', 'phₐ': 'fₐ',
             'kₒ': 'qₒ', 'khₒ': 'qhₒ', 'jₒ': 'zₒ', 'phₒ': 'fₒ',
-            'ka': 'qa', 'kha': 'qha', 'ja': 'za', 'pha': 'fa'
+            'ka': 'qa', 'kha': 'qha', 'ja': 'za', 'pha': 'fa',
+            'ra': 'Ra', 'la': 'La', 'sa': 'sha' // Gurmukhi nukta combinations
             // words like पढ़ाई, चौड़ा seem to be pronounced as if the nukta is not there
         };
         if (nuktaReplacements[prevLetter]) {
@@ -368,7 +423,8 @@
         } else if (sourceText[i] == nukta) {
             handleNukta(prevLetter, replacementText);
         } else { // discrete letter
-            replacementText.push(mapping[sourceText[i]] || sourceText[i]);
+            const mapped = mapping[sourceText[i]];
+            replacementText.push(mapped !== undefined ? mapped : sourceText[i]);
         }
     }
 
@@ -384,7 +440,8 @@
 
         // Explicitly check if all settings are false
         if (settings.bengali === false && settings.devanagari === false && settings.gujarati === false &&
-            settings.kannada === false && settings.telugu === false && settings.odia === false && settings.malayalam === false) {
+            settings.gurmukhi === false && settings.kannada === false && settings.telugu === false &&
+            settings.odia === false && settings.malayalam === false) {
             log('Skipping transliteration: all scripts disabled');
             return text;
         }
@@ -441,6 +498,17 @@
                     currentScript = 'gujarati';
                 }
                 appendTransliteratedChar(text, i, currentWord, gujaratiToITRANS, GUJARATI_MODIFIER_START, GUJARATI_MODIFIER_END, GUJARATI_NUKTA);
+            } else if (settings.gurmukhi !== false && text[i] >= GURMUKHI_START && text[i] <= GURMUKHI_END) {
+                if (currentScript !== 'gurmukhi') {
+                    flushCurrentWord();
+                    currentScript = 'gurmukhi';
+                }
+                if (text[i] === GURMUKHI_ADDAK) {
+                    const next = gurmukhiToITRANS[text[i + 1]];
+                    if (next) currentWord.push(next.slice(0, -1)); // strip inherent 'a', doubling the consonant
+                } else {
+                    appendTransliteratedChar(text, i, currentWord, gurmukhiToITRANS, GURMUKHI_MODIFIER_START, GURMUKHI_MODIFIER_END, GURMUKHI_NUKTA);
+                }
             } else if (settings.bengali !== false && text[i] >= BENGALI_START && text[i] <= BENGALI_END) {
                 if (currentScript !== 'bengali') {
                     flushCurrentWord();
@@ -609,6 +677,7 @@
         bengali: true,
         devanagari: true,
         gujarati: true,
+        gurmukhi: true,
         kannada: true,
         odia: true,
         telugu: true,
@@ -620,6 +689,7 @@
             bengali: result.bengali,
             devanagari: result.devanagari,
             gujarati: result.gujarati,
+            gurmukhi: result.gurmukhi,
             kannada: result.kannada,
             odia: result.odia,
             telugu: result.telugu,

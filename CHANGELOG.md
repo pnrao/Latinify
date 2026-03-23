@@ -4,6 +4,7 @@
 
 - NEW: Bengali script (Bengali and Assamese)
 - NEW: Gujarati script
+- NEW: Gurmukhi script (Punjabi)
 - NEW: Malayalam script
 - FIX: Telugu vocalic R matra (ృ) was not being transliterated
 

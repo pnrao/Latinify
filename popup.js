@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bengali = document.getElementById('bengali');
     const devanagari = document.getElementById('devanagari');
     const gujarati = document.getElementById('gujarati');
+    const gurmukhi = document.getElementById('gurmukhi');
     const kannada = document.getElementById('kannada');
     const malayalam = document.getElementById('malayalam');
     const odia = document.getElementById('odia');
@@ -14,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bengali.checked = result.bengali !== false;
         devanagari.checked = result.devanagari !== false;
         gujarati.checked = result.gujarati !== false;
+        gurmukhi.checked = result.gurmukhi !== false;
         kannada.checked = result.kannada !== false;
         malayalam.checked = result.malayalam !== false;
         odia.checked = result.odia !== false;
@@ -28,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
             bengali: bengali.checked,
             devanagari: devanagari.checked,
             gujarati: gujarati.checked,
+            gurmukhi: gurmukhi.checked,
             kannada: kannada.checked,
             malayalam: malayalam.checked,
             odia: odia.checked,
@@ -58,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bengali.addEventListener('change', updateSettings);
     devanagari.addEventListener('change', updateSettings);
     gujarati.addEventListener('change', updateSettings);
+    gurmukhi.addEventListener('change', updateSettings);
     kannada.addEventListener('change', updateSettings);
     malayalam.addEventListener('change', updateSettings);
     odia.addEventListener('change', updateSettings);
