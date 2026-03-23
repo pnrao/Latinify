@@ -40,6 +40,12 @@
     const GUJARATI_MODIFIER_END = '\u0AE3';
     const GUJARATI_NUKTA = '\u0ABC';
 
+    const BENGALI_START = '\u0980';
+    const BENGALI_END = '\u09FF';
+    const BENGALI_MODIFIER_START = '\u09BE';
+    const BENGALI_MODIFIER_END = '\u09CD'; // stop before nukta consonants ড় ঢ় য় (U+09DC-09DF)
+    const BENGALI_NUKTA = '\u09BC';
+
     const SKIPPED_NODES = ['script', 'style', 'textarea', 'input', 'noscript', 'iframe', 'object', 'embed', 'audio', 'video', 'select', 'button', 'code', 'pre'];
 
     // Mapping of Devanagari Unicode characters to ITRANS
@@ -57,14 +63,14 @@
         'प': 'pₐ', 'फ': 'phₐ', 'ब': 'bₐ', 'भ': 'bhₐ', 'म': 'mₐ',
         'य': 'yₐ', 'र': 'rₐ', 'ल': 'lₐ', 'व': 'vₐ', 'श': 'shₐ',
         'ष': 'Shₐ', 'स': 'sₐ', 'ह': 'hₐ', 'ळ': 'Lₐ',
-        'ज़': 'zₐ', 'फ़': 'fₐ',
+        '\u091C\u093C': 'zₐ', '\u092B\u093C': 'fₐ', // ज़ फ़
 
         // nukta consonants
         'क़': 'qₐ', 'ख़': 'qhₐ', 'ग़': 'gₐ', 'ज़': 'zₐ', 'ड़': 'rₐ', 'ढ़': 'rhₐ', 'फ़': 'fₐ', 'य़': 'yyₐ',
 
         // Conjunct Consonants (Special Cases)
-        'क्ष': 'kshₐ',
-        'ज्ञ': 'gyₐ',
+        '\u0915\u094D\u0937': 'kshₐ', // क्ष
+        '\u091C\u094D\u091E': 'gyₐ', // ज्ञ
 
         // Matras (Vowel signs)
         'ा': 'aa', 'ि': 'i', 'ी': 'ii', 'ु': 'u', 'ू': 'uu',
@@ -123,7 +129,10 @@
     const teluguToITRANS = {
         // Vowels
         'అ': 'a', 'ఆ': 'aa', 'ఇ': 'i', 'ఈ': 'ii', 'ఉ': 'u', 'ఊ': 'uu',
-        'ఋ': 'RRi', 'ౠ': 'RRI', 'ఎ': 'e', 'ఏ': 'ee', 'ఐ': 'ai', 'ఒ': 'o', 'ఓ': 'oo', 'ఔ': 'au',
+        'ఋ': 'RRi', 'ౠ': 'RRI', 'ఌ': 'LLi', 'ౡ': 'LLI', 'ఎ': 'e', 'ఏ': 'ee', 'ఐ': 'ai', 'ఒ': 'o', 'ఓ': 'oo', 'ఔ': 'au',
+
+        // Chandrabindu, avagraha
+        'ఁ': 'ⁿ', 'ఽ': "'",
 
         // Consonants
         'క': 'ka', 'ఖ': 'kha', 'గ': 'ga', 'ఘ': 'gha', 'ఙ': 'nga',
@@ -132,11 +141,14 @@
         'త': 'ta', 'థ': 'tha', 'ద': 'da', 'ధ': 'dha', 'న': 'na',
         'ప': 'pa', 'ఫ': 'pha', 'బ': 'ba', 'భ': 'bha', 'మ': 'ma',
         'య': 'ya', 'ర': 'ra', 'ల': 'la', 'వ': 'va', 'శ': 'sha',
-        'ష': 'Sha', 'స': 'sa', 'హ': 'ha', 'ళ': 'La', 'క్ష': 'kSha',
+        'ష': 'Sha', 'స': 'sa', 'హ': 'ha', 'ళ': 'La', 'ఱ': 'rra', 'ఴ': 'LLLa', '\u0C15\u0C4D\u0C37': 'kSha', // క్ష
+        'ౘ': 'tsa', 'ౙ': 'dza', 'ౚ': 'rra', 'ౝ': 'na',
 
         // Matras (Vowel signs)
         'ా': 'aa', 'ి': 'i', 'ీ': 'ii', 'ు': 'u', 'ూ': 'uu',
+        'ృ': 'RRi', 'ౄ': 'RRI',
         'ె': 'e', 'ే': 'ee', 'ై': 'ai', 'ొ': 'o', 'ో': 'oo', 'ౌ': 'au',
+        'ౢ': 'LLi', 'ౣ': 'LLI',
 
         // Additional marks
         '్': '', 'ం': 'ᵐ', 'ః': 'H',
@@ -144,6 +156,10 @@
         // Numerals
         '౦': '0', '౧': '1', '౨': '2', '౩': '3', '౪': '4',
         '౫': '5', '౬': '6', '౭': '7', '౮': '8', '౯': '9',
+
+        // Fractions
+        '౸': ' 0', '౹': '¼', '౺': '½', '౻': '¾',
+        '౼': ' 1/16', '౽': '⅛', '౾': ' 3/16',
 
         // Others
         '।': '. ', '॥': '. ',
@@ -238,6 +254,52 @@
         ' ': ' '
     };
 
+    // Mapping of Bengali Unicode characters to ITRANS
+    const bengaliToITRANS = {
+        // Vowels
+        'অ': 'a', 'আ': 'aa', 'ই': 'i', 'ঈ': 'ii', 'উ': 'u', 'ঊ': 'uu',
+        'ঋ': 'RRi', 'ৠ': 'RRI', 'ঌ': 'LLi', 'ৡ': 'LLI',
+        'এ': 'e', 'ঐ': 'ai', 'ও': 'o', 'ঔ': 'au',
+
+        // Consonants
+        'ক': 'kₒ', 'খ': 'khₒ', 'গ': 'gₒ', 'ঘ': 'ghₒ', 'ঙ': 'gnₒ',
+        'চ': 'chₒ', 'ছ': 'Chₒ', 'জ': 'jₒ', 'ঝ': 'jhₒ', 'ঞ': 'jnₒ',
+        'ট': 'Tₒ', 'ঠ': 'Thₒ', 'ড': 'Dₒ', 'ঢ': 'Dhₒ', 'ণ': 'Nₒ',
+        'ত': 'tₒ', 'থ': 'thₒ', 'দ': 'dₒ', 'ধ': 'dhₒ', 'ন': 'nₒ',
+        'প': 'pₒ', 'ফ': 'phₒ', 'ব': 'bₒ', 'ভ': 'bhₒ', 'ম': 'mₒ',
+        'য': 'yₒ', 'র': 'rₒ', 'ল': 'lₒ', 'শ': 'shₒ', 'ষ': 'Shₒ', 'স': 'sₒ', 'হ': 'hₒ',
+        '\u09A1\u09BC': 'Rₒ', '\u09A2\u09BC': 'Rhₒ', '\u09AF\u09BC': 'yₒ', // ড় ঢ় য়
+        'ৎ': 't', // khanda ta: terminal consonant without inherent vowel
+
+        // Matras (Vowel signs)
+        'া': 'aa', 'ি': 'i', 'ী': 'ii', 'ু': 'u', 'ূ': 'uu',
+        'ৃ': 'ri', 'ৄ': 'RRI',
+        'ে': 'e', 'ৈ': 'ai', 'ো': 'o', 'ৌ': 'au',
+
+        // Vocalic L matras (outside matra range, treated as discrete)
+        'ৢ': 'LLi', 'ৣ': 'LLI',
+
+        // Additional marks
+        '্': '', 'ং': 'ⁿ', 'ঃ': 'H', 'ঁ': 'ⁿ',
+        '়': '', // Nukta
+        'ঽ': "'", // Avagraha
+
+        // Numerals
+        '০': '0', '১': '1', '২': '2', '৩': '3', '৪': '4',
+        '৫': '5', '৬': '6', '৭': '7', '৮': '8', '৯': '9',
+
+        // Currency
+        '৲': 'Rs', '৳': '₹',
+
+        // Fractions (anna subdivisions, denominator 16)
+        '৴': ' 1/16', '৵': '⅛', '৶': ' 3/16', '৷': '¼', '৸': ' 15/16', '৹': '16',
+
+        // Others
+        '।': '. ', '॥': '. ',
+        '৺': '¶',
+        ' ': ' '
+    };
+
     // Mapping of Gujarati Unicode characters to ITRANS
     const gujaratiToITRANS = {
         // Vowels
@@ -273,7 +335,7 @@
         ' ': ' '
     };
 
-    let settings = { devanagari: undefined, gujarati: undefined, kannada: undefined, telugu: undefined, odia: undefined, malayalam: undefined, indicateScript: undefined };
+    let settings = { bengali: undefined, devanagari: undefined, gujarati: undefined, kannada: undefined, telugu: undefined, odia: undefined, malayalam: undefined, indicateScript: undefined };
     // When we had set the above to true, it was always transliterating some
     // sections of the page.The settings were not taking effect.
     // XXX: I'd like some explanation for this behaviour.
@@ -287,6 +349,7 @@
     function handleNukta(prevLetter, replacementText) {
         const nuktaReplacements = {
             'kₐ': 'qₐ', 'khₐ': 'qhₐ', 'jₐ': 'zₐ', 'phₐ': 'fₐ',
+            'kₒ': 'qₒ', 'khₒ': 'qhₒ', 'jₒ': 'zₒ', 'phₒ': 'fₒ',
             'ka': 'qa', 'kha': 'qha', 'ja': 'za', 'pha': 'fa'
             // words like पढ़ाई, चौड़ा seem to be pronounced as if the nukta is not there
         };
@@ -298,7 +361,7 @@
     function appendTransliteratedChar(sourceText, i, replacementText, mapping, matraStart, matraEnd, nukta) {
         const prevLetter = replacementText.length > 0 ? replacementText[replacementText.length - 1] : '';
         if (sourceText[i] >= matraStart && sourceText[i] <= matraEnd) {
-            if (replacementText.length > 0 && (prevLetter.endsWith('ₐ') || prevLetter.endsWith('a'))) {
+            if (replacementText.length > 0 && (prevLetter.endsWith('ₐ') || prevLetter.endsWith('ₒ') || prevLetter.endsWith('a'))) {
                 replacementText[replacementText.length - 1] = prevLetter.slice(0, -1);
             }
             replacementText.push(mapping[sourceText[i]]);
@@ -320,8 +383,8 @@
         }
 
         // Explicitly check if all settings are false
-        if (settings.devanagari === false && settings.gujarati === false && settings.kannada === false &&
-            settings.telugu === false && settings.odia === false && settings.malayalam === false) {
+        if (settings.bengali === false && settings.devanagari === false && settings.gujarati === false &&
+            settings.kannada === false && settings.telugu === false && settings.odia === false && settings.malayalam === false) {
             log('Skipping transliteration: all scripts disabled');
             return text;
         }
@@ -378,6 +441,12 @@
                     currentScript = 'gujarati';
                 }
                 appendTransliteratedChar(text, i, currentWord, gujaratiToITRANS, GUJARATI_MODIFIER_START, GUJARATI_MODIFIER_END, GUJARATI_NUKTA);
+            } else if (settings.bengali !== false && text[i] >= BENGALI_START && text[i] <= BENGALI_END) {
+                if (currentScript !== 'bengali') {
+                    flushCurrentWord();
+                    currentScript = 'bengali';
+                }
+                appendTransliteratedChar(text, i, currentWord, bengaliToITRANS, BENGALI_MODIFIER_START, BENGALI_MODIFIER_END, BENGALI_NUKTA);
             } else {
                 flushCurrentWord();
                 currentScript = null;
@@ -537,6 +606,7 @@
 
     // Load settings before initializing
     chrome.storage.sync.get({
+        bengali: true,
         devanagari: true,
         gujarati: true,
         kannada: true,
@@ -547,6 +617,7 @@
         showStats: false
     }, (result) => {
         settings = {
+            bengali: result.bengali,
             devanagari: result.devanagari,
             gujarati: result.gujarati,
             kannada: result.kannada,

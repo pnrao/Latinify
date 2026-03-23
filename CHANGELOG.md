@@ -2,8 +2,10 @@
 
 ## 1.5 - unreleased
 
+- NEW: Bengali script (Bengali and Assamese)
 - NEW: Gujarati script
 - NEW: Malayalam script
+- FIX: Telugu vocalic R matra (ృ) was not being transliterated
 
 ## 1.4 - 2025-11-27
 

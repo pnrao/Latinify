@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const bengali = document.getElementById('bengali');
     const devanagari = document.getElementById('devanagari');
     const gujarati = document.getElementById('gujarati');
     const kannada = document.getElementById('kannada');
@@ -9,7 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const showStats = document.getElementById('showStats');
 
     // Load saved settings (defaults to true, except stats which defaults to false)
-    chrome.storage.sync.get(['devanagari', 'gujarati', 'kannada', 'malayalam', 'odia', 'telugu', 'indicateScript', 'showStats'], (result) => {
+    chrome.storage.sync.get(['bengali', 'devanagari', 'gujarati', 'kannada', 'malayalam', 'odia', 'telugu', 'indicateScript', 'showStats'], (result) => {
+        bengali.checked = result.bengali !== false;
         devanagari.checked = result.devanagari !== false;
         gujarati.checked = result.gujarati !== false;
         kannada.checked = result.kannada !== false;
@@ -23,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Save settings and notify tabs
     const updateSettings = () => {
         const settings = {
+            bengali: bengali.checked,
             devanagari: devanagari.checked,
             gujarati: gujarati.checked,
             kannada: kannada.checked,
@@ -52,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    bengali.addEventListener('change', updateSettings);
     devanagari.addEventListener('change', updateSettings);
     gujarati.addEventListener('change', updateSettings);
     kannada.addEventListener('change', updateSettings);
