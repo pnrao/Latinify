@@ -20,7 +20,7 @@
 .transliterated-sinhala    { text-decoration-color: dodgerblue; }
 .transliterated-tamil      { text-decoration-color: crimson; }
 .transliterated-telugu     { text-decoration-color: hotpink; }
-.transliterated-urdu       { text-decoration-color: lightgreen; }
+.transliterated-arabic     { text-decoration-color: teal; }
 
 /* Stats overlay */
 #latinify-stats-overlay {

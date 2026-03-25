@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Indic Script to ITRANS Auto-Converter",
-    "version": "1.5",
-    "description": "Automatically transliterates all text in Indic scripts to ITRANS",
+    "name": "Latinify: Indic & Arabic Romanizer",
+    "version": "2.0",
+    "description": "Transliterates Indic scripts (using ITRANS conventions) and Arabic script to the Latin alphabet",
     "permissions": [
         "storage"
     ],

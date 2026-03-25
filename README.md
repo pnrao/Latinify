@@ -2,10 +2,11 @@
 
 Many written languages in India are hard for most Indians to understand due to their scripts. For example, many understand conversational Hindi but can't read Hindi written in the Devanagari script.
 
-This Chrome extension helps by converting text in Indic scripts to the Latin script using the [ITRANS](https://en.wikipedia.org/wiki/ITRANS) schema.
+This Chrome extension helps by converting text in Indic scripts to the Latin script using [ITRANS](https://en.wikipedia.org/wiki/ITRANS) conventions. Arabic script (Urdu, Persian, etc.) is also supported using standard romanization.
 
 ## Supported Scripts
 
+- Arabic (Urdu, Persian, etc.)
 - Bengali (Bengali, Assamese)
 - Devanagari (Hindi, Marathi, etc.)
 - Gujarati
@@ -33,6 +34,10 @@ This Chrome extension helps by converting text in Indic scripts to the Latin scr
 - Schwa deletion for Bengali, Hindi and Marathi is left as an exercise to the reader. Sanskrit, often written in Devanagari, retains the schwa. For example, in Hindi, धड़कने → dhaD**a**kne (verb) or धड़कनें → dhaDk**a**neⁿ (noun). Without deeper linguistic analysis, it's not possible to determine which ₐ of धड़क should be deleted.
 - Terminal consonants in Kannada that are not affixed with a vowel sign should ideally be transliterated to 'aa', but are treated the same as non-terminal consonants.
 - There is no straightforward way to map anusvaras. They are sometimes pronounced as nasal vowels (आँखें), or 'n' (चिंता, ఉంది), or 'ŋ' (अंकुर, తెలంగాణ), or 'm' (संभव, దేశం), or dropped entirely (हैं in casual speech).
+
+## Requesting More Scripts
+
+If you'd like support for additional scripts, open an issue on GitHub.
 
 ## Privacy
 

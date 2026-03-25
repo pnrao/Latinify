@@ -1,7 +1,7 @@
 (function () {
     'use strict';
     const LOGGING_ENABLED = false;
-    const INDIC_START = '\u0900';
+    const INDIC_START = '\u0600';
     const INDIC_END = '\u0DFF';
 
     const DEVANAGARI_START = '\u0900';
@@ -59,6 +59,12 @@
     const GURMUKHI_NUKTA = '\u0A3C';
     const GURMUKHI_ADDAK = '\u0A71';
 
+    const ARABIC_START = '\u0600';
+    const ARABIC_END = '\u06FF';
+    const ARABIC_MODIFIER_START = '\u064B'; // tanwin fath (first harakat)
+    const ARABIC_MODIFIER_END = '\u0652';   // sukun (last harakat)
+    const ARABIC_NUKTA = null;
+
     const BENGALI_START = '\u0980';
     const BENGALI_END = '\u09FF';
     const BENGALI_MODIFIER_START = '\u09BE';
@@ -66,6 +72,59 @@
     const BENGALI_NUKTA = '\u09BC';
 
     const SKIPPED_NODES = ['script', 'style', 'textarea', 'input', 'noscript', 'iframe', 'object', 'embed', 'audio', 'video', 'select', 'button', 'code', 'pre'];
+
+    // Mapping of Arabic script Unicode characters to ITRANS (covers Arabic, Urdu, Persian, etc.)
+    const arabicToLatin = {
+        // Alef forms (vowel carriers)
+        'ا': 'a', 'آ': 'aa', 'أ': 'a', 'إ': 'i', 'ؤ': 'w', 'ئ': 'y',
+
+        // Consonants
+        'ب': 'b', 'پ': 'p',
+        'ت': 't', 'ٹ': 'T', 'ة': 't', // ة = ta marbuta
+        'ث': 's',
+        'ج': 'j', 'چ': 'ch',
+        'ح': 'h', 'خ': 'kh',
+        'د': 'd', 'ڈ': 'D',
+        'ذ': 'z',
+        'ر': 'r', 'ڑ': 'R',
+        'ز': 'z', 'ژ': 'zh',
+        'س': 's', 'ش': 'sh',
+        'ص': 's', 'ض': 'z', 'ط': 't', 'ظ': 'z',
+        'ع': '',  // ain - glottal/silent
+        'غ': 'gh',
+        'ف': 'f', 'ق': 'q',
+        '\u06A9': 'k', '\u0643': 'k', // ک (Urdu kaf) and ك (Arabic kaf)
+        'گ': 'g',
+        'ل': 'l', 'م': 'm', 'ن': 'n',
+        'ں': 'ⁿ', // noon ghunna (nasalization)
+        'و': 'w',
+        '\u06C1': 'h', '\u0647': 'h', '\u06BE': 'h', // ہ (Urdu he), ه (Arabic he), ھ (do chashmi he)
+        'ء': "'", // hamza
+        '\u06CC': 'y', '\u064A': 'y', '\u0649': 'a', // ی (Urdu ye), ي (Arabic ye), ى (alef maksura)
+        '\u06D2': 'e', // ے bari ye
+
+        // Harakat (vowel marks) — in modifier range U+064B–U+0652
+        '\u064E': 'a', '\u064F': 'u', '\u0650': 'i', // fatha, damma, kasra
+        '\u064B': 'an', '\u064C': 'un', '\u064D': 'in', // tanwin forms
+        '\u0651': '', '\u0652': '', // shadda (gemination), sukun (no vowel)
+
+        // Tatweel (kashida) — visual lengthening, no phonetic value
+        '\u0640': '',
+
+        // Punctuation
+        '\u060C': ',', '\u061B': ';', '\u061F': '?', // Arabic comma, semicolon, question mark
+        '\u06D4': '. ', // Urdu full stop
+
+        // Eastern Arabic / Urdu numerals
+        '\u06F0': '0', '\u06F1': '1', '\u06F2': '2', '\u06F3': '3', '\u06F4': '4',
+        '\u06F5': '5', '\u06F6': '6', '\u06F7': '7', '\u06F8': '8', '\u06F9': '9',
+
+        // Arabic-Indic numerals
+        '\u0660': '0', '\u0661': '1', '\u0662': '2', '\u0663': '3', '\u0664': '4',
+        '\u0665': '5', '\u0666': '6', '\u0667': '7', '\u0668': '8', '\u0669': '9',
+
+        ' ': ' '
+    };
 
     // Mapping of Devanagari Unicode characters to ITRANS
     const devanagariToITRANS = {
@@ -481,7 +540,7 @@
         ' ': ' '
     };
 
-    let settings = { bengali: undefined, devanagari: undefined, gujarati: undefined, gurmukhi: undefined, kannada: undefined, sinhala: undefined, tamil: undefined, telugu: undefined, odia: undefined, malayalam: undefined, indicateScript: undefined };
+    let settings = { bengali: undefined, devanagari: undefined, gujarati: undefined, gurmukhi: undefined, kannada: undefined, sinhala: undefined, tamil: undefined, telugu: undefined, odia: undefined, malayalam: undefined, arabic: undefined, indicateScript: undefined };
     // When we had set the above to true, it was always transliterating some
     // sections of the page.The settings were not taking effect.
     // XXX: I'd like some explanation for this behaviour.
@@ -534,7 +593,7 @@
         if (settings.bengali === false && settings.devanagari === false && settings.gujarati === false &&
             settings.gurmukhi === false && settings.kannada === false && settings.sinhala === false &&
             settings.tamil === false && settings.telugu === false && settings.odia === false &&
-            settings.malayalam === false) {
+            settings.malayalam === false && settings.arabic === false) {
             log('Skipping transliteration: all scripts disabled');
             return text;
         }
@@ -555,7 +614,13 @@
         }
 
         for (let i = 0; i < text.length; i++) {
-            if (settings.devanagari !== false && text[i] >= DEVANAGARI_START && text[i] <= DEVANAGARI_END) {
+            if (settings.arabic !== false && text[i] >= ARABIC_START && text[i] <= ARABIC_END) {
+                if (currentScript !== 'arabic') {
+                    flushCurrentWord();
+                    currentScript = 'arabic';
+                }
+                appendTransliteratedChar(text, i, currentWord, arabicToLatin, ARABIC_MODIFIER_START, ARABIC_MODIFIER_END, ARABIC_NUKTA);
+            } else if (settings.devanagari !== false && text[i] >= DEVANAGARI_START && text[i] <= DEVANAGARI_END) {
                 if (currentScript !== 'devanagari') {
                     flushCurrentWord();
                     currentScript = 'devanagari';
@@ -789,6 +854,7 @@
         odia: true,
         telugu: true,
         malayalam: true,
+        arabic: true,
         indicateScript: true,
         showStats: false
     }, (result) => {
@@ -803,6 +869,7 @@
             odia: result.odia,
             telugu: result.telugu,
             malayalam: result.malayalam,
+            arabic: result.arabic,
             indicateScript: result.indicateScript,
             showStats: result.showStats
         };

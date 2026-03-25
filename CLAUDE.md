@@ -8,7 +8,7 @@ https://chromewebstore.google.com/detail/indic-script-to-itrans-au/hkijmljcghoac
 
 ## What This Is
 
-Latinify is a Chrome extension (Manifest V3) that transliterates Indic scripts to the Latin script using ITRANS notation, running entirely locally in the browser. Supported scripts: Bengali, Devanagari, Gujarati, Gurmukhi, Kannada, Malayalam, Odia, Sinhala, Tamil, Telugu.
+Latinify is a Chrome extension (Manifest V3) that transliterates Indic scripts to the Latin script using ITRANS conventions, and Arabic script using standard romanization, running entirely locally in the browser. Supported scripts: Arabic (Urdu, Persian, etc.), Bengali, Devanagari, Gujarati, Gurmukhi, Kannada, Malayalam, Odia, Sinhala, Tamil, Telugu.
 
 ## Development
 
@@ -27,7 +27,7 @@ The extension has two runtime contexts:
 
 **Popup** (`popup.html` + `popup.js`): Per-script toggles plus "Indicate Original Script" and "Show Stats" options. On change, saves to `chrome.storage.sync` and sends a `settingsChanged` message to the active tab.
 
-**Settings keys** (stored in `chrome.storage.sync`): `bengali`, `devanagari`, `gujarati`, `gurmukhi`, `kannada`, `malayalam`, `odia`, `sinhala`, `tamil`, `telugu` (booleans, default `true`), `indicateScript` (boolean, default `true`), `showStats` (boolean, default `false`).
+**Settings keys** (stored in `chrome.storage.sync`): `arabic`, `bengali`, `devanagari`, `gujarati`, `gurmukhi`, `kannada`, `malayalam`, `odia`, `sinhala`, `tamil`, `telugu` (booleans, default `true`), `indicateScript` (boolean, default `true`), `showStats` (boolean, default `false`).
 
 ## Transliteration Logic (`content.js`)
 

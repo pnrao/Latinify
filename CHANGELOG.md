@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0 - unreleased
+
+- NEW: Arabic script (covers Urdu, Persian, and other Arabic-script languages)
+
 ## 1.5 - 2026-03-25
 
 - NEW: Bengali script
