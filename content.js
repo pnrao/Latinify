@@ -1,8 +1,8 @@
 (function () {
     'use strict';
     const LOGGING_ENABLED = false;
-    const INDIC_START = '\u0600';
-    const INDIC_END = '\u0DFF';
+    const SCRIPT_RANGE_START = '\u0600';
+    const SCRIPT_RANGE_END = '\u0DFF';
 
     const DEVANAGARI_START = '\u0900';
     const DEVANAGARI_END = '\u097F';
@@ -626,8 +626,8 @@
         return `<span class="transliterated-${script}">${word}</span>`;
     }
 
-    // Function to transliterate text to ITRANS
-    function transliterateToITRANS(text) {
+    // Function to transliterate text to Latin
+    function transliterateToLatin(text) {
         if (!text || typeof text !== 'string') {
             return text;
         }
@@ -744,9 +744,9 @@
         return replacement.join('');
     }
 
-    function hasIndic(text) {
+    function hasTargetScript(text) {
         for (let char of text) {
-            if (char >= INDIC_START && char <= INDIC_END) {
+            if (char >= SCRIPT_RANGE_START && char <= SCRIPT_RANGE_END) {
                 return true;
             }
         }
@@ -765,12 +765,12 @@
         // Skip editable content to avoid interfering with user input
         if (isNodeEditable(node)) return;
 
-        if (node.nodeType === Node.TEXT_NODE && hasIndic(node.nodeValue)) {
+        if (node.nodeType === Node.TEXT_NODE && hasTargetScript(node.nodeValue)) {
             if (node.parentNode && node.parentNode.hasAttribute('data-transliterated')) {
                 // log('Skipping already processed text node:', node.nodeValue);
                 return; // Skip already processed nodes
             }
-            const transliteratedText = transliterateToITRANS(node.nodeValue);
+            const transliteratedText = transliterateToLatin(node.nodeValue);
             if (node.nodeValue !== transliteratedText) {
                 log('Transliterating text node:', {
                     original: node.nodeValue,
@@ -785,7 +785,7 @@
                 } else {
                     node.nodeValue = transliteratedText;
                     // We can't easily mark a text node as processed without a wrapper.
-                    // However, since the text is now Latin, hasIndic() will return false,
+                    // However, since the text is now Latin, hasTargetScript() will return false,
                     // so it won't be processed again anyway.
                 }
             }
