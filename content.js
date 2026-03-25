@@ -766,7 +766,7 @@
         if (isNodeEditable(node)) return;
 
         if (node.nodeType === Node.TEXT_NODE && hasTargetScript(node.nodeValue)) {
-            if (node.parentNode && node.parentNode.hasAttribute('data-transliterated')) {
+            if (node.parentNode && node.parentNode.classList.contains('transliterated')) {
                 // log('Skipping already processed text node:', node.nodeValue);
                 return; // Skip already processed nodes
             }
@@ -864,19 +864,23 @@
                 mutations.forEach((mutation) => {
                     if (mutation.type === 'childList') {
                         mutation.addedNodes.forEach((node) => {
+                            // Ignore our own nodes to prevent loops
                             if (node.nodeType === Node.ELEMENT_NODE) {
-                                // Optimization: Ignore our own nodes to prevent loops
                                 if (node.classList.contains('transliterated') || node.hasAttribute('data-transliterated') || node.id === 'latinify-stats-overlay') {
                                     return;
                                 }
-                                log('Processing dynamically added node:', node);
-                                processNode(node);
-                                processed = true;
+                            } else if (node.nodeType === Node.TEXT_NODE) {
+                                if (node.parentNode && node.parentNode.classList.contains('transliterated')) {
+                                    return;
+                                }
                             }
+                            log('Processing dynamically added node:', node);
+                            processNode(node);
+                            processed = true;
                         });
                     } else if (mutation.type === 'characterData') {
                         // Ignore changes to our own nodes
-                        if (mutation.target.parentNode && (mutation.target.parentNode.classList.contains('transliterated') || mutation.target.parentNode.hasAttribute('data-transliterated'))) {
+                        if (mutation.target.parentNode && mutation.target.parentNode.classList.contains('transliterated')) {
                             return;
                         }
                         log('Processing dynamically changed text node:', mutation.target);
