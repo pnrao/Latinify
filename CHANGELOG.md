@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.5 - unreleased
+## 1.5 - 2026-03-25
 
 - NEW: Bengali script
 - NEW: Gujarati script
