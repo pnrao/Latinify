@@ -2,7 +2,16 @@
 
 ## 2.0 - unreleased
 
-- NEW: Arabic script (covers Urdu, Persian, and other Arabic-script languages)
+- NEW: Arabic script (Urdu, Persian, Pashto, Kashmiri, and more)
+- NEW: Flip Right-to-Left Pages toggle
+- CHANGE: Extension renamed to "Latinify: Indic & Arabic Romanizer"
+- FIX: Arabic ain (ع) now rendered as apostrophe instead of being silently dropped
+- FIX: Arabic shadda (ّ) now correctly doubles the preceding consonant
+- FIX: Odia avagraha (ଽ) now rendered as apostrophe
+- FIX: Devanagari avagraha (ऽ) now rendered as apostrophe
+- FIX: Bengali Assamese letters (ৰ, ৱ) now transliterated
+- FIX: Gujarati ZHA (ૹ) now transliterated
+- FIX: Kannada vocalic L and other rarely used characters now transliterated
 
 ## 1.5 - 2026-03-25
 

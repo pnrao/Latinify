@@ -27,7 +27,7 @@ The extension has two runtime contexts:
 
 **Popup** (`popup.html` + `popup.js`): Per-script toggles plus "Indicate Original Script" and "Show Stats" options. On change, saves to `chrome.storage.sync` and sends a `settingsChanged` message to the active tab.
 
-**Settings keys** (stored in `chrome.storage.sync`): `arabic`, `bengali`, `devanagari`, `gujarati`, `gurmukhi`, `kannada`, `malayalam`, `odia`, `sinhala`, `tamil`, `telugu` (booleans, default `true`), `indicateScript` (boolean, default `true`), `showStats` (boolean, default `false`).
+**Settings keys** (stored in `chrome.storage.sync`): `arabic`, `bengali`, `devanagari`, `gujarati`, `gurmukhi`, `kannada`, `malayalam`, `odia`, `sinhala`, `tamil`, `telugu` (booleans, default `true`), `flipRtl` (boolean, default `true`), `indicateScript` (boolean, default `true`), `showStats` (boolean, default `false`).
 
 ## Transliteration Logic (`content.js`)
 

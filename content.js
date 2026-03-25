@@ -60,9 +60,9 @@
     const GURMUKHI_ADDAK = '\u0A71';
 
     const ARABIC_START = '\u0600';
-    const ARABIC_END = '\u06FF';
+    const ARABIC_END = '\u077F'; // extended to cover Arabic Extended-A block (U+0750–U+077F)
     const ARABIC_MODIFIER_START = '\u064B'; // tanwin fath (first harakat)
-    const ARABIC_MODIFIER_END = '\u0652';   // sukun (last harakat)
+    const ARABIC_MODIFIER_END = '\u065F';   // extended to cover all Arabic diacritical marks
     const ARABIC_NUKTA = null;
 
     const BENGALI_START = '\u0980';
@@ -73,7 +73,7 @@
 
     const SKIPPED_NODES = ['script', 'style', 'textarea', 'input', 'noscript', 'iframe', 'object', 'embed', 'audio', 'video', 'select', 'button', 'code', 'pre'];
 
-    // Mapping of Arabic script Unicode characters to ITRANS (covers Arabic, Urdu, Persian, etc.)
+    // Mapping of Arabic script Unicode characters to Latin (covers Urdu, Persian, Pashto, etc.)
     const arabicToLatin = {
         // Alef forms (vowel carriers)
         'ا': 'a', 'آ': 'aa', 'أ': 'a', 'إ': 'i', 'ؤ': 'w', 'ئ': 'y',
@@ -90,7 +90,7 @@
         'ز': 'z', 'ژ': 'zh',
         'س': 's', 'ش': 'sh',
         'ص': 's', 'ض': 'z', 'ط': 't', 'ظ': 'z',
-        'ع': '',  // ain - glottal/silent
+        'ع': "'", // ain - glottal stop
         'غ': 'gh',
         'ف': 'f', 'ق': 'q',
         '\u06A9': 'k', '\u0643': 'k', // ک (Urdu kaf) and ك (Arabic kaf)
@@ -103,10 +103,53 @@
         '\u06CC': 'y', '\u064A': 'y', '\u0649': 'a', // ی (Urdu ye), ي (Arabic ye), ى (alef maksura)
         '\u06D2': 'e', // ے bari ye
 
-        // Harakat (vowel marks) — in modifier range U+064B–U+0652
+        // Harakat and diacritical marks — in modifier range U+064B–U+065F
         '\u064E': 'a', '\u064F': 'u', '\u0650': 'i', // fatha, damma, kasra
         '\u064B': 'an', '\u064C': 'un', '\u064D': 'in', // tanwin forms
         '\u0651': '', '\u0652': '', // shadda (gemination), sukun (no vowel)
+        '\u0653': '', '\u0654': "'", '\u0655': "'", // maddah, hamza above, hamza below
+        '\u0656': 'i', '\u0657': 'u', // subscript alef (Kashmiri i), inverted damma (u)
+        '\u0658': 'ⁿ', '\u0659': '', '\u065A': '', '\u065B': '', // noon ghunna mark, rare Quranic marks
+        '\u065C': '', '\u065D': '', '\u065E': '', '\u065F': '', // rare Quranic marks
+
+        // Kashmiri letters
+        '\u0620': 'y', '\u06C4': 'o', // ؠ (Kashmiri yeh), ۄ (Kashmiri waw with ring)
+
+        // Urdu/Nastaliq variants
+        '\u06C2': 'h', '\u06C3': 't', // ۂ (he goal with hamza), ۃ (teh marbuta goal)
+
+        // Superscript alef — long vowel mark
+        '\u0670': 'a',
+
+        // Sindhi/extended consonants (Arabic Extended-A block U+0750–U+077F)
+        '\u0683': 'ɲ', '\u0768': 'ɲ', // ڃ nyeh, ݨ nye — palatal nasal
+        '\u0750': 'b', '\u0751': 'b', '\u0752': 'b', '\u0753': 'b', '\u0754': 'b', '\u0755': 'b', '\u0756': 'b', // beh variants
+        '\u0757': 'h', '\u0758': 'h', // hah variants
+        '\u0759': 'd', '\u075A': 'd', // dal variants
+        '\u075B': 'r', // reh with stroke
+        '\u075C': 's', // seen with four dots
+        '\u075D': "'", '\u075E': "'", '\u075F': "'", // ain variants
+        '\u0760': 'f', '\u0761': 'f', // fa variants
+        '\u0762': 'k', '\u0763': 'k', '\u0764': 'k', // keheh variants
+        '\u0765': 'm', '\u0766': 'm', // meem variants
+        '\u0767': 'n', '\u0769': 'n', // noon variants
+        '\u076A': 'l', // lam with bar
+        '\u076B': 'r', '\u076C': 'r', // reh variants
+        '\u076D': 's', // seen variant
+        '\u076E': 'h', '\u076F': 'h', '\u0770': 's', '\u0771': 'r', '\u0772': 'h', // hah/seen/reh variants
+        '\u0773': '', '\u0774': '', '\u0775': '', '\u0776': '', '\u0777': '', // Quranic marks
+        '\u0778': '', '\u0779': '', '\u077A': '', '\u077B': '', '\u077C': '', '\u077D': '', '\u077E': '', '\u077F': '', // Quranic/liturgical marks
+
+        // Pashto consonants
+        '\u067C': 'T', '\u0681': 'dz', '\u0685': 'ts', '\u0689': 'D', '\u068C': 'd',
+        '\u0693': 'R', '\u0696': 'zh', '\u069A': 'sh', '\u06AB': 'g', '\u06BC': 'N',
+
+        // Additional vowels (Kurdish, Pashto, Uyghur)
+        '\u0672': 'a', '\u06C6': 'o', '\u06C7': 'u',
+        '\u06CD': 'ai', '\u06D0': 'e', '\u06D5': 'ä',
+
+        // Arabic punctuation
+        '\u066A': '%', '\u066B': '.', '\u066C': ',',
 
         // Tatweel (kashida) — visual lengthening, no phonetic value
         '\u0640': '',
@@ -311,7 +354,7 @@
         // Additional marks
         '୍': '', 'ଂ': 'ⁿ', 'ଃ': 'H', 'ଁ': 'ⁿ',
         '଼': '', // Nukta
-        'ଽ': '', // Avagraha
+        'ଽ': "'", // Avagraha
         '୰': '', // ORIYA ISSHAR (rare) - ignore
         '୲': '¼', '୳': '½', '୴': '¾', // fractions: 1/4, 1/2, 3/4
         '୵': ' 1/16', '୶': '⅛', '୷': ' 3/16', // fractions as ASCII strings
@@ -540,7 +583,7 @@
         ' ': ' '
     };
 
-    let settings = { bengali: undefined, devanagari: undefined, gujarati: undefined, gurmukhi: undefined, kannada: undefined, sinhala: undefined, tamil: undefined, telugu: undefined, odia: undefined, malayalam: undefined, arabic: undefined, indicateScript: undefined };
+    let settings = { bengali: undefined, devanagari: undefined, gujarati: undefined, gurmukhi: undefined, kannada: undefined, sinhala: undefined, tamil: undefined, telugu: undefined, odia: undefined, malayalam: undefined, arabic: undefined, flipRtl: undefined, indicateScript: undefined };
     // When we had set the above to true, it was always transliterating some
     // sections of the page.The settings were not taking effect.
     // XXX: I'd like some explanation for this behaviour.
@@ -619,7 +662,12 @@
                     flushCurrentWord();
                     currentScript = 'arabic';
                 }
-                appendTransliteratedChar(text, i, currentWord, arabicToLatin, ARABIC_MODIFIER_START, ARABIC_MODIFIER_END, ARABIC_NUKTA);
+                if (text[i] === '\u0651' && currentWord.length > 0) {
+                    // Shadda: gemination — repeat the previous consonant
+                    currentWord.push(currentWord[currentWord.length - 1]);
+                } else {
+                    appendTransliteratedChar(text, i, currentWord, arabicToLatin, ARABIC_MODIFIER_START, ARABIC_MODIFIER_END, ARABIC_NUKTA);
+                }
             } else if (settings.devanagari !== false && text[i] >= DEVANAGARI_START && text[i] <= DEVANAGARI_END) {
                 if (currentScript !== 'devanagari') {
                     flushCurrentWord();
@@ -781,6 +829,23 @@
         }, 500);
     }
 
+
+    function applyDirectionOverride() {
+        const htmlEl = document.documentElement;
+        const isRtl = htmlEl.dir === 'rtl' || getComputedStyle(htmlEl).direction === 'rtl';
+        if (settings.arabic !== false && settings.flipRtl !== false && isRtl) {
+            document.querySelectorAll('[dir="rtl"]').forEach(el => {
+                el.setAttribute('data-latinify-dir', 'rtl');
+                el.dir = 'ltr';
+            });
+        } else if (settings.arabic === false || settings.flipRtl === false) {
+            document.querySelectorAll('[data-latinify-dir="rtl"]').forEach(el => {
+                el.dir = 'rtl';
+                el.removeAttribute('data-latinify-dir');
+            });
+        }
+    }
+
     function initTransliteration() {
         if (document.body) {
             const startTime = performance.now();
@@ -855,6 +920,7 @@
         telugu: true,
         malayalam: true,
         arabic: true,
+        flipRtl: true,
         indicateScript: true,
         showStats: false
     }, (result) => {
@@ -870,10 +936,12 @@
             telugu: result.telugu,
             malayalam: result.malayalam,
             arabic: result.arabic,
+            flipRtl: result.flipRtl,
             indicateScript: result.indicateScript,
             showStats: result.showStats
         };
         log('Settings initialized:', settings);
+        applyDirectionOverride();
         initTransliteration();
     });
 
@@ -881,6 +949,7 @@
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.type === 'settingsChanged') {
             settings = message.settings;
+            applyDirectionOverride();
             // Reset total time if stats are disabled then enabled?
             // Or just keep tracking? Let's keep tracking but only show if enabled.
             if (!settings.showStats) {

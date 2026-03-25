@@ -10,11 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const tamil = document.getElementById('tamil');
     const telugu = document.getElementById('telugu');
     const arabic = document.getElementById('arabic');
+    const flipRtl = document.getElementById('flipRtl');
     const indicateScript = document.getElementById('indicateScript');
     const showStats = document.getElementById('showStats');
 
     // Load saved settings (defaults to true, except stats which defaults to false)
-    chrome.storage.sync.get(['bengali', 'devanagari', 'gujarati', 'kannada', 'malayalam', 'odia', 'telugu', 'arabic', 'indicateScript', 'showStats'], (result) => {
+    chrome.storage.sync.get(['bengali', 'devanagari', 'gujarati', 'kannada', 'malayalam', 'odia', 'telugu', 'arabic', 'flipRtl', 'indicateScript', 'showStats'], (result) => {
         bengali.checked = result.bengali !== false;
         devanagari.checked = result.devanagari !== false;
         gujarati.checked = result.gujarati !== false;
@@ -26,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tamil.checked = result.tamil !== false;
         telugu.checked = result.telugu !== false;
         arabic.checked = result.arabic !== false;
+        flipRtl.checked = result.flipRtl !== false;
         indicateScript.checked = result.indicateScript !== false;
         showStats.checked = result.showStats === true;
     });
@@ -44,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
             tamil: tamil.checked,
             telugu: telugu.checked,
             arabic: arabic.checked,
+            flipRtl: flipRtl.checked,
             indicateScript: indicateScript.checked,
             showStats: showStats.checked
         };
@@ -78,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tamil.addEventListener('change', updateSettings);
     telugu.addEventListener('change', updateSettings);
     arabic.addEventListener('change', updateSettings);
+    flipRtl.addEventListener('change', updateSettings);
     indicateScript.addEventListener('change', updateSettings);
     showStats.addEventListener('change', updateSettings);
 });
