@@ -5,25 +5,21 @@
     text-decoration-skip-ink: none;
 }
 
+.transliterated-arabic     { text-decoration-color: teal; }
 .transliterated-bengali    { text-decoration-color: darkgreen; }
 .transliterated-devanagari { text-decoration-color: lightgreen; }
 .transliterated-gujarati   { text-decoration-color: goldenrod; }
 .transliterated-gurmukhi   { text-decoration-color: violet; }
 .transliterated-kannada    { text-decoration-color: gold; }
-.transliterated-kashmiri   { text-decoration-color: indigo; }
 .transliterated-malayalam  { text-decoration-color: magenta; }
-.transliterated-manipuri   { text-decoration-color: lime; }
-.transliterated-marathi    { text-decoration-color: maroon; }
-.transliterated-odia       { text-decoration-color: Orchid; }
-.transliterated-santali    { text-decoration-color: sienna; }
-.transliterated-sindhi     { text-decoration-color: sandybrown; }
+.transliterated-odia       { text-decoration-color: orchid; }
 .transliterated-sinhala    { text-decoration-color: dodgerblue; }
 .transliterated-tamil      { text-decoration-color: crimson; }
 .transliterated-telugu     { text-decoration-color: hotpink; }
-.transliterated-arabic     { text-decoration-color: teal; }
 
 /* Stats overlay */
 #latinify-stats-overlay {
+    display: none;
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -34,10 +30,8 @@
     font-family: monospace;
     z-index: 10000;
     pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
 }
 
 #latinify-stats-overlay.visible {
-    opacity: 1;
+    display: block;
 }

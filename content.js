@@ -236,7 +236,8 @@
         'ೢ': 'li', 'ೣ': 'li',
 
         // Additional marks
-        '್': '', 'ಂ': 'ⁿ', 'ಃ': 'H', 'ಁ': 'ⁿ', 'ಽ': '\'', 'ೕ': '', 'ೖ': '', 'ೱ': '', 'ೲ': '',
+        '್': '', 'ಂ': 'ⁿ', 'ಃ': 'H', 'ಁ': 'ⁿ', '\u0C80': 'ⁿ', 'ಽ': '\'', 'ೕ': '', 'ೖ': '', 'ೱ': 'H', 'ೲ': 'f', // jihvamuliya (velar fricative), upadhmaniya (bilabial fricative)
+        'ಱ': 'fa', // old Kannada letter FA
 
         // Numerals
         '೦': '0', '೧': '1', '೨': '2', '೩': '3', '೪': '4',
@@ -312,7 +313,7 @@
         // Additional marks
         'ஂ': 'ᵐ', 'ஃ': 'H',
         'ௗ': 'au', // au length mark
-        'ௐ': 'OM',
+        // ௐ Tamil OM — auspicious symbol, passed through unchanged
 
         // Numerals
         '௦': '0', '௧': '1', '௨': '2', '௩': '3', '௪': '4',
@@ -490,7 +491,7 @@
         'ੑ': '', '\u0A75': '', '੶': '.', // udaat (tone mark), yakash, abbreviation sign
 
         // Sacred symbol
-        'ੴ': 'Ik Onkar',
+        // ੴ Gurmukhi Ek Onkar — auspicious symbol, passed through unchanged
 
         // Numerals
         '੦': '0', '੧': '1', '੨': '2', '੩': '3', '੪': '4',
