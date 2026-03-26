@@ -39,6 +39,7 @@
                 "maps/sinhala.js",
                 "maps/tamil.js",
                 "maps/telugu.js",
+                "maps/indic.js",
                 "content.js"
             ],
             "css": [

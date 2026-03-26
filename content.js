@@ -2,72 +2,28 @@ const LOGGING_ENABLED = false;
     const REPLACEABLE_SCRIPT_START = '\u0600';
     const REPLACEABLE_SCRIPT_END = '\u0DFF';
 
-    const DEVANAGARI_START = '\u0900';
-    const DEVANAGARI_END = '\u097F';
-    const DEVANAGARI_MODIFIER_START = '\u093E';
-    const DEVANAGARI_MODIFIER_END = '\u094F';
-    const DEVANAGARI_NUKTA = '\u093C';
+    const INDIC_START = '\u0900';
+    const INDIC_END   = '\u0DFF';
 
-    const KANNADA_START = '\u0C80';
-    const KANNADA_END = '\u0CFF';
-    const KANNADA_MODIFIER_START = '\u0CBE';
-    const KANNADA_MODIFIER_END = '\u0CCD';
-    const KANNADA_NUKTA = '\u0CBC';
+    const ARABIC_START          = '\u0600';
+    const ARABIC_END            = '\u077F';
+    const ARABIC_MODIFIER_START = '\u064B';
+    const ARABIC_MODIFIER_END   = '\u065F';
+    const ARABIC_NUKTA          = null;
 
-    const TELUGU_START = '\u0C00';
-    const TELUGU_END = '\u0C7F';
-    const TELUGU_MODIFIER_START = '\u0C3E';
-    const TELUGU_MODIFIER_END = '\u0C56';
-    const TELUGU_NUKTA = null; // Telugu does not have a nukta equivalent
-
-    const ODIA_START = '\u0B00';
-    const ODIA_END = '\u0B7F';
-    const ODIA_MODIFIER_START = '\u0B3E';
-    const ODIA_MODIFIER_END = '\u0B57';
-    const ODIA_NUKTA = '\u0B3C';
-
-    const TAMIL_START = '\u0B80';
-    const TAMIL_END = '\u0BFF';
-    const TAMIL_MODIFIER_START = '\u0BBE';
-    const TAMIL_MODIFIER_END = '\u0BCD';
-    const TAMIL_NUKTA = null;
-
-    const MALAYALAM_START = '\u0D00';
-    const MALAYALAM_END = '\u0D7F';
-    const MALAYALAM_MODIFIER_START = '\u0D3E';
-    const MALAYALAM_MODIFIER_END = '\u0D63';
-    const MALAYALAM_NUKTA = null; // Malayalam does not have a nukta equivalent
-
-    const SINHALA_START = '\u0D80';
-    const SINHALA_END = '\u0DFF';
-    const SINHALA_MODIFIER_START = '\u0DCA'; // hal kirima (virama)
-    const SINHALA_MODIFIER_END = '\u0DDF';
-    const SINHALA_NUKTA = null;
-
-    const GUJARATI_START = '\u0A80';
-    const GUJARATI_END = '\u0AFF';
-    const GUJARATI_MODIFIER_START = '\u0ABE';
-    const GUJARATI_MODIFIER_END = '\u0AE3';
-    const GUJARATI_NUKTA = '\u0ABC';
-
-    const GURMUKHI_START = '\u0A00';
-    const GURMUKHI_END = '\u0A7F';
-    const GURMUKHI_MODIFIER_START = '\u0A3E';
-    const GURMUKHI_MODIFIER_END = '\u0A4D';
-    const GURMUKHI_NUKTA = '\u0A3C';
-    const GURMUKHI_ADDAK = '\u0A71';
-
-    const ARABIC_START = '\u0600';
-    const ARABIC_END = '\u077F'; // extended to cover Arabic Extended-A block (U+0750–U+077F)
-    const ARABIC_MODIFIER_START = '\u064B'; // tanwin fath (first harakat)
-    const ARABIC_MODIFIER_END = '\u065F';   // extended to cover all Arabic diacritical marks
-    const ARABIC_NUKTA = null;
-
-    const BENGALI_START = '\u0980';
-    const BENGALI_END = '\u09FF';
-    const BENGALI_MODIFIER_START = '\u09BE';
-    const BENGALI_MODIFIER_END = '\u09CD'; // stop before nukta consonants ড় ঢ় য় (U+09DC-09DF)
-    const BENGALI_NUKTA = '\u09BC';
+    // One entry per Indic script block, in Unicode order (index = (cp - 0x0900) >> 7).
+    const indicScripts = [
+        { key: 'devanagari', matraStart: '\u093E', matraEnd: '\u094F', nukta: '\u093C' },
+        { key: 'bengali',    matraStart: '\u09BE', matraEnd: '\u09CD', nukta: '\u09BC' },
+        { key: 'gurmukhi',   matraStart: '\u0A3E', matraEnd: '\u0A4D', nukta: '\u0A3C', addak: '\u0A71' },
+        { key: 'gujarati',   matraStart: '\u0ABE', matraEnd: '\u0AE3', nukta: '\u0ABC' },
+        { key: 'odia',       matraStart: '\u0B3E', matraEnd: '\u0B57', nukta: '\u0B3C' },
+        { key: 'tamil',      matraStart: '\u0BBE', matraEnd: '\u0BCD', nukta: null },
+        { key: 'telugu',     matraStart: '\u0C3E', matraEnd: '\u0C56', nukta: null },
+        { key: 'kannada',    matraStart: '\u0CBE', matraEnd: '\u0CCD', nukta: '\u0CBC' },
+        { key: 'malayalam',  matraStart: '\u0D3E', matraEnd: '\u0D63', nukta: null },
+        { key: 'sinhala',    matraStart: '\u0DCA', matraEnd: '\u0DDF', nukta: null },
+    ];
 
     const SKIPPED_NODES = ['script', 'style', 'textarea', 'input', 'noscript', 'iframe', 'object', 'embed', 'audio', 'video', 'select', 'button', 'code', 'pre'];
 
@@ -159,87 +115,33 @@ const LOGGING_ENABLED = false;
         }
 
         for (let i = 0; i < text.length; i++) {
-            if (settings.arabic !== false && text[i] >= ARABIC_START && text[i] <= ARABIC_END) {
-                if (currentScript !== 'arabic') {
-                    flushCurrentWord();
-                    currentScript = 'arabic';
-                }
-                if (text[i] === '\u0651' && currentWord.length > 0) {
-                    // Shadda: gemination — repeat the previous consonant
-                    currentWord.push(currentWord[currentWord.length - 1]);
+            if (text[i] >= ARABIC_START && text[i] <= ARABIC_END) {
+                if (settings.arabic === false) {
+                    flushCurrentWord(); currentScript = null; replacement.push(text[i]);
                 } else {
-                    appendTransliteratedChar(text, i, currentWord, arabicTable, 0x0600, ARABIC_MODIFIER_START, ARABIC_MODIFIER_END, ARABIC_NUKTA, schemeIdx);
+                    if (currentScript !== 'arabic') { flushCurrentWord(); currentScript = 'arabic'; }
+                    if (text[i] === '\u0651' && currentWord.length > 0) {
+                        currentWord.push(currentWord[currentWord.length - 1]);
+                    } else {
+                        appendTransliteratedChar(text, i, currentWord, arabicTable, 0x0600, ARABIC_MODIFIER_START, ARABIC_MODIFIER_END, ARABIC_NUKTA, schemeIdx);
+                    }
                 }
-            } else if (settings.devanagari !== false && text[i] >= DEVANAGARI_START && text[i] <= DEVANAGARI_END) {
-                if (currentScript !== 'devanagari') {
-                    flushCurrentWord();
-                    currentScript = 'devanagari';
-                }
-                appendTransliteratedChar(text, i, currentWord, devanagariTable, 0x0900, DEVANAGARI_MODIFIER_START, DEVANAGARI_MODIFIER_END, DEVANAGARI_NUKTA, schemeIdx);
-            } else if (settings.kannada !== false && text[i] >= KANNADA_START && text[i] <= KANNADA_END) {
-                if (currentScript !== 'kannada') {
-                    flushCurrentWord();
-                    currentScript = 'kannada';
-                }
-                appendTransliteratedChar(text, i, currentWord, kannadaTable, 0x0C80, KANNADA_MODIFIER_START, KANNADA_MODIFIER_END, KANNADA_NUKTA, schemeIdx);
-            } else if (settings.telugu !== false && text[i] >= TELUGU_START && text[i] <= TELUGU_END) {
-                if (currentScript !== 'telugu') {
-                    flushCurrentWord();
-                    currentScript = 'telugu';
-                }
-                appendTransliteratedChar(text, i, currentWord, teluguTable, 0x0C00, TELUGU_MODIFIER_START, TELUGU_MODIFIER_END, TELUGU_NUKTA, schemeIdx);
-            } else if (settings.odia !== false && text[i] >= ODIA_START && text[i] <= ODIA_END) {
-                if (currentScript !== 'odia') {
-                    flushCurrentWord();
-                    currentScript = 'odia';
-                }
-                appendTransliteratedChar(text, i, currentWord, odiaTable, 0x0B00, ODIA_MODIFIER_START, ODIA_MODIFIER_END, ODIA_NUKTA, schemeIdx);
-            } else if (settings.malayalam !== false && text[i] >= MALAYALAM_START && text[i] <= MALAYALAM_END) {
-                if (currentScript !== 'malayalam') {
-                    flushCurrentWord();
-                    currentScript = 'malayalam';
-                }
-                appendTransliteratedChar(text, i, currentWord, malayalamTable, 0x0D00, MALAYALAM_MODIFIER_START, MALAYALAM_MODIFIER_END, MALAYALAM_NUKTA, schemeIdx);
-            } else if (settings.sinhala !== false && text[i] >= SINHALA_START && text[i] <= SINHALA_END) {
-                if (currentScript !== 'sinhala') {
-                    flushCurrentWord();
-                    currentScript = 'sinhala';
-                }
-                appendTransliteratedChar(text, i, currentWord, sinhalaTable, 0x0D80, SINHALA_MODIFIER_START, SINHALA_MODIFIER_END, SINHALA_NUKTA, schemeIdx);
-            } else if (settings.gujarati !== false && text[i] >= GUJARATI_START && text[i] <= GUJARATI_END) {
-                if (currentScript !== 'gujarati') {
-                    flushCurrentWord();
-                    currentScript = 'gujarati';
-                }
-                appendTransliteratedChar(text, i, currentWord, gujaratiTable, 0x0A80, GUJARATI_MODIFIER_START, GUJARATI_MODIFIER_END, GUJARATI_NUKTA, schemeIdx);
-            } else if (settings.gurmukhi !== false && text[i] >= GURMUKHI_START && text[i] <= GURMUKHI_END) {
-                if (currentScript !== 'gurmukhi') {
-                    flushCurrentWord();
-                    currentScript = 'gurmukhi';
-                }
-                if (text[i] === GURMUKHI_ADDAK) {
-                    const nextEntry = gurmukhiTable[text.charCodeAt(i + 1) - 0x0A00];
-                    const next = nextEntry ? nextEntry[schemeIdx] : null;
-                    if (next) currentWord.push(next.slice(0, -1)); // strip inherent 'a', doubling the consonant
+            } else if (text[i] >= INDIC_START && text[i] <= INDIC_END) {
+                const script = indicScripts[(text.charCodeAt(i) - 0x0900) >> 7];
+                if (settings[script.key] === false) {
+                    flushCurrentWord(); currentScript = null; replacement.push(text[i]);
                 } else {
-                    appendTransliteratedChar(text, i, currentWord, gurmukhiTable, 0x0A00, GURMUKHI_MODIFIER_START, GURMUKHI_MODIFIER_END, GURMUKHI_NUKTA, schemeIdx);
+                    if (currentScript !== script.key) { flushCurrentWord(); currentScript = script.key; }
+                    if (script.addak && text[i] === script.addak) {
+                        const nextEntry = indicTable[text.charCodeAt(i + 1) - 0x0900];
+                        const next = nextEntry ? nextEntry[schemeIdx] : null;
+                        if (next) currentWord.push(next.slice(0, -1));
+                    } else {
+                        appendTransliteratedChar(text, i, currentWord, indicTable, 0x0900, script.matraStart, script.matraEnd, script.nukta, schemeIdx);
+                    }
                 }
-            } else if (settings.tamil !== false && text[i] >= TAMIL_START && text[i] <= TAMIL_END) {
-                if (currentScript !== 'tamil') {
-                    flushCurrentWord();
-                    currentScript = 'tamil';
-                }
-                appendTransliteratedChar(text, i, currentWord, tamilTable, 0x0B80, TAMIL_MODIFIER_START, TAMIL_MODIFIER_END, TAMIL_NUKTA, schemeIdx);
-            } else if (settings.bengali !== false && text[i] >= BENGALI_START && text[i] <= BENGALI_END) {
-                if (currentScript !== 'bengali') {
-                    flushCurrentWord();
-                    currentScript = 'bengali';
-                }
-                appendTransliteratedChar(text, i, currentWord, bengaliTable, 0x0980, BENGALI_MODIFIER_START, BENGALI_MODIFIER_END, BENGALI_NUKTA, schemeIdx);
             } else {
-                flushCurrentWord();
-                currentScript = null;
-                replacement.push(text[i]);
+                flushCurrentWord(); currentScript = null; replacement.push(text[i]);
             }
         }
         flushCurrentWord();
