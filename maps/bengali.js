@@ -1,45 +1,97 @@
-var bengaliMaps = { itrans: {
-    // Vowels
-    'অ': 'a', 'আ': 'A', 'ই': 'i', 'ঈ': 'I', 'উ': 'u', 'ঊ': 'U',
-    'ঋ': 'ri', 'ৠ': 'ri', 'ঌ': 'li', 'ৡ': 'li',
-    'এ': 'e', 'ঐ': 'ai', 'ও': 'o', 'ঔ': 'au',
+// Bengali transliteration table, indexed by (codepoint - 0x0980)
+// Each entry: [itrans, iso, ipa] — null = pass through original character
+// Note: Bengali ITRANS uses subscript-o (ₒ) as inherent vowel marker.
+var bengaliTable = (function () {
+  const t = new Array(0x80).fill(null);
+  // 0x00 - unmapped
+  t[0x01] = ["ⁿ", null, null];
+  t[0x02] = ["ⁿ", null, null];
+  t[0x03] = ["H", null, null];
+  t[0x05] = ["a", null, null];
+  t[0x06] = ["A", null, null];
+  t[0x07] = ["i", null, null];
+  t[0x08] = ["I", null, null];
+  t[0x09] = ["u", null, null];
+  t[0x0a] = ["U", null, null];
+  t[0x0b] = ["ri", null, null];
+  t[0x0c] = ["li", null, null];
+  t[0x0f] = ["e", null, null];
+  t[0x10] = ["ai", null, null];
+  t[0x13] = ["o", null, null];
+  t[0x14] = ["au", null, null];
+  t[0x15] = ["kₒ", null, null];
+  t[0x16] = ["khₒ", null, null];
+  t[0x17] = ["gₒ", null, null];
+  t[0x18] = ["ghₒ", null, null];
+  t[0x19] = ["ŋₒ", null, null];
+  t[0x1a] = ["chₒ", null, null];
+  t[0x1b] = ["Chₒ", null, null];
+  t[0x1c] = ["jₒ", null, null];
+  t[0x1d] = ["jhₒ", null, null];
+  t[0x1e] = ["jnₒ", null, null];
+  t[0x1f] = ["Tₒ", null, null];
+  t[0x20] = ["Thₒ", null, null];
+  t[0x21] = ["Dₒ", null, null];
+  t[0x22] = ["Dhₒ", null, null];
+  t[0x23] = ["Nₒ", null, null];
+  t[0x24] = ["tₒ", null, null];
+  t[0x25] = ["thₒ", null, null];
+  t[0x26] = ["dₒ", null, null];
+  t[0x27] = ["dhₒ", null, null];
+  t[0x28] = ["nₒ", null, null];
+  t[0x2a] = ["pₒ", null, null];
+  t[0x2b] = ["phₒ", null, null];
+  t[0x2c] = ["bₒ", null, null];
+  t[0x2d] = ["bhₒ", null, null];
+  t[0x2e] = ["mₒ", null, null];
+  t[0x2f] = ["yₒ", null, null];
+  t[0x30] = ["rₒ", null, null];
+  t[0x30] = ["rₒ", null, null];
+  t[0x32] = ["lₒ", null, null];
+  t[0x36] = ["shₒ", null, null];
+  t[0x37] = ["Shₒ", null, null];
+  t[0x38] = ["sₒ", null, null];
+  t[0x39] = ["hₒ", null, null];
+  t[0x3d] = ["'", null, null];
+  t[0x3e] = ["A", null, null];
+  t[0x3f] = ["i", null, null];
+  t[0x40] = ["I", null, null];
+  t[0x41] = ["u", null, null];
+  t[0x42] = ["U", null, null];
+  t[0x43] = ["ri", null, null];
+  t[0x44] = ["ri", null, null];
+  t[0x47] = ["e", null, null];
+  t[0x48] = ["ai", null, null];
+  t[0x4b] = ["o", null, null];
+  t[0x4c] = ["au", null, null];
+  t[0x4d] = ["", null, null];
+  t[0x4e] = ["t", null, null];
+  t[0x5c] = ["Rₒ", null, null];
+  t[0x5d] = ["Rhₒ", null, null];
+  t[0x5f] = ["yₒ", null, null];
+  t[0x62] = ["li", null, null];
+  t[0x63] = ["li", null, null];
+  t[0x66] = ["0", null, null];
+  t[0x67] = ["1", null, null];
+  t[0x68] = ["2", null, null];
+  t[0x69] = ["3", null, null];
+  t[0x6a] = ["4", null, null];
+  t[0x6b] = ["5", null, null];
+  t[0x6c] = ["6", null, null];
+  t[0x6d] = ["7", null, null];
+  t[0x6e] = ["8", null, null];
+  t[0x6f] = ["9", null, null];
+  t[0x70] = ["rₒ", null, null];
+  t[0x71] = ["wₒ", null, null];
+  t[0x72] = ["Rs", null, null];
+  t[0x73] = ["INR", null, null];
+  t[0x74] = [" 1/16", null, null];
+  t[0x75] = ["⅛", null, null];
+  t[0x76] = [" 3/16", null, null];
+  t[0x77] = ["¼", null, null];
+  t[0x78] = [" 15/16", null, null];
+  t[0x79] = ["16", null, null];
+  t[0x7a] = ["¶", null, null];
 
-    // Consonants
-    'ক': 'kₒ', 'খ': 'khₒ', 'গ': 'gₒ', 'ঘ': 'ghₒ', 'ঙ': 'ŋₒ',
-    'চ': 'chₒ', 'ছ': 'Chₒ', 'জ': 'jₒ', 'ঝ': 'jhₒ', 'ঞ': 'jnₒ',
-    'ট': 'Tₒ', 'ঠ': 'Thₒ', 'ড': 'Dₒ', 'ঢ': 'Dhₒ', 'ণ': 'Nₒ',
-    'ত': 'tₒ', 'থ': 'thₒ', 'দ': 'dₒ', 'ধ': 'dhₒ', 'ন': 'nₒ',
-    'প': 'pₒ', 'ফ': 'phₒ', 'ব': 'bₒ', 'ভ': 'bhₒ', 'ম': 'mₒ',
-    'য': 'yₒ', 'র': 'rₒ', 'ল': 'lₒ', 'শ': 'shₒ', 'ষ': 'Shₒ', 'স': 'sₒ', 'হ': 'hₒ',
-    '\u09A1\u09BC': 'Rₒ', '\u09A2\u09BC': 'Rhₒ', '\u09AF\u09BC': 'yₒ', // ড় ঢ় য়
-    'ৰ': 'rₒ', 'ৱ': 'wₒ', // Assamese ra, wa
-    'ৎ': 't', // khanda ta: terminal consonant without inherent vowel
-
-    // Matras (Vowel signs)
-    'া': 'A', 'ি': 'i', 'ী': 'I', 'ু': 'u', 'ূ': 'U',
-    'ৃ': 'ri', 'ৄ': 'ri',
-    'ে': 'e', 'ৈ': 'ai', 'ো': 'o', 'ৌ': 'au',
-
-    // Vocalic L matras (outside matra range, treated as discrete)
-    'ৢ': 'li', 'ৣ': 'li',
-
-    // Additional marks
-    '্': '', 'ং': 'ⁿ', 'ঃ': 'H', 'ঁ': 'ⁿ',
-    '়': '', // Nukta
-    'ঽ': "'", // Avagraha
-
-    // Numerals
-    '০': '0', '১': '1', '২': '2', '৩': '3', '৪': '4',
-    '৫': '5', '৬': '6', '৭': '7', '৮': '8', '৯': '9',
-
-    // Currency
-    '৲': 'Rs', '৳': 'INR',
-
-    // Fractions (anna subdivisions, denominator 16)
-    '৴': ' 1/16', '৵': '⅛', '৶': ' 3/16', '৷': '¼', '৸': ' 15/16', '৹': '16',
-
-    // Others
-    '।': '. ', '॥': '. ',
-    '৺': '¶',
-    ' ': ' '
-}, iso: {}, ipa: {} };
+  return t;
+})();

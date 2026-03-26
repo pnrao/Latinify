@@ -1,37 +1,96 @@
-var odiaMaps = { itrans: {
-    // Vowels
-    'ଅ': 'a', 'ଆ': 'A', 'ଇ': 'i', 'ଈ': 'I', 'ଉ': 'u', 'ଊ': 'U',
-    'ଋ': 'ri', 'ୠ': 'ri', 'ଌ': 'li', 'ୡ': 'li',
-    'ଏ': 'e', 'ଐ': 'ai', 'ଓ': 'o', 'ଔ': 'au',
+// Odia transliteration table, indexed by (codepoint - 0x0B00)
+// Each entry: [itrans, iso, ipa] — null = pass through original character
+var odiaTable = (function () {
+  const t = new Array(0x80).fill(null);
+  // 0x00 - unmapped
+  t[0x01] = ["ⁿ", null, null];
+  t[0x02] = ["ⁿ", null, null];
+  t[0x03] = ["H", null, null];
+  t[0x05] = ["a", null, null];
+  t[0x06] = ["A", null, null];
+  t[0x07] = ["i", null, null];
+  t[0x08] = ["I", null, null];
+  t[0x09] = ["u", null, null];
+  t[0x0a] = ["U", null, null];
+  t[0x0b] = ["ri", null, null];
+  t[0x0c] = ["li", null, null];
+  t[0x0f] = ["e", null, null];
+  t[0x10] = ["ai", null, null];
+  t[0x13] = ["o", null, null];
+  t[0x14] = ["au", null, null];
+  t[0x15] = ["ka", null, null];
+  t[0x16] = ["kha", null, null];
+  t[0x17] = ["ga", null, null];
+  t[0x18] = ["gha", null, null];
+  t[0x19] = ["gna", null, null];
+  t[0x1a] = ["cha", null, null];
+  t[0x1b] = ["Cha", null, null];
+  t[0x1c] = ["ja", null, null];
+  t[0x1d] = ["jha", null, null];
+  t[0x1e] = ["jna", null, null];
+  t[0x1f] = ["Ta", null, null];
+  t[0x20] = ["Tha", null, null];
+  t[0x21] = ["Da", null, null];
+  t[0x22] = ["Dha", null, null];
+  t[0x23] = ["Na", null, null];
+  t[0x24] = ["ta", null, null];
+  t[0x25] = ["tha", null, null];
+  t[0x26] = ["da", null, null];
+  t[0x27] = ["dha", null, null];
+  t[0x28] = ["na", null, null];
+  t[0x2a] = ["pa", null, null];
+  t[0x2b] = ["pha", null, null];
+  t[0x2c] = ["ba", null, null];
+  t[0x2d] = ["bha", null, null];
+  t[0x2e] = ["ma", null, null];
+  t[0x2f] = ["ya", null, null];
+  t[0x30] = ["ra", null, null];
+  t[0x32] = ["la", null, null];
+  t[0x33] = ["La", null, null];
+  t[0x35] = ["va", null, null];
+  t[0x36] = ["sha", null, null];
+  t[0x37] = ["Sha", null, null];
+  t[0x38] = ["sa", null, null];
+  t[0x39] = ["ha", null, null];
+  // Nukta (0x3C) handled procedurally — leave null
+  t[0x3d] = ["'", null, null];
+  t[0x3e] = ["A", null, null];
+  t[0x3f] = ["i", null, null];
+  t[0x40] = ["I", null, null];
+  t[0x41] = ["u", null, null];
+  t[0x42] = ["U", null, null];
+  t[0x43] = ["ri", null, null];
+  t[0x44] = ["ri", null, null];
+  t[0x47] = ["e", null, null];
+  t[0x48] = ["ai", null, null];
+  t[0x4b] = ["o", null, null];
+  t[0x4c] = ["au", null, null];
+  t[0x4d] = ["", null, null];
+  t[0x5c] = ["Ra", null, null];
+  t[0x5d] = ["Rha", null, null];
+  t[0x5f] = ["ya", null, null];
+  t[0x60] = ["ri", null, null];
+  t[0x61] = ["li", null, null];
+  t[0x62] = ["li", null, null];
+  t[0x63] = ["li", null, null];
+  t[0x66] = ["0", null, null];
+  t[0x67] = ["1", null, null];
+  t[0x68] = ["2", null, null];
+  t[0x69] = ["3", null, null];
+  t[0x6a] = ["4", null, null];
+  t[0x6b] = ["5", null, null];
+  t[0x6c] = ["6", null, null];
+  t[0x6d] = ["7", null, null];
+  t[0x6e] = ["8", null, null];
+  t[0x6f] = ["9", null, null];
+  t[0x70] = ["", null, null];
+  t[0x71] = ["wa", null, null];
+  t[0x72] = ["¼", null, null];
+  t[0x73] = ["½", null, null];
+  t[0x74] = ["¾", null, null];
+  t[0x75] = [" 1/16", null, null];
+  t[0x76] = ["⅛", null, null];
+  t[0x77] = [" 3/16", null, null];
 
-    // Consonants
-    'କ': 'ka', 'ଖ': 'kha', 'ଗ': 'ga', 'ଘ': 'gha', 'ଙ': 'gna',
-    'ଚ': 'cha', 'ଛ': 'Cha', 'ଜ': 'ja', 'ଝ': 'jha', 'ଞ': 'jna',
-    'ଟ': 'Ta', 'ଠ': 'Tha', 'ଡ': 'Da', 'ଢ': 'Dha', 'ଣ': 'Na',
-    'ଡ଼': 'Ra', 'ଢ଼': 'Rha',
-    'ତ': 'ta', 'ଥ': 'tha', 'ଦ': 'da', 'ଧ': 'dha', 'ନ': 'na',
-    'ପ': 'pa', 'ଫ': 'pha', 'ବ': 'ba', 'ଭ': 'bha', 'ମ': 'ma',
-    'ଯ': 'ya', 'ୟ': 'ya', 'ର': 'ra', 'ଲ': 'la', 'ଳ': 'La', 'ଵ': 'va', 'ୱ': 'wa',
-    'ଶ': 'sha', 'ଷ': 'Sha', 'ସ': 'sa', 'ହ': 'ha',
-
-    // Matras (Vowel signs)
-    'ା': 'A', 'ି': 'i', 'ୀ': 'I', 'ୁ': 'u', 'ୂ': 'U',
-    'ୃ': 'ri', 'ୄ': 'ri', 'ୢ': 'li', 'ୣ': 'li',
-    'େ': 'e', 'ୈ': 'ai', 'ୋ': 'o', 'ୌ': 'au',
-
-    // Additional marks
-    '୍': '', 'ଂ': 'ⁿ', 'ଃ': 'H', 'ଁ': 'ⁿ',
-    '଼': '', // Nukta
-    'ଽ': "'", // Avagraha
-    '୰': '', // ORIYA ISSHAR (rare) - ignore
-    '୲': '¼', '୳': '½', '୴': '¾', // fractions: 1/4, 1/2, 3/4
-    '୵': ' 1/16', '୶': '⅛', '୷': ' 3/16', // fractions as ASCII strings
-
-    // Numerals
-    '୦': '0', '୧': '1', '୨': '2', '୩': '3', '୪': '4',
-    '୫': '5', '୬': '6', '୭': '7', '୮': '8', '୯': '9',
-
-    // Others
-    '।': '. ', '॥': '. ',
-    ' ': ' '
-}, iso: {}, ipa: {} };
+  return t;
+})();

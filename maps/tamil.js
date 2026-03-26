@@ -1,39 +1,80 @@
-var tamilMaps = { itrans: {
-    // Vowels
-    'அ': 'a', 'ஆ': 'A', 'இ': 'i', 'ஈ': 'I', 'உ': 'u', 'ஊ': 'U',
-    'எ': 'e', 'ஏ': 'E', 'ஐ': 'ai', 'ஒ': 'o', 'ஓ': 'O', 'ஔ': 'au',
+// Tamil transliteration table, indexed by (codepoint - 0x0B80)
+// Each entry: [itrans, iso, ipa] — null = pass through original character
+var tamilTable = (function () {
+  const t = new Array(0x80).fill(null);
+  // 0x00 - unmapped
+  // 0x01 - unmapped
+  t[0x02] = ["ᵐ", null, null];
+  t[0x03] = ["H", null, null];
+  t[0x05] = ["a", null, null];
+  t[0x06] = ["A", null, null];
+  t[0x07] = ["i", null, null];
+  t[0x08] = ["I", null, null];
+  t[0x09] = ["u", null, null];
+  t[0x0a] = ["U", null, null];
+  t[0x0e] = ["e", null, null];
+  t[0x0f] = ["E", null, null];
+  t[0x10] = ["ai", null, null];
+  t[0x12] = ["o", null, null];
+  t[0x13] = ["O", null, null];
+  t[0x14] = ["au", null, null];
+  t[0x15] = ["ka", null, null];
+  t[0x19] = ["ŋa", null, null];
+  t[0x1a] = ["cha", null, null];
+  t[0x1c] = ["ja", null, null];
+  t[0x1e] = ["ɲa", null, null];
+  t[0x1f] = ["Ta", null, null];
+  t[0x23] = ["Na", null, null];
+  t[0x24] = ["ta", null, null];
+  t[0x28] = ["na", null, null];
+  t[0x29] = ["na", null, null];
+  t[0x2a] = ["pa", null, null];
+  t[0x2e] = ["ma", null, null];
+  t[0x2f] = ["ya", null, null];
+  t[0x30] = ["ra", null, null];
+  t[0x31] = ["rra", null, null];
+  t[0x32] = ["la", null, null];
+  t[0x33] = ["La", null, null];
+  t[0x34] = ["Lha", null, null];
+  t[0x35] = ["va", null, null];
+  t[0x36] = ["sha", null, null];
+  t[0x37] = ["Sha", null, null];
+  t[0x38] = ["sa", null, null];
+  t[0x39] = ["ha", null, null];
+  t[0x3e] = ["A", null, null];
+  t[0x3f] = ["i", null, null];
+  t[0x40] = ["I", null, null];
+  t[0x41] = ["u", null, null];
+  t[0x42] = ["U", null, null];
+  t[0x46] = ["e", null, null];
+  t[0x47] = ["E", null, null];
+  t[0x48] = ["ai", null, null];
+  t[0x4a] = ["o", null, null];
+  t[0x4b] = ["O", null, null];
+  t[0x4c] = ["au", null, null];
+  t[0x4d] = ["", null, null];
+  t[0x57] = ["au", null, null];
+  t[0x66] = ["0", null, null];
+  t[0x67] = ["1", null, null];
+  t[0x68] = ["2", null, null];
+  t[0x69] = ["3", null, null];
+  t[0x6a] = ["4", null, null];
+  t[0x6b] = ["5", null, null];
+  t[0x6c] = ["6", null, null];
+  t[0x6d] = ["7", null, null];
+  t[0x6e] = ["8", null, null];
+  t[0x6f] = ["9", null, null];
+  t[0x70] = ["10", null, null];
+  t[0x71] = ["100", null, null];
+  t[0x72] = ["1000", null, null];
+  t[0x73] = ["day", null, null];
+  t[0x74] = ["month", null, null];
+  t[0x75] = ["year", null, null];
+  t[0x76] = ["dr.", null, null];
+  t[0x77] = ["cr.", null, null];
+  t[0x78] = ["do.", null, null];
+  t[0x79] = ["INR", null, null];
+  t[0x7a] = ["#", null, null];
 
-    // Consonants
-    'க': 'ka', 'ங': 'ŋa',
-    'ச': 'cha', 'ஜ': 'ja', 'ஞ': 'ɲa',
-    'ட': 'Ta', 'ண': 'Na',
-    'த': 'ta', 'ந': 'na', 'ன': 'na',
-    'ப': 'pa', 'ம': 'ma',
-    'ய': 'ya', 'ர': 'ra', 'ற': 'rra', 'ல': 'la', 'ள': 'La', 'ழ': 'Lha', 'வ': 'va',
-    'ஶ': 'sha', 'ஷ': 'Sha', 'ஸ': 'sa', 'ஹ': 'ha',
-
-    // Matras (vowel signs)
-    'ா': 'A', 'ி': 'i', 'ீ': 'I', 'ு': 'u', 'ூ': 'U',
-    'ெ': 'e', 'ே': 'E', 'ை': 'ai',
-    'ொ': 'o', 'ோ': 'O', 'ௌ': 'au',
-    '்': '', // pulli (virama)
-
-    // Additional marks
-    'ஂ': 'ᵐ', 'ஃ': 'H',
-    'ௗ': 'au', // au length mark
-    // ௐ Tamil OM — auspicious symbol, passed through unchanged
-
-    // Numerals
-    '௦': '0', '௧': '1', '௨': '2', '௩': '3', '௪': '4',
-    '௫': '5', '௬': '6', '௭': '7', '௮': '8', '௯': '9',
-    '௰': '10', '௱': '100', '௲': '1000',
-
-    // Archaic symbols
-    '௳': 'day', '௴': 'month', '௵': 'year',
-    '௶': 'dr.', '௷': 'cr.', '௸': 'do.',
-    '௹': 'INR', '௺': '#',
-
-    // Others
-    '।': '. ', '॥': '. ',
-    ' ': ' '
-}, iso: {}, ipa: {} };
+  return t;
+})();

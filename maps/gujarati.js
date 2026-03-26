@@ -1,33 +1,89 @@
-var gujaratiMaps = { itrans: {
-    // Vowels
-    'અ': 'a', 'આ': 'A', 'ઇ': 'i', 'ઈ': 'I', 'ઉ': 'u', 'ઊ': 'U',
-    'ઋ': 'ri', 'ૠ': 'ri', 'ઌ': 'li', 'ૡ': 'li',
-    'ઍ': 'e', 'એ': 'e', 'ઐ': 'ai', 'ઑ': 'o', 'ઓ': 'o', 'ઔ': 'au',
+// Gujarati transliteration table, indexed by (codepoint - 0x0A80)
+// Each entry: [itrans, iso, ipa] — null = pass through original character
+// Note: Gujarati ITRANS uses subscript-a (ₐ) as inherent vowel marker.
+var gujaratiTable = (function () {
+  const t = new Array(0x80).fill(null);
+  // 0x00 - unmapped
+  t[0x01] = ["ⁿ", null, null];
+  t[0x02] = ["ⁿ", null, null];
+  t[0x03] = ["H", null, null];
+  t[0x05] = ["a", null, null];
+  t[0x06] = ["A", null, null];
+  t[0x07] = ["i", null, null];
+  t[0x08] = ["I", null, null];
+  t[0x09] = ["u", null, null];
+  t[0x0a] = ["U", null, null];
+  t[0x0b] = ["ri", null, null];
+  t[0x0c] = ["li", null, null];
+  t[0x0d] = ["e", null, null];
+  t[0x0f] = ["e", null, null];
+  t[0x10] = ["ai", null, null];
+  t[0x11] = ["o", null, null];
+  t[0x13] = ["o", null, null];
+  t[0x14] = ["au", null, null];
+  t[0x15] = ["kₐ", null, null];
+  t[0x16] = ["khₐ", null, null];
+  t[0x17] = ["gₐ", null, null];
+  t[0x18] = ["ghₐ", null, null];
+  t[0x19] = ["gnₐ", null, null];
+  t[0x1a] = ["chₐ", null, null];
+  t[0x1b] = ["Chₐ", null, null];
+  t[0x1c] = ["jₐ", null, null];
+  t[0x1d] = ["jhₐ", null, null];
+  t[0x1e] = ["jnₐ", null, null];
+  t[0x1f] = ["Tₐ", null, null];
+  t[0x20] = ["Thₐ", null, null];
+  t[0x21] = ["Dₐ", null, null];
+  t[0x22] = ["Dhₐ", null, null];
+  t[0x23] = ["Nₐ", null, null];
+  t[0x24] = ["tₐ", null, null];
+  t[0x25] = ["thₐ", null, null];
+  t[0x26] = ["dₐ", null, null];
+  t[0x27] = ["dhₐ", null, null];
+  t[0x28] = ["nₐ", null, null];
+  t[0x2a] = ["pₐ", null, null];
+  t[0x2b] = ["phₐ", null, null];
+  t[0x2c] = ["bₐ", null, null];
+  t[0x2d] = ["bhₐ", null, null];
+  t[0x2e] = ["mₐ", null, null];
+  t[0x2f] = ["yₐ", null, null];
+  t[0x30] = ["rₐ", null, null];
+  t[0x32] = ["lₐ", null, null];
+  t[0x33] = ["Lₐ", null, null];
+  t[0x35] = ["vₐ", null, null];
+  t[0x36] = ["shₐ", null, null];
+  t[0x37] = ["Shₐ", null, null];
+  t[0x38] = ["sₐ", null, null];
+  t[0x39] = ["hₐ", null, null];
+  // Nukta (0x3C) handled procedurally — leave null
+  t[0x3d] = ["'", null, null];
+  t[0x3e] = ["A", null, null];
+  t[0x3f] = ["i", null, null];
+  t[0x40] = ["I", null, null];
+  t[0x41] = ["u", null, null];
+  t[0x42] = ["U", null, null];
+  t[0x43] = ["ri", null, null];
+  t[0x44] = ["ri", null, null];
+  t[0x45] = ["e", null, null];
+  t[0x47] = ["e", null, null];
+  t[0x48] = ["ai", null, null];
+  t[0x49] = ["o", null, null];
+  t[0x4b] = ["o", null, null];
+  t[0x4c] = ["au", null, null];
+  t[0x4d] = ["", null, null];
+  t[0x62] = ["li", null, null];
+  t[0x63] = ["li", null, null];
+  t[0x66] = ["0", null, null];
+  t[0x67] = ["1", null, null];
+  t[0x68] = ["2", null, null];
+  t[0x69] = ["3", null, null];
+  t[0x6a] = ["4", null, null];
+  t[0x6b] = ["5", null, null];
+  t[0x6c] = ["6", null, null];
+  t[0x6d] = ["7", null, null];
+  t[0x6e] = ["8", null, null];
+  t[0x6f] = ["9", null, null];
+  t[0x79] = ["zhₐ", null, null];
 
-    // Consonants
-    'ક': 'kₐ', 'ખ': 'khₐ', 'ગ': 'gₐ', 'ઘ': 'ghₐ', 'ઙ': 'gnₐ',
-    'ચ': 'chₐ', 'છ': 'Chₐ', 'જ': 'jₐ', 'ઝ': 'jhₐ', 'ઞ': 'jnₐ',
-    'ટ': 'Tₐ', 'ઠ': 'Thₐ', 'ડ': 'Dₐ', 'ઢ': 'Dhₐ', 'ણ': 'Nₐ',
-    'ત': 'tₐ', 'થ': 'thₐ', 'દ': 'dₐ', 'ધ': 'dhₐ', 'ન': 'nₐ',
-    'પ': 'pₐ', 'ફ': 'phₐ', 'બ': 'bₐ', 'ભ': 'bhₐ', 'મ': 'mₐ',
-    'ય': 'yₐ', 'ર': 'rₐ', 'લ': 'lₐ', 'ળ': 'Lₐ', 'વ': 'vₐ',
-    'શ': 'shₐ', 'ષ': 'Shₐ', 'સ': 'sₐ', 'હ': 'hₐ', 'ૹ': 'zhₐ',
-
-    // Matras (Vowel signs)
-    'ા': 'A', 'િ': 'i', 'ી': 'I', 'ુ': 'u', 'ૂ': 'U',
-    'ૃ': 'ri', 'ૄ': 'ri', 'ૅ': 'e', 'ૢ': 'li', 'ૣ': 'li',
-    'ે': 'e', 'ૈ': 'ai', 'ૉ': 'o', 'ો': 'o', 'ૌ': 'au',
-
-    // Additional marks
-    '્': '', 'ં': 'ⁿ', 'ઃ': 'H', 'ઁ': 'ⁿ',
-    '઼': '', // Nukta
-    'ઽ': "'", // Avagraha
-
-    // Numerals
-    '૦': '0', '૧': '1', '૨': '2', '૩': '3', '૪': '4',
-    '૫': '5', '૬': '6', '૭': '7', '૮': '8', '૯': '9',
-
-    // Others
-    '।': '. ', '॥': '. ',
-    ' ': ' '
-}, iso: {}, ipa: {} };
+  return t;
+})();

@@ -1,47 +1,117 @@
-var malayalamMaps = { itrans: {
-    // Vowels
-    'അ': 'a', 'ആ': 'A', 'ഇ': 'i', 'ഈ': 'I', 'ഉ': 'u', 'ഊ': 'U',
-    'ഋ': 'ri', 'ൠ': 'ri', 'ഌ': 'li', 'ൡ': 'li', 'ൟ': 'I',
-    'എ': 'e', 'ഏ': 'E', 'ഐ': 'ai', 'ഒ': 'o', 'ഓ': 'O', 'ഔ': 'au',
+// Malayalam transliteration table, indexed by (codepoint - 0x0D00)
+// Each entry: [itrans, iso, ipa] — null = pass through original character
+var malayalamTable = (function () {
+  const t = new Array(0x80).fill(null);
+  t[0x00] = ["ⁿ", null, null];
+  t[0x01] = ["ⁿ", null, null];
+  t[0x02] = ["ᵐ", null, null];
+  t[0x03] = ["H", null, null];
+  t[0x04] = ["ⁿ", null, null];
+  t[0x05] = ["a", null, null];
+  t[0x06] = ["A", null, null];
+  t[0x07] = ["i", null, null];
+  t[0x08] = ["I", null, null];
+  t[0x09] = ["u", null, null];
+  t[0x0a] = ["U", null, null];
+  t[0x0b] = ["ri", null, null];
+  t[0x0c] = ["li", null, null];
+  t[0x0e] = ["e", null, null];
+  t[0x0f] = ["E", null, null];
+  t[0x10] = ["ai", null, null];
+  t[0x12] = ["o", null, null];
+  t[0x13] = ["O", null, null];
+  t[0x14] = ["au", null, null];
+  t[0x15] = ["ka", null, null];
+  t[0x16] = ["kha", null, null];
+  t[0x17] = ["ga", null, null];
+  t[0x18] = ["gha", null, null];
+  t[0x19] = ["gna", null, null];
+  t[0x1a] = ["cha", null, null];
+  t[0x1b] = ["Cha", null, null];
+  t[0x1c] = ["ja", null, null];
+  t[0x1d] = ["jha", null, null];
+  t[0x1e] = ["jna", null, null];
+  t[0x1f] = ["Ta", null, null];
+  t[0x20] = ["Tha", null, null];
+  t[0x21] = ["Da", null, null];
+  t[0x22] = ["Dha", null, null];
+  t[0x23] = ["Na", null, null];
+  t[0x24] = ["ta", null, null];
+  t[0x25] = ["tha", null, null];
+  t[0x26] = ["da", null, null];
+  t[0x27] = ["dha", null, null];
+  t[0x28] = ["na", null, null];
+  t[0x29] = ["na", null, null];
+  t[0x2a] = ["pa", null, null];
+  t[0x2b] = ["pha", null, null];
+  t[0x2c] = ["ba", null, null];
+  t[0x2d] = ["bha", null, null];
+  t[0x2e] = ["ma", null, null];
+  t[0x2f] = ["ya", null, null];
+  t[0x30] = ["ra", null, null];
+  t[0x31] = ["Ra", null, null];
+  t[0x32] = ["la", null, null];
+  t[0x33] = ["La", null, null];
+  t[0x34] = ["Lha", null, null];
+  t[0x35] = ["va", null, null];
+  t[0x36] = ["sha", null, null];
+  t[0x37] = ["Sha", null, null];
+  t[0x38] = ["sa", null, null];
+  t[0x39] = ["ha", null, null];
+  t[0x3e] = ["A", null, null];
+  t[0x3f] = ["i", null, null];
+  t[0x40] = ["I", null, null];
+  t[0x41] = ["u", null, null];
+  t[0x42] = ["U", null, null];
+  t[0x43] = ["ru", null, null];
+  t[0x44] = ["ri", null, null];
+  t[0x46] = ["e", null, null];
+  t[0x47] = ["E", null, null];
+  t[0x48] = ["ai", null, null];
+  t[0x4a] = ["o", null, null];
+  t[0x4b] = ["O", null, null];
+  t[0x4c] = ["au", null, null];
+  t[0x4d] = ["", null, null];
+  t[0x4e] = ["r", null, null];
+  t[0x4f] = ["¶", null, null];
+  t[0x57] = ["au", null, null];
+  t[0x58] = [" 1/160", null, null];
+  t[0x59] = [" 1/40", null, null];
+  t[0x5a] = [" 3/80", null, null];
+  t[0x5b] = [" 1/20", null, null];
+  t[0x5c] = [" 1/10", null, null];
+  t[0x5d] = [" 3/20", null, null];
+  t[0x5e] = ["⅕", null, null];
+  t[0x5f] = ["I", null, null];
+  t[0x60] = ["ri", null, null];
+  t[0x61] = ["li", null, null];
+  t[0x62] = ["li", null, null];
+  t[0x63] = ["li", null, null];
+  t[0x66] = ["0", null, null];
+  t[0x67] = ["1", null, null];
+  t[0x68] = ["2", null, null];
+  t[0x69] = ["3", null, null];
+  t[0x6a] = ["4", null, null];
+  t[0x6b] = ["5", null, null];
+  t[0x6c] = ["6", null, null];
+  t[0x6d] = ["7", null, null];
+  t[0x6e] = ["8", null, null];
+  t[0x6f] = ["9", null, null];
+  t[0x70] = ["10", null, null];
+  t[0x71] = ["100", null, null];
+  t[0x72] = ["1000", null, null];
+  t[0x73] = ["¼", null, null];
+  t[0x74] = ["½", null, null];
+  t[0x75] = ["¾", null, null];
+  t[0x76] = [" 1/16", null, null];
+  t[0x77] = ["⅛", null, null];
+  t[0x78] = [" 3/16", null, null];
+  t[0x7a] = ["N", null, null];
+  t[0x7b] = ["n", null, null];
+  t[0x7c] = ["r", null, null];
+  t[0x7d] = ["l", null, null];
+  t[0x7e] = ["L", null, null];
+  t[0x7f] = ["k", null, null];
 
-    // Consonants
-    'ക': 'ka', 'ഖ': 'kha', 'ഗ': 'ga', 'ഘ': 'gha', 'ങ': 'gna',
-    'ച': 'cha', 'ഛ': 'Cha', 'ജ': 'ja', 'ഝ': 'jha', 'ഞ': 'jna',
-    'ട': 'Ta', 'ഠ': 'Tha', 'ഡ': 'Da', 'ഢ': 'Dha', 'ണ': 'Na',
-    'ത': 'ta', 'ഥ': 'tha', 'ദ': 'da', 'ധ': 'dha', 'ന': 'na', 'ഩ': 'na',
-    'പ': 'pa', 'ഫ': 'pha', 'ബ': 'ba', 'ഭ': 'bha', 'മ': 'ma',
-    'യ': 'ya', 'ര': 'ra', 'റ': 'Ra', 'ല': 'la', 'ള': 'La', 'ഴ': 'Lha',
-    'വ': 'va', 'ശ': 'sha', 'ഷ': 'Sha', 'സ': 'sa', 'ഹ': 'ha',
-
-    // Chillu letters (pure consonants, no inherent vowel)
-    'ൺ': 'N', 'ൻ': 'n', 'ർ': 'r', 'ൎ': 'r', 'ൽ': 'l', 'ൾ': 'L', 'ൿ': 'k',
-
-    // Matras (Vowel signs)
-    'ാ': 'A', 'ി': 'i', 'ീ': 'I', 'ു': 'u', 'ൂ': 'U',
-    'ൃ': 'ru', 'ൄ': 'ri', 'ൢ': 'li', 'ൣ': 'li',
-    'െ': 'e', 'േ': 'E', 'ൈ': 'ai',
-    'ൊ': 'o', 'ോ': 'O', 'ൌ': 'au', 'ൗ': 'au',
-
-    // Additional marks
-    '്': '', 'ം': 'ᵐ', 'ഃ': 'H', 'ഁ': 'ⁿ', 'ഀ': 'ⁿ', 'ഄ': 'ⁿ', 'ഽ': "'",
-
-    // Numerals
-    '൦': '0', '൧': '1', '൨': '2', '൩': '3', '൪': '4',
-    '൫': '5', '൬': '6', '൭': '7', '൮': '8', '൯': '9',
-
-    // Traditional number symbols
-    '൰': '10', '൱': '100', '൲': '1000',
-
-    // Fractions
-    '൳': '¼', '൴': '½', '൵': '¾',
-    '൶': ' 1/16', '൷': '⅛', '൸': ' 3/16',
-
-    // Archaic fractions
-    '൘': ' 1/160', '൙': ' 1/40', '൚': ' 3/80',
-    '൛': ' 1/20', '൜': ' 1/10', '൝': ' 3/20', '൞': '⅕',
-
-    // Others
-    '।': '. ', '॥': '. ',
-    '൏': '¶',
-    ' ': ' '
-}, iso: {}, ipa: {} };
+  return t;
+})();

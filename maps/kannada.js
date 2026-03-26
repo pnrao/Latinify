@@ -1,31 +1,95 @@
-var kannadaMaps = { itrans: {
-    // Vowels
-    'ಅ': 'a', 'ಆ': 'A', 'ಇ': 'i', 'ಈ': 'I', 'ಉ': 'u', 'ಊ': 'U',
-    'ಋ': 'ri', 'ೠ': 'ri', 'ಌ': 'li', 'ೡ': 'li', 'ಎ': 'e', 'ಏ': 'E', 'ಐ': 'ai', 'ಒ': 'o', 'ಓ': 'O', 'ಔ': 'au',
+// Kannada transliteration table, indexed by (codepoint - 0x0C80)
+// Each entry: [itrans, iso, ipa] — null = pass through original character
+var kannadaTable = (function () {
+  const t = new Array(0x80).fill(null);
+  t[0x00] = ["ⁿ", "ṁ", null];
+  t[0x01] = ["ⁿ", "ṁ", null];
+  t[0x02] = ["ⁿ", "ṃ", null];
+  t[0x03] = ["H", "ḥ", null];
+  t[0x05] = ["a", "a", null];
+  t[0x06] = ["A", "ā", null];
+  t[0x07] = ["i", "i", null];
+  t[0x08] = ["I", "ī", null];
+  t[0x09] = ["u", "u", null];
+  t[0x0a] = ["U", "ū", null];
+  t[0x0b] = ["ri", "ṛ", null];
+  t[0x0c] = ["li", "ḷ", null];
+  t[0x0e] = ["e", "e", null];
+  t[0x0f] = ["E", "ē", null];
+  t[0x10] = ["ai", "ai", null];
+  t[0x12] = ["o", "o", null];
+  t[0x13] = ["O", "ō", null];
+  t[0x14] = ["au", "au", null];
+  t[0x15] = ["ka", "ka", null];
+  t[0x16] = ["kha", "kha", null];
+  t[0x17] = ["ga", "ga", null];
+  t[0x18] = ["gha", "gha", null];
+  t[0x19] = ["gna", "ṅa", null];
+  t[0x1a] = ["cha", "ca", null];
+  t[0x1b] = ["Cha", "cha", null];
+  t[0x1c] = ["ja", "ja", null];
+  t[0x1d] = ["jha", "jha", null];
+  t[0x1e] = ["jna", "ña", null];
+  t[0x1f] = ["Ta", "ṭa", null];
+  t[0x20] = ["Tha", "ṭha", null];
+  t[0x21] = ["Da", "ḍa", null];
+  t[0x22] = ["Dha", "ḍha", null];
+  t[0x23] = ["Na", "ṇa", null];
+  t[0x24] = ["ta", "ta", null];
+  t[0x25] = ["tha", "tha", null];
+  t[0x26] = ["da", "da", null];
+  t[0x27] = ["dha", "dha", null];
+  t[0x28] = ["na", "na", null];
+  t[0x2a] = ["pa", "pa", null];
+  t[0x2b] = ["pha", "pha", null];
+  t[0x2c] = ["ba", "ba", null];
+  t[0x2d] = ["bha", "bha", null];
+  t[0x2e] = ["ma", "ma", null];
+  t[0x2f] = ["ya", "ya", null];
+  t[0x30] = ["ra", "ra", null];
+  t[0x31] = ["fa", "fa", null];
+  t[0x32] = ["la", "la", null];
+  t[0x33] = ["La", "ḷa", null];
+  t[0x35] = ["va", "va", null];
+  t[0x36] = ["sha", "śa", null];
+  t[0x37] = ["Sha", "ṣa", null];
+  t[0x38] = ["sa", "sa", null];
+  t[0x39] = ["ha", "ha", null];
+  // Nukta (0x3C) handled procedurally — leave null
+  t[0x3d] = ["'", "'", null];
+  t[0x3e] = ["A", "ā", null];
+  t[0x3f] = ["i", "i", null];
+  t[0x40] = ["I", "ī", null];
+  t[0x41] = ["u", "u", null];
+  t[0x42] = ["U", "ū", null];
+  t[0x43] = ["ru", "ṛ", null];
+  t[0x44] = ["ri", "ṝ", null];
+  t[0x46] = ["e", "e", null];
+  t[0x47] = ["E", "ē", null];
+  t[0x48] = ["ai", "ai", null];
+  t[0x4a] = ["o", "o", null];
+  t[0x4b] = ["O", "ō", null];
+  t[0x4c] = ["au", "au", null];
+  t[0x4d] = ["", "", null];
+  t[0x55] = ["", "", null];
+  t[0x56] = ["", "", null];
+  t[0x5e] = ["LLa", "ḻa", null];
+  t[0x60] = ["ri", "ṝ", null];
+  t[0x61] = ["li", "ḹ", null];
+  t[0x62] = ["li", "ḷ", null];
+  t[0x63] = ["li", "ḹ", null];
+  t[0x66] = ["0", "0", null];
+  t[0x67] = ["1", "1", null];
+  t[0x68] = ["2", "2", null];
+  t[0x69] = ["3", "3", null];
+  t[0x6a] = ["4", "4", null];
+  t[0x6b] = ["5", "5", null];
+  t[0x6c] = ["6", "6", null];
+  t[0x6d] = ["7", "7", null];
+  t[0x6e] = ["8", "8", null];
+  t[0x6f] = ["9", "9", null];
+  t[0x71] = ["H", "ḥ", null];
+  t[0x72] = ["f", "f", null];
 
-    // Consonants
-    'ಕ': 'ka', 'ಖ': 'kha', 'ಗ': 'ga', 'ಘ': 'gha', 'ಙ': 'gna',
-    'ಚ': 'cha', 'ಛ': 'Cha', 'ಜ': 'ja', 'ಝ': 'jha', 'ಞ': 'jna',
-    'ಟ': 'Ta', 'ಠ': 'Tha', 'ಡ': 'Da', 'ಢ': 'Dha', 'ಣ': 'Na',
-    'ತ': 'ta', 'ಥ': 'tha', 'ದ': 'da', 'ಧ': 'dha', 'ನ': 'na',
-    'ಪ': 'pa', 'ಫ': 'pha', 'ಬ': 'ba', 'ಭ': 'bha', 'ಮ': 'ma',
-    'ಯ': 'ya', 'ರ': 'ra', 'ಲ': 'la', 'ವ': 'va', 'ಶ': 'sha',
-    'ಷ': 'Sha', 'ಸ': 'sa', 'ಹ': 'ha', 'ಳ': 'La', 'ೞ': 'LLa',
-
-    // Matras (Vowel signs)
-    'ಾ': 'A', 'ಿ': 'i', 'ೀ': 'I', 'ು': 'u', 'ೂ': 'U',
-    'ೆ': 'e', 'ೇ': 'E', 'ೈ': 'ai', 'ೊ': 'o', 'ೋ': 'O', 'ೌ': 'au', 'ೃ': 'ru', 'ೄ': 'ri',
-    'ೢ': 'li', 'ೣ': 'li',
-
-    // Additional marks
-    '್': '', 'ಂ': 'ⁿ', 'ಃ': 'H', 'ಁ': 'ⁿ', '\u0C80': 'ⁿ', 'ಽ': '\'', 'ೕ': '', 'ೖ': '', 'ೱ': 'H', 'ೲ': 'f', // jihvamuliya (velar fricative), upadhmaniya (bilabial fricative)
-    'ಱ': 'fa', // old Kannada letter FA
-
-    // Numerals
-    '೦': '0', '೧': '1', '೨': '2', '೩': '3', '೪': '4',
-    '೫': '5', '೬': '6', '೭': '7', '೮': '8', '೯': '9',
-
-    // Others
-    '।': '. ', '॥': '. ',
-    ' ': ' '
-}, iso: {}, ipa: {} };
+  return t;
+})();

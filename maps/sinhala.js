@@ -1,35 +1,99 @@
-var sinhalaMaps = { itrans: {
-    // Vowels
-    'අ': 'a', 'ආ': 'A', 'ඇ': 'ae', 'ඈ': 'aae',
-    'ඉ': 'i', 'ඊ': 'I', 'උ': 'u', 'ඌ': 'U',
-    'ඍ': 'ri', 'ඎ': 'ri', 'ඏ': 'li', 'ඐ': 'li',
-    'එ': 'e', 'ඒ': 'E', 'ඓ': 'ai', 'ඔ': 'o', 'ඕ': 'O', 'ඖ': 'au',
+// Sinhala transliteration table, indexed by (codepoint - 0x0D80)
+// Each entry: [itrans, iso, ipa] — null = pass through original character
+var sinhalaTable = (function () {
+  const t = new Array(0x80).fill(null);
+  // 0x00 - unmapped
+  t[0x01] = ["ⁿ", null, null];
+  t[0x02] = ["ᵐ", null, null];
+  t[0x03] = ["H", null, null];
+  t[0x05] = ["a", null, null];
+  t[0x06] = ["A", null, null];
+  t[0x07] = ["ae", null, null];
+  t[0x08] = ["aae", null, null];
+  t[0x09] = ["i", null, null];
+  t[0x0a] = ["I", null, null];
+  t[0x0b] = ["u", null, null];
+  t[0x0c] = ["U", null, null];
+  t[0x0d] = ["ri", null, null];
+  t[0x0e] = ["ri", null, null];
+  t[0x0f] = ["li", null, null];
+  t[0x10] = ["li", null, null];
+  t[0x11] = ["e", null, null];
+  t[0x12] = ["E", null, null];
+  t[0x13] = ["ai", null, null];
+  t[0x14] = ["o", null, null];
+  t[0x15] = ["O", null, null];
+  t[0x16] = ["au", null, null];
+  t[0x1a] = ["ka", null, null];
+  t[0x1b] = ["kha", null, null];
+  t[0x1c] = ["ga", null, null];
+  t[0x1d] = ["gha", null, null];
+  t[0x1e] = ["ŋa", null, null];
+  t[0x1f] = ["ŋga", null, null];
+  t[0x20] = ["cha", null, null];
+  t[0x21] = ["Cha", null, null];
+  t[0x22] = ["ja", null, null];
+  t[0x23] = ["jha", null, null];
+  t[0x24] = ["ɲa", null, null];
+  t[0x25] = ["jna", null, null];
+  t[0x26] = ["ɲja", null, null];
+  t[0x27] = ["Ta", null, null];
+  t[0x28] = ["Tha", null, null];
+  t[0x29] = ["Da", null, null];
+  t[0x2a] = ["Dha", null, null];
+  t[0x2b] = ["Na", null, null];
+  t[0x2c] = ["NDa", null, null];
+  t[0x2d] = ["ta", null, null];
+  t[0x2e] = ["tha", null, null];
+  t[0x2f] = ["da", null, null];
+  t[0x30] = ["dha", null, null];
+  t[0x31] = ["na", null, null];
+  t[0x33] = ["nda", null, null];
+  t[0x34] = ["pa", null, null];
+  t[0x35] = ["pha", null, null];
+  t[0x36] = ["ba", null, null];
+  t[0x37] = ["bha", null, null];
+  t[0x38] = ["ma", null, null];
+  t[0x39] = ["mba", null, null];
+  t[0x3a] = ["ya", null, null];
+  t[0x3b] = ["ra", null, null];
+  t[0x3d] = ["la", null, null];
+  t[0x40] = ["va", null, null];
+  t[0x41] = ["sha", null, null];
+  t[0x42] = ["Sha", null, null];
+  t[0x43] = ["sa", null, null];
+  t[0x44] = ["ha", null, null];
+  t[0x45] = ["La", null, null];
+  t[0x46] = ["fa", null, null];
+  t[0x4a] = ["", null, null];
+  t[0x4f] = ["A", null, null];
+  t[0x50] = ["ae", null, null];
+  t[0x51] = ["aae", null, null];
+  t[0x52] = ["i", null, null];
+  t[0x53] = ["I", null, null];
+  t[0x54] = ["u", null, null];
+  t[0x56] = ["U", null, null];
+  t[0x58] = ["ri", null, null];
+  t[0x59] = ["e", null, null];
+  t[0x5a] = ["E", null, null];
+  t[0x5b] = ["ai", null, null];
+  t[0x5c] = ["o", null, null];
+  t[0x5d] = ["O", null, null];
+  t[0x5e] = ["au", null, null];
+  t[0x5f] = ["li", null, null];
+  t[0x66] = ["0", null, null];
+  t[0x67] = ["1", null, null];
+  t[0x68] = ["2", null, null];
+  t[0x69] = ["3", null, null];
+  t[0x6a] = ["4", null, null];
+  t[0x6b] = ["5", null, null];
+  t[0x6c] = ["6", null, null];
+  t[0x6d] = ["7", null, null];
+  t[0x6e] = ["8", null, null];
+  t[0x6f] = ["9", null, null];
+  t[0x72] = ["ri", null, null];
+  t[0x73] = ["ri", null, null];
+  t[0x74] = [". ", null, null];
 
-    // Consonants
-    'ක': 'ka', 'ඛ': 'kha', 'ග': 'ga', 'ඝ': 'gha', 'ඞ': 'ŋa', 'ඟ': 'ŋga',
-    'ච': 'cha', 'ඡ': 'Cha', 'ජ': 'ja', 'ඣ': 'jha', 'ඤ': 'ɲa', 'ඥ': 'jna', 'ඦ': 'ɲja',
-    'ට': 'Ta', 'ඨ': 'Tha', 'ඩ': 'Da', 'ඪ': 'Dha', 'ණ': 'Na', 'ඬ': 'NDa',
-    'ත': 'ta', 'ථ': 'tha', 'ද': 'da', 'ධ': 'dha', 'න': 'na', 'ඳ': 'nda',
-    'ප': 'pa', 'ඵ': 'pha', 'බ': 'ba', 'භ': 'bha', 'ම': 'ma', 'ඹ': 'mba',
-    'ය': 'ya', 'ර': 'ra', 'ල': 'la', 'ව': 'va',
-    'ශ': 'sha', 'ෂ': 'Sha', 'ස': 'sa', 'හ': 'ha', 'ළ': 'La', 'ෆ': 'fa',
-
-    // Matras (vowel signs)
-    'ා': 'A', 'ැ': 'ae', 'ෑ': 'aae',
-    'ි': 'i', 'ී': 'I', 'ු': 'u', 'ූ': 'U',
-    'ෘ': 'ri', 'ෙ': 'e', 'ේ': 'E', 'ෛ': 'ai',
-    'ො': 'o', 'ෝ': 'O', 'ෞ': 'au', 'ෟ': 'li',
-    '්': '', // hal kirima (virama)
-    'ෲ': 'ri', 'ෳ': 'ri',
-
-    // Additional marks
-    'ඁ': 'ⁿ', 'ං': 'ᵐ', 'ඃ': 'H',
-
-    // Numerals
-    '෦': '0', '෧': '1', '෨': '2', '෩': '3', '෪': '4',
-    '෫': '5', '෬': '6', '෭': '7', '෮': '8', '෯': '9',
-
-    // Others
-    '෴': '. ', '।': '. ', '॥': '. ',
-    ' ': ' '
-}, iso: {}, ipa: {} };
+  return t;
+})();

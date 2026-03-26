@@ -1,44 +1,133 @@
-var devanagariMaps = { itrans: {
-    // Vowels
-    'अ': 'a', 'आ': 'A', 'इ': 'i', 'ई': 'I', 'उ': 'u', 'ऊ': 'U',
-    'ऋ': 'ri', 'ॠ': 'ri', 'ऌ': 'li', 'ॡ': 'li',
-    'ए': 'e', 'ऐ': 'ai', 'ऑ': 'o', 'ओ': 'o', 'औ': 'au',
+// Devanagari transliteration table, indexed by (codepoint - 0x0900)
+// Each entry: [itrans, iso, ipa] — null = pass through original character
+// Note: Devanagari ITRANS uses subscript-a (ₐ) as inherent vowel; ISO uses plain a.
+var devanagariTable = (function () {
+  const t = new Array(0x80).fill(null);
+  // 0x00 - unmapped
+  t[0x01] = ["ⁿ", "ṁ", null];
+  t[0x02] = ["ⁿ", "ṃ", null];
+  t[0x03] = ["H", "ḥ", null];
+  t[0x04] = ["a", "a", null];
+  t[0x05] = ["a", "a", null];
+  t[0x06] = ["A", "ā", null];
+  t[0x07] = ["i", "i", null];
+  t[0x08] = ["I", "ī", null];
+  t[0x09] = ["u", "u", null];
+  t[0x0a] = ["U", "ū", null];
+  t[0x0b] = ["ri", "ṛ", null];
+  t[0x0c] = ["li", "ḷ", null];
+  t[0x0d] = ["ae", "æ", null];
+  t[0x0e] = ["e", "e", null];
+  t[0x0f] = ["e", "e", null];
+  t[0x10] = ["ai", "ai", null];
+  t[0x11] = ["o", "o", null];
+  t[0x12] = ["o", "o", null];
+  t[0x13] = ["o", "o", null];
+  t[0x14] = ["au", "au", null];
+  t[0x15] = ["kₐ", "ka", null];
+  t[0x16] = ["khₐ", "kha", null];
+  t[0x17] = ["gₐ", "ga", null];
+  t[0x18] = ["ghₐ", "gha", null];
+  t[0x19] = ["gnₐ", "ṅa", null];
+  t[0x1a] = ["chₐ", "ca", null];
+  t[0x1b] = ["Chₐ", "cha", null];
+  t[0x1c] = ["jₐ", "ja", null];
+  t[0x1d] = ["jhₐ", "jha", null];
+  t[0x1e] = ["jnₐ", "ña", null];
+  t[0x1f] = ["Tₐ", "ṭa", null];
+  t[0x20] = ["Thₐ", "ṭha", null];
+  t[0x21] = ["Dₐ", "ḍa", null];
+  t[0x22] = ["Dhₐ", "ḍha", null];
+  t[0x23] = ["Nₐ", "ṇa", null];
+  t[0x24] = ["tₐ", "ta", null];
+  t[0x25] = ["thₐ", "tha", null];
+  t[0x26] = ["dₐ", "da", null];
+  t[0x27] = ["dhₐ", "dha", null];
+  t[0x28] = ["nₐ", "na", null];
+  t[0x2a] = ["pₐ", "pa", null];
+  t[0x2b] = ["phₐ", "pha", null];
+  t[0x2c] = ["bₐ", "ba", null];
+  t[0x2d] = ["bhₐ", "bha", null];
+  t[0x2e] = ["mₐ", "ma", null];
+  t[0x2f] = ["yₐ", "ya", null];
+  t[0x30] = ["rₐ", "ra", null];
+  t[0x31] = ["rₐ", "ṟa", null];
+  t[0x32] = ["lₐ", "la", null];
+  t[0x33] = ["Lₐ", "ḷa", null];
+  t[0x35] = ["vₐ", "va", null];
+  t[0x36] = ["shₐ", "śa", null];
+  t[0x37] = ["Shₐ", "ṣa", null];
+  t[0x38] = ["sₐ", "sa", null];
+  t[0x39] = ["hₐ", "ha", null];
+  t[0x3a] = ["oe", "oe", null];
+  t[0x3b] = ["oE", "ōe", null];
+  t[0x3d] = ["'",  "'",  null];
+  t[0x3e] = ["A", "ā", null];
+  t[0x3f] = ["i", "i", null];
+  t[0x40] = ["I", "ī", null];
+  t[0x41] = ["u", "u", null];
+  t[0x42] = ["U", "ū", null];
+  t[0x43] = ["ri", "ṛ", null];
+  t[0x44] = ["ri", "ṝ", null];
+  t[0x45] = ["ae", "æ", null];
+  t[0x46] = ["e", "e", null];
+  t[0x47] = ["e", "e", null];
+  t[0x48] = ["ai", "ai", null];
+  t[0x49] = ["o", "o", null];
+  t[0x4a] = ["o", "o", null];
+  t[0x4b] = ["o", "o", null];
+  t[0x4c] = ["au", "au", null];
+  t[0x4d] = ["",   "",   null];
+  t[0x4e] = ["e",  "e",  null];
+  t[0x4f] = ["aw", "aw", null];
+  t[0x51] = ["",   "",   null];
+  t[0x52] = ["",   "",   null];
+  t[0x53] = ["",   "",   null];
+  t[0x54] = ["",   "",   null];
+  t[0x55] = ["ae", "æ",  null];
+  t[0x56] = ["ue", "ue", null];
+  t[0x57] = ["Ue", "ūe", null];
+  t[0x58] = ["qₐ", "qa", null];
+  t[0x59] = ["qhₐ", "qha", null];
+  t[0x5a] = ["gₐ", "ga", null];
+  t[0x5b] = ["zₐ", "za", null];
+  t[0x5c] = ["rₐ", "ṛa", null];
+  t[0x5d] = ["rhₐ", "ṛha", null];
+  t[0x5e] = ["fₐ", "fa", null];
+  t[0x5f] = ["yyₐ", "yya", null];
+  t[0x60] = ["ri", "ṝ", null];
+  t[0x61] = ["li", "ḹ", null];
+  t[0x62] = ["li", "ḷ", null];
+  t[0x63] = ["li", "ḹ", null];
+  t[0x64] = [". ", ". ", null];
+  t[0x65] = [". ", ". ", null];
+  t[0x66] = ["0", "0", null];
+  t[0x67] = ["1", "1", null];
+  t[0x68] = ["2", "2", null];
+  t[0x69] = ["3", "3", null];
+  t[0x6a] = ["4", "4", null];
+  t[0x6b] = ["5", "5", null];
+  t[0x6c] = ["6", "6", null];
+  t[0x6d] = ["7", "7", null];
+  t[0x6e] = ["8", "8", null];
+  t[0x6f] = ["9",    "9",   null];
 
-    // Consonants
-    'क': 'kₐ', 'ख': 'khₐ', 'ग': 'gₐ', 'घ': 'ghₐ', 'ङ': 'gnₐ',
-    'च': 'chₐ', 'छ': 'Chₐ', 'ज': 'jₐ', 'झ': 'jhₐ', 'ञ': 'jnₐ',
-    'ट': 'Tₐ', 'ठ': 'Thₐ', 'ड': 'Dₐ', 'ढ': 'Dhₐ', 'ण': 'Nₐ',
-    'त': 'tₐ', 'थ': 'thₐ', 'द': 'dₐ', 'ध': 'dhₐ', 'न': 'nₐ',
-    'प': 'pₐ', 'फ': 'phₐ', 'ब': 'bₐ', 'भ': 'bhₐ', 'म': 'mₐ',
-    'य': 'yₐ', 'र': 'rₐ', 'ल': 'lₐ', 'व': 'vₐ', 'श': 'shₐ',
-    'ष': 'Shₐ', 'स': 'sₐ', 'ह': 'hₐ', 'ळ': 'Lₐ',
-    '\u091C\u093C': 'zₐ', '\u092B\u093C': 'fₐ', // ज़ फ़
+  t[0x70] = [".",    ".",   null];
+  t[0x71] = [".",    ".",   null];
+  t[0x72] = ["a",    "â",   null];
+  t[0x73] = ["oe",   "oe",  null];
+  t[0x74] = ["oE",   "ōe",  null];
+  t[0x75] = ["aw",   "aw",  null];
+  t[0x76] = ["ue",   "ue",  null];
+  t[0x77] = ["Ue",   "ūe",  null];
+  t[0x78] = ["Dₐ",   null,  null];
+  t[0x79] = ["zhₐ",  "ḻa",  null];
+  t[0x7a] = ["yₐ",   null,  null];
+  t[0x7b] = ["gₐ",   null,  null];
+  t[0x7c] = ["jₐ",   null,  null];
+  t[0x7d] = ["'",    "'",   null];
+  t[0x7e] = ["Dₐ",   null,  null];
+  t[0x7f] = ["bₐ",   null,  null];
 
-    // nukta consonants
-    'क़': 'qₐ', 'ख़': 'qhₐ', 'ग़': 'gₐ', 'ज़': 'zₐ', 'ड़': 'rₐ', 'ढ़': 'rhₐ', 'फ़': 'fₐ', 'य़': 'yyₐ',
-
-    // Conjunct Consonants (Special Cases)
-    '\u0915\u094D\u0937': 'kshₐ', // क्ष
-    '\u091C\u094D\u091E': 'gyₐ', // ज्ञ
-
-    // Matras (Vowel signs)
-    'ा': 'A', 'ि': 'i', 'ी': 'I', 'ु': 'u', 'ू': 'U',
-    'े': 'e', 'ै': 'ai', 'ो': 'o', 'ौ': 'au', 'ृ': 'ri',
-    'ॄ': 'ri', 'ॢ': 'li', 'ॣ': 'li',
-
-    // Additional marks
-    '्': '', 'ं': 'ⁿ', 'ः': 'H', 'ँ': 'ⁿ',
-    '़': '', // Nukta
-    'ऽ': "'", // Avagraha
-    'ॅ': 'e', 'ॉ': 'o',
-
-    // Numerals
-    '०': '0', '१': '1', '२': '2', '३': '3', '४': '4',
-    '५': '5', '६': '6', '७': '7', '८': '8', '९': '9',
-
-    // Others
-    '।': '. ', '॥': '. ',
-    ' ': ' '
-
-    // we don't remap ॐ because this is interepreted as a religious symbol, and not part of any word
-}, iso: {}, ipa: {} };
+  return t;
+})();
