@@ -947,6 +947,7 @@
         };
         log('Settings initialized:', settings);
         applyDirectionOverride();
+        document.documentElement.classList.toggle('latinify-indicate', settings.indicateScript !== false);
         initTransliteration();
     });
 
@@ -955,6 +956,7 @@
         if (message.type === 'settingsChanged') {
             settings = message.settings;
             applyDirectionOverride();
+            document.documentElement.classList.toggle('latinify-indicate', settings.indicateScript !== false);
             // Reset total time if stats are disabled then enabled?
             // Or just keep tracking? Let's keep tracking but only show if enabled.
             if (!settings.showStats) {

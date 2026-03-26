@@ -1,21 +1,21 @@
-/* Language colour classes */
-[class*="transliterated-"] {
+/* Language colour classes — only shown when indicateScript is on */
+html.latinify-indicate [class*="transliterated-"] {
     text-decoration: solid underline;
     text-underline-offset: 5px;
     text-decoration-skip-ink: none;
 }
 
-.transliterated-arabic     { text-decoration-color: teal; }
-.transliterated-bengali    { text-decoration-color: darkgreen; }
-.transliterated-devanagari { text-decoration-color: lightgreen; }
-.transliterated-gujarati   { text-decoration-color: goldenrod; }
-.transliterated-gurmukhi   { text-decoration-color: violet; }
-.transliterated-kannada    { text-decoration-color: gold; }
-.transliterated-malayalam  { text-decoration-color: magenta; }
-.transliterated-odia       { text-decoration-color: orchid; }
-.transliterated-sinhala    { text-decoration-color: dodgerblue; }
-.transliterated-tamil      { text-decoration-color: crimson; }
-.transliterated-telugu     { text-decoration-color: hotpink; }
+html.latinify-indicate .transliterated-arabic     { text-decoration-color: teal; }
+html.latinify-indicate .transliterated-bengali    { text-decoration-color: darkgreen; }
+html.latinify-indicate .transliterated-devanagari { text-decoration-color: lightgreen; }
+html.latinify-indicate .transliterated-gujarati   { text-decoration-color: goldenrod; }
+html.latinify-indicate .transliterated-gurmukhi   { text-decoration-color: violet; }
+html.latinify-indicate .transliterated-kannada    { text-decoration-color: gold; }
+html.latinify-indicate .transliterated-malayalam  { text-decoration-color: magenta; }
+html.latinify-indicate .transliterated-odia       { text-decoration-color: orchid; }
+html.latinify-indicate .transliterated-sinhala    { text-decoration-color: dodgerblue; }
+html.latinify-indicate .transliterated-tamil      { text-decoration-color: crimson; }
+html.latinify-indicate .transliterated-telugu     { text-decoration-color: hotpink; }
 
 /* Stats overlay */
 #latinify-stats-overlay {
