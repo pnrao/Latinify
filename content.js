@@ -76,7 +76,7 @@
     // Mapping of Arabic script Unicode characters to Latin (covers Urdu, Persian, Pashto, etc.)
     const arabicToLatin = {
         // Alef forms (vowel carriers)
-        'ا': 'a', 'آ': 'aa', 'أ': 'a', 'إ': 'i', 'ؤ': 'w', 'ئ': 'y',
+        'ا': 'a', 'آ': 'A', 'أ': 'a', 'إ': 'i', 'ؤ': 'w', 'ئ': 'y',
 
         // Consonants
         'ب': 'b', 'پ': 'p',
@@ -172,7 +172,7 @@
     // Mapping of Devanagari Unicode characters to ITRANS
     const devanagariToITRANS = {
         // Vowels
-        'अ': 'a', 'आ': 'aa', 'इ': 'i', 'ई': 'ii', 'उ': 'u', 'ऊ': 'uu',
+        'अ': 'a', 'आ': 'A', 'इ': 'i', 'ई': 'I', 'उ': 'u', 'ऊ': 'U',
         'ऋ': 'ri', 'ॠ': 'ri', 'ऌ': 'li', 'ॡ': 'li',
         'ए': 'e', 'ऐ': 'ai', 'ऑ': 'o', 'ओ': 'o', 'औ': 'au',
 
@@ -194,7 +194,7 @@
         '\u091C\u094D\u091E': 'gyₐ', // ज्ञ
 
         // Matras (Vowel signs)
-        'ा': 'aa', 'ि': 'i', 'ी': 'ii', 'ु': 'u', 'ू': 'uu',
+        'ा': 'A', 'ि': 'i', 'ी': 'I', 'ु': 'u', 'ू': 'U',
         'े': 'e', 'ै': 'ai', 'ो': 'o', 'ौ': 'au', 'ृ': 'ri',
         'ॄ': 'ri', 'ॢ': 'li', 'ॣ': 'li',
 
@@ -218,8 +218,8 @@
     // Mapping of Kannada Unicode characters to ITRANS
     const kannadaToITRANS = {
         // Vowels
-        'ಅ': 'a', 'ಆ': 'aa', 'ಇ': 'i', 'ಈ': 'ii', 'ಉ': 'u', 'ಊ': 'uu',
-        'ಋ': 'ri', 'ೠ': 'ri', 'ಌ': 'li', 'ೡ': 'li', 'ಎ': 'e', 'ಏ': 'ee', 'ಐ': 'ai', 'ಒ': 'o', 'ಓ': 'oo', 'ಔ': 'au',
+        'ಅ': 'a', 'ಆ': 'A', 'ಇ': 'i', 'ಈ': 'I', 'ಉ': 'u', 'ಊ': 'U',
+        'ಋ': 'ri', 'ೠ': 'ri', 'ಌ': 'li', 'ೡ': 'li', 'ಎ': 'e', 'ಏ': 'E', 'ಐ': 'ai', 'ಒ': 'o', 'ಓ': 'O', 'ಔ': 'au',
 
         // Consonants
         'ಕ': 'ka', 'ಖ': 'kha', 'ಗ': 'ga', 'ಘ': 'gha', 'ಙ': 'gna',
@@ -231,8 +231,8 @@
         'ಷ': 'Sha', 'ಸ': 'sa', 'ಹ': 'ha', 'ಳ': 'La', 'ೞ': 'LLa',
 
         // Matras (Vowel signs)
-        'ಾ': 'aa', 'ಿ': 'i', 'ೀ': 'ii', 'ು': 'u', 'ೂ': 'uu',
-        'ೆ': 'e', 'ೇ': 'ee', 'ೈ': 'ai', 'ೊ': 'o', 'ೋ': 'oo', 'ೌ': 'au', 'ೃ': 'ru', 'ೄ': 'ri',
+        'ಾ': 'A', 'ಿ': 'i', 'ೀ': 'I', 'ು': 'u', 'ೂ': 'U',
+        'ೆ': 'e', 'ೇ': 'E', 'ೈ': 'ai', 'ೊ': 'o', 'ೋ': 'O', 'ೌ': 'au', 'ೃ': 'ru', 'ೄ': 'ri',
         'ೢ': 'li', 'ೣ': 'li',
 
         // Additional marks
@@ -251,8 +251,8 @@
     // Mapping of Telugu Unicode characters to ITRANS
     const teluguToITRANS = {
         // Vowels
-        'అ': 'a', 'ఆ': 'aa', 'ఇ': 'i', 'ఈ': 'ii', 'ఉ': 'u', 'ఊ': 'uu',
-        'ఋ': 'ri', 'ౠ': 'ri', 'ఌ': 'li', 'ౡ': 'li', 'ఎ': 'e', 'ఏ': 'ee', 'ఐ': 'ai', 'ఒ': 'o', 'ఓ': 'oo', 'ఔ': 'au',
+        'అ': 'a', 'ఆ': 'A', 'ఇ': 'i', 'ఈ': 'I', 'ఉ': 'u', 'ఊ': 'U',
+        'ఋ': 'ri', 'ౠ': 'ri', 'ఌ': 'li', 'ౡ': 'li', 'ఎ': 'e', 'ఏ': 'E', 'ఐ': 'ai', 'ఒ': 'o', 'ఓ': 'O', 'ఔ': 'au',
 
         // Chandrabindu, avagraha
         'ఁ': 'ⁿ', 'ఽ': "'",
@@ -268,9 +268,9 @@
         'ౘ': 'tsa', 'ౙ': 'dza', 'ౚ': 'rra', 'ౝ': 'na',
 
         // Matras (Vowel signs)
-        'ా': 'aa', 'ి': 'i', 'ీ': 'ii', 'ు': 'u', 'ూ': 'uu',
+        'ా': 'A', 'ి': 'i', 'ీ': 'I', 'ు': 'u', 'ూ': 'U',
         'ృ': 'ri', 'ౄ': 'ri',
-        'ె': 'e', 'ే': 'ee', 'ై': 'ai', 'ొ': 'o', 'ో': 'oo', 'ౌ': 'au',
+        'ె': 'e', 'ే': 'E', 'ై': 'ai', 'ొ': 'o', 'ో': 'O', 'ౌ': 'au',
         'ౢ': 'li', 'ౣ': 'li',
 
         // Additional marks
@@ -292,8 +292,8 @@
     // Mapping of Tamil Unicode characters to ITRANS
     const tamilToITRANS = {
         // Vowels
-        'அ': 'a', 'ஆ': 'aa', 'இ': 'i', 'ஈ': 'ii', 'உ': 'u', 'ஊ': 'uu',
-        'எ': 'e', 'ஏ': 'ee', 'ஐ': 'ai', 'ஒ': 'o', 'ஓ': 'oo', 'ஔ': 'au',
+        'அ': 'a', 'ஆ': 'A', 'இ': 'i', 'ஈ': 'I', 'உ': 'u', 'ஊ': 'U',
+        'எ': 'e', 'ஏ': 'E', 'ஐ': 'ai', 'ஒ': 'o', 'ஓ': 'O', 'ஔ': 'au',
 
         // Consonants
         'க': 'ka', 'ங': 'ŋa',
@@ -305,9 +305,9 @@
         'ஶ': 'sha', 'ஷ': 'Sha', 'ஸ': 'sa', 'ஹ': 'ha',
 
         // Matras (vowel signs)
-        'ா': 'aa', 'ி': 'i', 'ீ': 'ii', 'ு': 'u', 'ூ': 'uu',
-        'ெ': 'e', 'ே': 'ee', 'ை': 'ai',
-        'ொ': 'o', 'ோ': 'oo', 'ௌ': 'au',
+        'ா': 'A', 'ி': 'i', 'ீ': 'I', 'ு': 'u', 'ூ': 'U',
+        'ெ': 'e', 'ே': 'E', 'ை': 'ai',
+        'ொ': 'o', 'ோ': 'O', 'ௌ': 'au',
         '்': '', // pulli (virama)
 
         // Additional marks
@@ -333,7 +333,7 @@
     // Mapping of Odia Unicode characters to ITRANS
     const odiaToITRANS = {
         // Vowels
-        'ଅ': 'a', 'ଆ': 'aa', 'ଇ': 'i', 'ଈ': 'ii', 'ଉ': 'u', 'ଊ': 'uu',
+        'ଅ': 'a', 'ଆ': 'A', 'ଇ': 'i', 'ଈ': 'I', 'ଉ': 'u', 'ଊ': 'U',
         'ଋ': 'ri', 'ୠ': 'ri', 'ଌ': 'li', 'ୡ': 'li',
         'ଏ': 'e', 'ଐ': 'ai', 'ଓ': 'o', 'ଔ': 'au',
 
@@ -348,7 +348,7 @@
         'ଶ': 'sha', 'ଷ': 'Sha', 'ସ': 'sa', 'ହ': 'ha',
 
         // Matras (Vowel signs)
-        'ା': 'aa', 'ି': 'i', 'ୀ': 'ii', 'ୁ': 'u', 'ୂ': 'uu',
+        'ା': 'A', 'ି': 'i', 'ୀ': 'I', 'ୁ': 'u', 'ୂ': 'U',
         'ୃ': 'ri', 'ୄ': 'ri', 'ୢ': 'li', 'ୣ': 'li',
         'େ': 'e', 'ୈ': 'ai', 'ୋ': 'o', 'ୌ': 'au',
 
@@ -372,10 +372,10 @@
     // Mapping of Sinhala Unicode characters to ITRANS
     const sinhalaToITRANS = {
         // Vowels
-        'අ': 'a', 'ආ': 'aa', 'ඇ': 'ae', 'ඈ': 'aae',
-        'ඉ': 'i', 'ඊ': 'ii', 'උ': 'u', 'ඌ': 'uu',
+        'අ': 'a', 'ආ': 'A', 'ඇ': 'ae', 'ඈ': 'aae',
+        'ඉ': 'i', 'ඊ': 'I', 'උ': 'u', 'ඌ': 'U',
         'ඍ': 'ri', 'ඎ': 'ri', 'ඏ': 'li', 'ඐ': 'li',
-        'එ': 'e', 'ඒ': 'ee', 'ඓ': 'ai', 'ඔ': 'o', 'ඕ': 'oo', 'ඖ': 'au',
+        'එ': 'e', 'ඒ': 'E', 'ඓ': 'ai', 'ඔ': 'o', 'ඕ': 'O', 'ඖ': 'au',
 
         // Consonants
         'ක': 'ka', 'ඛ': 'kha', 'ග': 'ga', 'ඝ': 'gha', 'ඞ': 'ŋa', 'ඟ': 'ŋga',
@@ -387,10 +387,10 @@
         'ශ': 'sha', 'ෂ': 'Sha', 'ස': 'sa', 'හ': 'ha', 'ළ': 'La', 'ෆ': 'fa',
 
         // Matras (vowel signs)
-        'ා': 'aa', 'ැ': 'ae', 'ෑ': 'aae',
-        'ි': 'i', 'ී': 'ii', 'ු': 'u', 'ූ': 'uu',
-        'ෘ': 'ri', 'ෙ': 'e', 'ේ': 'ee', 'ෛ': 'ai',
-        'ො': 'o', 'ෝ': 'oo', 'ෞ': 'au', 'ෟ': 'li',
+        'ා': 'A', 'ැ': 'ae', 'ෑ': 'aae',
+        'ි': 'i', 'ී': 'I', 'ු': 'u', 'ූ': 'U',
+        'ෘ': 'ri', 'ෙ': 'e', 'ේ': 'E', 'ෛ': 'ai',
+        'ො': 'o', 'ෝ': 'O', 'ෞ': 'au', 'ෟ': 'li',
         '්': '', // hal kirima (virama)
         'ෲ': 'ri', 'ෳ': 'ri',
 
@@ -409,9 +409,9 @@
     // Mapping of Malayalam Unicode characters to ITRANS
     const malayalamToITRANS = {
         // Vowels
-        'അ': 'a', 'ആ': 'aa', 'ഇ': 'i', 'ഈ': 'ii', 'ഉ': 'u', 'ഊ': 'uu',
-        'ഋ': 'ri', 'ൠ': 'ri', 'ഌ': 'li', 'ൡ': 'li', 'ൟ': 'ii',
-        'എ': 'e', 'ഏ': 'ee', 'ഐ': 'ai', 'ഒ': 'o', 'ഓ': 'oo', 'ഔ': 'au',
+        'അ': 'a', 'ആ': 'A', 'ഇ': 'i', 'ഈ': 'I', 'ഉ': 'u', 'ഊ': 'U',
+        'ഋ': 'ri', 'ൠ': 'ri', 'ഌ': 'li', 'ൡ': 'li', 'ൟ': 'I',
+        'എ': 'e', 'ഏ': 'E', 'ഐ': 'ai', 'ഒ': 'o', 'ഓ': 'O', 'ഔ': 'au',
 
         // Consonants
         'ക': 'ka', 'ഖ': 'kha', 'ഗ': 'ga', 'ഘ': 'gha', 'ങ': 'gna',
@@ -426,10 +426,10 @@
         'ൺ': 'N', 'ൻ': 'n', 'ർ': 'r', 'ൎ': 'r', 'ൽ': 'l', 'ൾ': 'L', 'ൿ': 'k',
 
         // Matras (Vowel signs)
-        'ാ': 'aa', 'ി': 'i', 'ീ': 'ii', 'ു': 'u', 'ൂ': 'uu',
+        'ാ': 'A', 'ി': 'i', 'ീ': 'I', 'ു': 'u', 'ൂ': 'U',
         'ൃ': 'ru', 'ൄ': 'ri', 'ൢ': 'li', 'ൣ': 'li',
-        'െ': 'e', 'േ': 'ee', 'ൈ': 'ai',
-        'ൊ': 'o', 'ോ': 'oo', 'ൌ': 'au', 'ൗ': 'au',
+        'െ': 'e', 'േ': 'E', 'ൈ': 'ai',
+        'ൊ': 'o', 'ോ': 'O', 'ൌ': 'au', 'ൗ': 'au',
 
         // Additional marks
         '്': '', 'ം': 'ᵐ', 'ഃ': 'H', 'ഁ': 'ⁿ', 'ഀ': 'ⁿ', 'ഄ': 'ⁿ', 'ഽ': "'",
@@ -458,7 +458,7 @@
     // Mapping of Gurmukhi Unicode characters to ITRANS
     const gurmukhiToITRANS = {
         // Vowels
-        'ਅ': 'a', 'ਆ': 'aa', 'ਇ': 'i', 'ਈ': 'ii', 'ਉ': 'u', 'ਊ': 'uu',
+        'ਅ': 'a', 'ਆ': 'A', 'ਇ': 'i', 'ਈ': 'I', 'ਉ': 'u', 'ਊ': 'U',
         'ਏ': 'e', 'ਐ': 'ai', 'ਓ': 'o', 'ਔ': 'au',
 
         // Carrier letters (silent base; following matra provides the vowel)
@@ -481,7 +481,7 @@
         'ਫ਼': 'fa', '\u0A5E': 'fa',   // \u0A5E = ਫ਼ precomposed
 
         // Matras (vowel signs)
-        'ਾ': 'aa', 'ਿ': 'i', 'ੀ': 'ii', 'ੁ': 'u', 'ੂ': 'uu',
+        'ਾ': 'A', 'ਿ': 'i', 'ੀ': 'I', 'ੁ': 'u', 'ੂ': 'U',
         'ੇ': 'e', 'ੈ': 'ai', 'ੋ': 'o', 'ੌ': 'au',
         '੍': '',
 
@@ -505,7 +505,7 @@
     // Mapping of Bengali Unicode characters to ITRANS
     const bengaliToITRANS = {
         // Vowels
-        'অ': 'a', 'আ': 'aa', 'ই': 'i', 'ঈ': 'ii', 'উ': 'u', 'ঊ': 'uu',
+        'অ': 'a', 'আ': 'A', 'ই': 'i', 'ঈ': 'I', 'উ': 'u', 'ঊ': 'U',
         'ঋ': 'ri', 'ৠ': 'ri', 'ঌ': 'li', 'ৡ': 'li',
         'এ': 'e', 'ঐ': 'ai', 'ও': 'o', 'ঔ': 'au',
 
@@ -521,7 +521,7 @@
         'ৎ': 't', // khanda ta: terminal consonant without inherent vowel
 
         // Matras (Vowel signs)
-        'া': 'aa', 'ি': 'i', 'ী': 'ii', 'ু': 'u', 'ূ': 'uu',
+        'া': 'A', 'ি': 'i', 'ী': 'I', 'ু': 'u', 'ূ': 'U',
         'ৃ': 'ri', 'ৄ': 'ri',
         'ে': 'e', 'ৈ': 'ai', 'ো': 'o', 'ৌ': 'au',
 
@@ -552,7 +552,7 @@
     // Mapping of Gujarati Unicode characters to ITRANS
     const gujaratiToITRANS = {
         // Vowels
-        'અ': 'a', 'આ': 'aa', 'ઇ': 'i', 'ઈ': 'ii', 'ઉ': 'u', 'ઊ': 'uu',
+        'અ': 'a', 'આ': 'A', 'ઇ': 'i', 'ઈ': 'I', 'ઉ': 'u', 'ઊ': 'U',
         'ઋ': 'ri', 'ૠ': 'ri', 'ઌ': 'li', 'ૡ': 'li',
         'ઍ': 'e', 'એ': 'e', 'ઐ': 'ai', 'ઑ': 'o', 'ઓ': 'o', 'ઔ': 'au',
 
@@ -566,7 +566,7 @@
         'શ': 'shₐ', 'ષ': 'Shₐ', 'સ': 'sₐ', 'હ': 'hₐ', 'ૹ': 'zhₐ',
 
         // Matras (Vowel signs)
-        'ા': 'aa', 'િ': 'i', 'ી': 'ii', 'ુ': 'u', 'ૂ': 'uu',
+        'ા': 'A', 'િ': 'i', 'ી': 'I', 'ુ': 'u', 'ૂ': 'U',
         'ૃ': 'ri', 'ૄ': 'ri', 'ૅ': 'e', 'ૢ': 'li', 'ૣ': 'li',
         'ે': 'e', 'ૈ': 'ai', 'ૉ': 'o', 'ો': 'o', 'ૌ': 'au',
 

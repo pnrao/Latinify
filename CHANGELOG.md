@@ -14,6 +14,7 @@
 - FIX: Kannada vocalic L and other rarely used characters now transliterated
 - FIX: YouTube closed captions now fully transliterated (previously only first word)
 - FIX: Auspicious symbols (Tamil OM ௐ, Gurmukhi Ek Onkar ੴ) now shown unaltered
+- CHANGE: Long vowels now uppercase: A (ā), I (ī), U (ū), E (ē), O (ō)
 
 ## 1.5 - 2026-03-25
 

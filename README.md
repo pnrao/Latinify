@@ -26,6 +26,7 @@ This Chrome extension helps by converting text in Indic scripts to the Latin scr
 - Schwa is denoted as ₐ in Devanagari and Gujarati, making it easier to ignore.
 - Schwa is denoted as 'a' in Gurmukhi, Kannada, Malayalam, Odia, Telugu, as it is usually pronounced.
 - In Bengali, the inherent vowel is ɔ, not ə. It is denoted as ₒ.
+- Long vowels are denoted with uppercase: A (ā), I (ī), U (ū), E (ē), O (ō). Examples: rAma (राम, ರಾಮ), sItA (सीता, ಸೀತಾ), Enu/En (ಏನು, ஏன்), ODu (ಓಡು, ஓடு).
 - Nasal signs are denoted as ⁿ or ᵐ, depending on the script and the letter.
 - For Arabic-script languages, unvowelled text (no harakat) will have short vowels missing, as they are not written. This is expected.
 - On right-to-left pages, the page layout can optionally be flipped to left-to-right. This is best-effort and some elements may remain RTL.
