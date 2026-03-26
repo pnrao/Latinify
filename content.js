@@ -870,7 +870,7 @@
                                     return;
                                 }
                             } else if (node.nodeType === Node.TEXT_NODE) {
-                                if (node.parentNode && node.parentNode.classList.contains('transliterated')) {
+                                if (node.parentNode && (node.parentNode.classList.contains('transliterated') || node.parentNode.id === 'latinify-stats-overlay')) {
                                     return;
                                 }
                             }
@@ -880,7 +880,7 @@
                         });
                     } else if (mutation.type === 'characterData') {
                         // Ignore changes to our own nodes
-                        if (mutation.target.parentNode && mutation.target.parentNode.classList.contains('transliterated')) {
+                        if (mutation.target.parentNode && (mutation.target.parentNode.classList.contains('transliterated') || mutation.target.parentNode.id === 'latinify-stats-overlay')) {
                             return;
                         }
                         log('Processing dynamically changed text node:', mutation.target);
