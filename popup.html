@@ -37,7 +37,21 @@
 </head>
 
 <body>
-    <h3>Transliterate</h3>
+    <div style="margin-bottom: 0.5em;">
+        <label style="display: inline; margin-right: 1em;">
+            <input type="radio" name="scheme" id="scheme-itrans" value="itrans" checked>
+            <span>ITRANS</span>
+        </label>
+        <label style="display: inline; margin-right: 1em;">
+            <input type="radio" name="scheme" id="scheme-iso" value="iso">
+            <span>ISO</span>
+        </label>
+        <label style="display: inline;">
+            <input type="radio" name="scheme" id="scheme-ipa" value="ipa">
+            <span>IPA</span>
+        </label>
+    </div>
+    <hr style="border: 0; border-top: 1px solid #ccc; margin: 10px 0;">
     <label>
         <input type="checkbox" id="arabic" checked>
         <span class="script-name transliterated-arabic">Arabic</span>

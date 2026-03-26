@@ -28,6 +28,17 @@
                 "<all_urls>"
             ],
             "js": [
+                "maps/arabic.js",
+                "maps/bengali.js",
+                "maps/devanagari.js",
+                "maps/gujarati.js",
+                "maps/gurmukhi.js",
+                "maps/kannada.js",
+                "maps/malayalam.js",
+                "maps/odia.js",
+                "maps/sinhala.js",
+                "maps/tamil.js",
+                "maps/telugu.js",
                 "content.js"
             ],
             "css": [

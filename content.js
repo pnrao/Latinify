@@ -1,6 +1,4 @@
-(function () {
-    'use strict';
-    const LOGGING_ENABLED = false;
+const LOGGING_ENABLED = false;
     const REPLACEABLE_SCRIPT_START = '\u0600';
     const REPLACEABLE_SCRIPT_END = '\u0DFF';
 
@@ -73,518 +71,8 @@
 
     const SKIPPED_NODES = ['script', 'style', 'textarea', 'input', 'noscript', 'iframe', 'object', 'embed', 'audio', 'video', 'select', 'button', 'code', 'pre'];
 
-    // Mapping of Arabic script Unicode characters to Latin (covers Urdu, Persian, Pashto, etc.)
-    const arabicToLatin = {
-        // Alef forms (vowel carriers)
-        'ا': 'a', 'آ': 'A', 'أ': 'a', 'إ': 'i', 'ؤ': 'w', 'ئ': 'y',
 
-        // Consonants
-        'ب': 'b', 'پ': 'p',
-        'ت': 't', 'ٹ': 'T', 'ة': 't', // ة = ta marbuta
-        'ث': 's',
-        'ج': 'j', 'چ': 'ch',
-        'ح': 'h', 'خ': 'kh',
-        'د': 'd', 'ڈ': 'D',
-        'ذ': 'z',
-        'ر': 'r', 'ڑ': 'R',
-        'ز': 'z', 'ژ': 'zh',
-        'س': 's', 'ش': 'sh',
-        'ص': 's', 'ض': 'z', 'ط': 't', 'ظ': 'z',
-        'ع': "'", // ain - glottal stop
-        'غ': 'gh',
-        'ف': 'f', 'ق': 'q',
-        '\u06A9': 'k', '\u0643': 'k', // ک (Urdu kaf) and ك (Arabic kaf)
-        'گ': 'g',
-        'ل': 'l', 'م': 'm', 'ن': 'n',
-        'ں': 'ⁿ', // noon ghunna (nasalization)
-        'و': 'w',
-        '\u06C1': 'h', '\u0647': 'h', '\u06BE': 'h', // ہ (Urdu he), ه (Arabic he), ھ (do chashmi he)
-        'ء': "'", // hamza
-        '\u06CC': 'y', '\u064A': 'y', '\u0649': 'a', // ی (Urdu ye), ي (Arabic ye), ى (alef maksura)
-        '\u06D2': 'e', // ے bari ye
-
-        // Harakat and diacritical marks — in modifier range U+064B–U+065F
-        '\u064E': 'a', '\u064F': 'u', '\u0650': 'i', // fatha, damma, kasra
-        '\u064B': 'an', '\u064C': 'un', '\u064D': 'in', // tanwin forms
-        '\u0651': '', '\u0652': '', // shadda (gemination), sukun (no vowel)
-        '\u0653': '', '\u0654': "'", '\u0655': "'", // maddah, hamza above, hamza below
-        '\u0656': 'i', '\u0657': 'u', // subscript alef (Kashmiri i), inverted damma (u)
-        '\u0658': 'ⁿ', '\u0659': '', '\u065A': '', '\u065B': '', // noon ghunna mark, rare Quranic marks
-        '\u065C': '', '\u065D': '', '\u065E': '', '\u065F': '', // rare Quranic marks
-
-        // Kashmiri letters
-        '\u0620': 'y', '\u06C4': 'o', // ؠ (Kashmiri yeh), ۄ (Kashmiri waw with ring)
-
-        // Urdu/Nastaliq variants
-        '\u06C2': 'h', '\u06C3': 't', // ۂ (he goal with hamza), ۃ (teh marbuta goal)
-
-        // Superscript alef — long vowel mark
-        '\u0670': 'a',
-
-        // Sindhi/extended consonants (Arabic Extended-A block U+0750–U+077F)
-        '\u0683': 'ɲ', '\u0768': 'ɲ', // ڃ nyeh, ݨ nye — palatal nasal
-        '\u0750': 'b', '\u0751': 'b', '\u0752': 'b', '\u0753': 'b', '\u0754': 'b', '\u0755': 'b', '\u0756': 'b', // beh variants
-        '\u0757': 'h', '\u0758': 'h', // hah variants
-        '\u0759': 'd', '\u075A': 'd', // dal variants
-        '\u075B': 'r', // reh with stroke
-        '\u075C': 's', // seen with four dots
-        '\u075D': "'", '\u075E': "'", '\u075F': "'", // ain variants
-        '\u0760': 'f', '\u0761': 'f', // fa variants
-        '\u0762': 'k', '\u0763': 'k', '\u0764': 'k', // keheh variants
-        '\u0765': 'm', '\u0766': 'm', // meem variants
-        '\u0767': 'n', '\u0769': 'n', // noon variants
-        '\u076A': 'l', // lam with bar
-        '\u076B': 'r', '\u076C': 'r', // reh variants
-        '\u076D': 's', // seen variant
-        '\u076E': 'h', '\u076F': 'h', '\u0770': 's', '\u0771': 'r', '\u0772': 'h', // hah/seen/reh variants
-        '\u0773': '', '\u0774': '', '\u0775': '', '\u0776': '', '\u0777': '', // Quranic marks
-        '\u0778': '', '\u0779': '', '\u077A': '', '\u077B': '', '\u077C': '', '\u077D': '', '\u077E': '', '\u077F': '', // Quranic/liturgical marks
-
-        // Pashto consonants
-        '\u067C': 'T', '\u0681': 'dz', '\u0685': 'ts', '\u0689': 'D', '\u068C': 'd',
-        '\u0693': 'R', '\u0696': 'zh', '\u069A': 'sh', '\u06AB': 'g', '\u06BC': 'N',
-
-        // Additional vowels (Kurdish, Pashto, Uyghur)
-        '\u0672': 'a', '\u06C6': 'o', '\u06C7': 'u',
-        '\u06CD': 'ai', '\u06D0': 'e', '\u06D5': 'ä',
-
-        // Arabic punctuation
-        '\u066A': '%', '\u066B': '.', '\u066C': ',',
-
-        // Tatweel (kashida) — visual lengthening, no phonetic value
-        '\u0640': '',
-
-        // Punctuation
-        '\u060C': ',', '\u061B': ';', '\u061F': '?', // Arabic comma, semicolon, question mark
-        '\u06D4': '. ', // Urdu full stop
-
-        // Eastern Arabic / Urdu numerals
-        '\u06F0': '0', '\u06F1': '1', '\u06F2': '2', '\u06F3': '3', '\u06F4': '4',
-        '\u06F5': '5', '\u06F6': '6', '\u06F7': '7', '\u06F8': '8', '\u06F9': '9',
-
-        // Arabic-Indic numerals
-        '\u0660': '0', '\u0661': '1', '\u0662': '2', '\u0663': '3', '\u0664': '4',
-        '\u0665': '5', '\u0666': '6', '\u0667': '7', '\u0668': '8', '\u0669': '9',
-
-        ' ': ' '
-    };
-
-    // Mapping of Devanagari Unicode characters to ITRANS
-    const devanagariToITRANS = {
-        // Vowels
-        'अ': 'a', 'आ': 'A', 'इ': 'i', 'ई': 'I', 'उ': 'u', 'ऊ': 'U',
-        'ऋ': 'ri', 'ॠ': 'ri', 'ऌ': 'li', 'ॡ': 'li',
-        'ए': 'e', 'ऐ': 'ai', 'ऑ': 'o', 'ओ': 'o', 'औ': 'au',
-
-        // Consonants
-        'क': 'kₐ', 'ख': 'khₐ', 'ग': 'gₐ', 'घ': 'ghₐ', 'ङ': 'gnₐ',
-        'च': 'chₐ', 'छ': 'Chₐ', 'ज': 'jₐ', 'झ': 'jhₐ', 'ञ': 'jnₐ',
-        'ट': 'Tₐ', 'ठ': 'Thₐ', 'ड': 'Dₐ', 'ढ': 'Dhₐ', 'ण': 'Nₐ',
-        'त': 'tₐ', 'थ': 'thₐ', 'द': 'dₐ', 'ध': 'dhₐ', 'न': 'nₐ',
-        'प': 'pₐ', 'फ': 'phₐ', 'ब': 'bₐ', 'भ': 'bhₐ', 'म': 'mₐ',
-        'य': 'yₐ', 'र': 'rₐ', 'ल': 'lₐ', 'व': 'vₐ', 'श': 'shₐ',
-        'ष': 'Shₐ', 'स': 'sₐ', 'ह': 'hₐ', 'ळ': 'Lₐ',
-        '\u091C\u093C': 'zₐ', '\u092B\u093C': 'fₐ', // ज़ फ़
-
-        // nukta consonants
-        'क़': 'qₐ', 'ख़': 'qhₐ', 'ग़': 'gₐ', 'ज़': 'zₐ', 'ड़': 'rₐ', 'ढ़': 'rhₐ', 'फ़': 'fₐ', 'य़': 'yyₐ',
-
-        // Conjunct Consonants (Special Cases)
-        '\u0915\u094D\u0937': 'kshₐ', // क्ष
-        '\u091C\u094D\u091E': 'gyₐ', // ज्ञ
-
-        // Matras (Vowel signs)
-        'ा': 'A', 'ि': 'i', 'ी': 'I', 'ु': 'u', 'ू': 'U',
-        'े': 'e', 'ै': 'ai', 'ो': 'o', 'ौ': 'au', 'ृ': 'ri',
-        'ॄ': 'ri', 'ॢ': 'li', 'ॣ': 'li',
-
-        // Additional marks
-        '्': '', 'ं': 'ⁿ', 'ः': 'H', 'ँ': 'ⁿ',
-        '़': '', // Nukta
-        'ऽ': "'", // Avagraha
-        'ॅ': 'e', 'ॉ': 'o',
-
-        // Numerals
-        '०': '0', '१': '1', '२': '2', '३': '3', '४': '4',
-        '५': '5', '६': '6', '७': '7', '८': '8', '९': '9',
-
-        // Others
-        '।': '. ', '॥': '. ',
-        ' ': ' '
-
-        // we don't remap ॐ because this is interepreted as a religious symbol, and not part of any word
-    };
-
-    // Mapping of Kannada Unicode characters to ITRANS
-    const kannadaToITRANS = {
-        // Vowels
-        'ಅ': 'a', 'ಆ': 'A', 'ಇ': 'i', 'ಈ': 'I', 'ಉ': 'u', 'ಊ': 'U',
-        'ಋ': 'ri', 'ೠ': 'ri', 'ಌ': 'li', 'ೡ': 'li', 'ಎ': 'e', 'ಏ': 'E', 'ಐ': 'ai', 'ಒ': 'o', 'ಓ': 'O', 'ಔ': 'au',
-
-        // Consonants
-        'ಕ': 'ka', 'ಖ': 'kha', 'ಗ': 'ga', 'ಘ': 'gha', 'ಙ': 'gna',
-        'ಚ': 'cha', 'ಛ': 'Cha', 'ಜ': 'ja', 'ಝ': 'jha', 'ಞ': 'jna',
-        'ಟ': 'Ta', 'ಠ': 'Tha', 'ಡ': 'Da', 'ಢ': 'Dha', 'ಣ': 'Na',
-        'ತ': 'ta', 'ಥ': 'tha', 'ದ': 'da', 'ಧ': 'dha', 'ನ': 'na',
-        'ಪ': 'pa', 'ಫ': 'pha', 'ಬ': 'ba', 'ಭ': 'bha', 'ಮ': 'ma',
-        'ಯ': 'ya', 'ರ': 'ra', 'ಲ': 'la', 'ವ': 'va', 'ಶ': 'sha',
-        'ಷ': 'Sha', 'ಸ': 'sa', 'ಹ': 'ha', 'ಳ': 'La', 'ೞ': 'LLa',
-
-        // Matras (Vowel signs)
-        'ಾ': 'A', 'ಿ': 'i', 'ೀ': 'I', 'ು': 'u', 'ೂ': 'U',
-        'ೆ': 'e', 'ೇ': 'E', 'ೈ': 'ai', 'ೊ': 'o', 'ೋ': 'O', 'ೌ': 'au', 'ೃ': 'ru', 'ೄ': 'ri',
-        'ೢ': 'li', 'ೣ': 'li',
-
-        // Additional marks
-        '್': '', 'ಂ': 'ⁿ', 'ಃ': 'H', 'ಁ': 'ⁿ', '\u0C80': 'ⁿ', 'ಽ': '\'', 'ೕ': '', 'ೖ': '', 'ೱ': 'H', 'ೲ': 'f', // jihvamuliya (velar fricative), upadhmaniya (bilabial fricative)
-        'ಱ': 'fa', // old Kannada letter FA
-
-        // Numerals
-        '೦': '0', '೧': '1', '೨': '2', '೩': '3', '೪': '4',
-        '೫': '5', '೬': '6', '೭': '7', '೮': '8', '೯': '9',
-
-        // Others
-        '।': '. ', '॥': '. ',
-        ' ': ' '
-    };
-
-    // Mapping of Telugu Unicode characters to ITRANS
-    const teluguToITRANS = {
-        // Vowels
-        'అ': 'a', 'ఆ': 'A', 'ఇ': 'i', 'ఈ': 'I', 'ఉ': 'u', 'ఊ': 'U',
-        'ఋ': 'ri', 'ౠ': 'ri', 'ఌ': 'li', 'ౡ': 'li', 'ఎ': 'e', 'ఏ': 'E', 'ఐ': 'ai', 'ఒ': 'o', 'ఓ': 'O', 'ఔ': 'au',
-
-        // Chandrabindu, avagraha
-        'ఁ': 'ⁿ', 'ఽ': "'",
-
-        // Consonants
-        'క': 'ka', 'ఖ': 'kha', 'గ': 'ga', 'ఘ': 'gha', 'ఙ': 'gna',
-        'చ': 'cha', 'ఛ': 'Cha', 'జ': 'ja', 'ఝ': 'jha', 'ఞ': 'jna',
-        'ట': 'Ta', 'ఠ': 'Tha', 'డ': 'Da', 'ఢ': 'Dha', 'ణ': 'Na',
-        'త': 'ta', 'థ': 'tha', 'ద': 'da', 'ధ': 'dha', 'న': 'na',
-        'ప': 'pa', 'ఫ': 'pha', 'బ': 'ba', 'భ': 'bha', 'మ': 'ma',
-        'య': 'ya', 'ర': 'ra', 'ల': 'la', 'వ': 'va', 'శ': 'sha',
-        'ష': 'Sha', 'స': 'sa', 'హ': 'ha', 'ళ': 'La', 'ఱ': 'rra', 'ఴ': 'LLLa', '\u0C15\u0C4D\u0C37': 'kSha', // క్ష
-        'ౘ': 'tsa', 'ౙ': 'dza', 'ౚ': 'rra', 'ౝ': 'na',
-
-        // Matras (Vowel signs)
-        'ా': 'A', 'ి': 'i', 'ీ': 'I', 'ు': 'u', 'ూ': 'U',
-        'ృ': 'ri', 'ౄ': 'ri',
-        'ె': 'e', 'ే': 'E', 'ై': 'ai', 'ొ': 'o', 'ో': 'O', 'ౌ': 'au',
-        'ౢ': 'li', 'ౣ': 'li',
-
-        // Additional marks
-        '్': '', 'ం': 'ᵐ', 'ః': 'H',
-
-        // Numerals
-        '౦': '0', '౧': '1', '౨': '2', '౩': '3', '౪': '4',
-        '౫': '5', '౬': '6', '౭': '7', '౮': '8', '౯': '9',
-
-        // Fractions
-        '౸': ' 0', '౹': '¼', '౺': '½', '౻': '¾',
-        '౼': ' 1/16', '౽': '⅛', '౾': ' 3/16',
-
-        // Others
-        '।': '. ', '॥': '. ',
-        ' ': ' '
-    };
-
-    // Mapping of Tamil Unicode characters to ITRANS
-    const tamilToITRANS = {
-        // Vowels
-        'அ': 'a', 'ஆ': 'A', 'இ': 'i', 'ஈ': 'I', 'உ': 'u', 'ஊ': 'U',
-        'எ': 'e', 'ஏ': 'E', 'ஐ': 'ai', 'ஒ': 'o', 'ஓ': 'O', 'ஔ': 'au',
-
-        // Consonants
-        'க': 'ka', 'ங': 'ŋa',
-        'ச': 'cha', 'ஜ': 'ja', 'ஞ': 'ɲa',
-        'ட': 'Ta', 'ண': 'Na',
-        'த': 'ta', 'ந': 'na', 'ன': 'na',
-        'ப': 'pa', 'ம': 'ma',
-        'ய': 'ya', 'ர': 'ra', 'ற': 'rra', 'ல': 'la', 'ள': 'La', 'ழ': 'Lha', 'வ': 'va',
-        'ஶ': 'sha', 'ஷ': 'Sha', 'ஸ': 'sa', 'ஹ': 'ha',
-
-        // Matras (vowel signs)
-        'ா': 'A', 'ி': 'i', 'ீ': 'I', 'ு': 'u', 'ூ': 'U',
-        'ெ': 'e', 'ே': 'E', 'ை': 'ai',
-        'ொ': 'o', 'ோ': 'O', 'ௌ': 'au',
-        '்': '', // pulli (virama)
-
-        // Additional marks
-        'ஂ': 'ᵐ', 'ஃ': 'H',
-        'ௗ': 'au', // au length mark
-        // ௐ Tamil OM — auspicious symbol, passed through unchanged
-
-        // Numerals
-        '௦': '0', '௧': '1', '௨': '2', '௩': '3', '௪': '4',
-        '௫': '5', '௬': '6', '௭': '7', '௮': '8', '௯': '9',
-        '௰': '10', '௱': '100', '௲': '1000',
-
-        // Archaic symbols
-        '௳': 'day', '௴': 'month', '௵': 'year',
-        '௶': 'dr.', '௷': 'cr.', '௸': 'do.',
-        '௹': 'INR', '௺': '#',
-
-        // Others
-        '।': '. ', '॥': '. ',
-        ' ': ' '
-    };
-
-    // Mapping of Odia Unicode characters to ITRANS
-    const odiaToITRANS = {
-        // Vowels
-        'ଅ': 'a', 'ଆ': 'A', 'ଇ': 'i', 'ଈ': 'I', 'ଉ': 'u', 'ଊ': 'U',
-        'ଋ': 'ri', 'ୠ': 'ri', 'ଌ': 'li', 'ୡ': 'li',
-        'ଏ': 'e', 'ଐ': 'ai', 'ଓ': 'o', 'ଔ': 'au',
-
-        // Consonants
-        'କ': 'ka', 'ଖ': 'kha', 'ଗ': 'ga', 'ଘ': 'gha', 'ଙ': 'gna',
-        'ଚ': 'cha', 'ଛ': 'Cha', 'ଜ': 'ja', 'ଝ': 'jha', 'ଞ': 'jna',
-        'ଟ': 'Ta', 'ଠ': 'Tha', 'ଡ': 'Da', 'ଢ': 'Dha', 'ଣ': 'Na',
-        'ଡ଼': 'Ra', 'ଢ଼': 'Rha',
-        'ତ': 'ta', 'ଥ': 'tha', 'ଦ': 'da', 'ଧ': 'dha', 'ନ': 'na',
-        'ପ': 'pa', 'ଫ': 'pha', 'ବ': 'ba', 'ଭ': 'bha', 'ମ': 'ma',
-        'ଯ': 'ya', 'ୟ': 'ya', 'ର': 'ra', 'ଲ': 'la', 'ଳ': 'La', 'ଵ': 'va', 'ୱ': 'wa',
-        'ଶ': 'sha', 'ଷ': 'Sha', 'ସ': 'sa', 'ହ': 'ha',
-
-        // Matras (Vowel signs)
-        'ା': 'A', 'ି': 'i', 'ୀ': 'I', 'ୁ': 'u', 'ୂ': 'U',
-        'ୃ': 'ri', 'ୄ': 'ri', 'ୢ': 'li', 'ୣ': 'li',
-        'େ': 'e', 'ୈ': 'ai', 'ୋ': 'o', 'ୌ': 'au',
-
-        // Additional marks
-        '୍': '', 'ଂ': 'ⁿ', 'ଃ': 'H', 'ଁ': 'ⁿ',
-        '଼': '', // Nukta
-        'ଽ': "'", // Avagraha
-        '୰': '', // ORIYA ISSHAR (rare) - ignore
-        '୲': '¼', '୳': '½', '୴': '¾', // fractions: 1/4, 1/2, 3/4
-        '୵': ' 1/16', '୶': '⅛', '୷': ' 3/16', // fractions as ASCII strings
-
-        // Numerals
-        '୦': '0', '୧': '1', '୨': '2', '୩': '3', '୪': '4',
-        '୫': '5', '୬': '6', '୭': '7', '୮': '8', '୯': '9',
-
-        // Others
-        '।': '. ', '॥': '. ',
-        ' ': ' '
-    };
-
-    // Mapping of Sinhala Unicode characters to ITRANS
-    const sinhalaToITRANS = {
-        // Vowels
-        'අ': 'a', 'ආ': 'A', 'ඇ': 'ae', 'ඈ': 'aae',
-        'ඉ': 'i', 'ඊ': 'I', 'උ': 'u', 'ඌ': 'U',
-        'ඍ': 'ri', 'ඎ': 'ri', 'ඏ': 'li', 'ඐ': 'li',
-        'එ': 'e', 'ඒ': 'E', 'ඓ': 'ai', 'ඔ': 'o', 'ඕ': 'O', 'ඖ': 'au',
-
-        // Consonants
-        'ක': 'ka', 'ඛ': 'kha', 'ග': 'ga', 'ඝ': 'gha', 'ඞ': 'ŋa', 'ඟ': 'ŋga',
-        'ච': 'cha', 'ඡ': 'Cha', 'ජ': 'ja', 'ඣ': 'jha', 'ඤ': 'ɲa', 'ඥ': 'jna', 'ඦ': 'ɲja',
-        'ට': 'Ta', 'ඨ': 'Tha', 'ඩ': 'Da', 'ඪ': 'Dha', 'ණ': 'Na', 'ඬ': 'NDa',
-        'ත': 'ta', 'ථ': 'tha', 'ද': 'da', 'ධ': 'dha', 'න': 'na', 'ඳ': 'nda',
-        'ප': 'pa', 'ඵ': 'pha', 'බ': 'ba', 'භ': 'bha', 'ම': 'ma', 'ඹ': 'mba',
-        'ය': 'ya', 'ර': 'ra', 'ල': 'la', 'ව': 'va',
-        'ශ': 'sha', 'ෂ': 'Sha', 'ස': 'sa', 'හ': 'ha', 'ළ': 'La', 'ෆ': 'fa',
-
-        // Matras (vowel signs)
-        'ා': 'A', 'ැ': 'ae', 'ෑ': 'aae',
-        'ි': 'i', 'ී': 'I', 'ු': 'u', 'ූ': 'U',
-        'ෘ': 'ri', 'ෙ': 'e', 'ේ': 'E', 'ෛ': 'ai',
-        'ො': 'o', 'ෝ': 'O', 'ෞ': 'au', 'ෟ': 'li',
-        '්': '', // hal kirima (virama)
-        'ෲ': 'ri', 'ෳ': 'ri',
-
-        // Additional marks
-        'ඁ': 'ⁿ', 'ං': 'ᵐ', 'ඃ': 'H',
-
-        // Numerals
-        '෦': '0', '෧': '1', '෨': '2', '෩': '3', '෪': '4',
-        '෫': '5', '෬': '6', '෭': '7', '෮': '8', '෯': '9',
-
-        // Others
-        '෴': '. ', '।': '. ', '॥': '. ',
-        ' ': ' '
-    };
-
-    // Mapping of Malayalam Unicode characters to ITRANS
-    const malayalamToITRANS = {
-        // Vowels
-        'അ': 'a', 'ആ': 'A', 'ഇ': 'i', 'ഈ': 'I', 'ഉ': 'u', 'ഊ': 'U',
-        'ഋ': 'ri', 'ൠ': 'ri', 'ഌ': 'li', 'ൡ': 'li', 'ൟ': 'I',
-        'എ': 'e', 'ഏ': 'E', 'ഐ': 'ai', 'ഒ': 'o', 'ഓ': 'O', 'ഔ': 'au',
-
-        // Consonants
-        'ക': 'ka', 'ഖ': 'kha', 'ഗ': 'ga', 'ഘ': 'gha', 'ങ': 'gna',
-        'ച': 'cha', 'ഛ': 'Cha', 'ജ': 'ja', 'ഝ': 'jha', 'ഞ': 'jna',
-        'ട': 'Ta', 'ഠ': 'Tha', 'ഡ': 'Da', 'ഢ': 'Dha', 'ണ': 'Na',
-        'ത': 'ta', 'ഥ': 'tha', 'ദ': 'da', 'ധ': 'dha', 'ന': 'na', 'ഩ': 'na',
-        'പ': 'pa', 'ഫ': 'pha', 'ബ': 'ba', 'ഭ': 'bha', 'മ': 'ma',
-        'യ': 'ya', 'ര': 'ra', 'റ': 'Ra', 'ല': 'la', 'ള': 'La', 'ഴ': 'Lha',
-        'വ': 'va', 'ശ': 'sha', 'ഷ': 'Sha', 'സ': 'sa', 'ഹ': 'ha',
-
-        // Chillu letters (pure consonants, no inherent vowel)
-        'ൺ': 'N', 'ൻ': 'n', 'ർ': 'r', 'ൎ': 'r', 'ൽ': 'l', 'ൾ': 'L', 'ൿ': 'k',
-
-        // Matras (Vowel signs)
-        'ാ': 'A', 'ി': 'i', 'ീ': 'I', 'ു': 'u', 'ൂ': 'U',
-        'ൃ': 'ru', 'ൄ': 'ri', 'ൢ': 'li', 'ൣ': 'li',
-        'െ': 'e', 'േ': 'E', 'ൈ': 'ai',
-        'ൊ': 'o', 'ോ': 'O', 'ൌ': 'au', 'ൗ': 'au',
-
-        // Additional marks
-        '്': '', 'ം': 'ᵐ', 'ഃ': 'H', 'ഁ': 'ⁿ', 'ഀ': 'ⁿ', 'ഄ': 'ⁿ', 'ഽ': "'",
-
-        // Numerals
-        '൦': '0', '൧': '1', '൨': '2', '൩': '3', '൪': '4',
-        '൫': '5', '൬': '6', '൭': '7', '൮': '8', '൯': '9',
-
-        // Traditional number symbols
-        '൰': '10', '൱': '100', '൲': '1000',
-
-        // Fractions
-        '൳': '¼', '൴': '½', '൵': '¾',
-        '൶': ' 1/16', '൷': '⅛', '൸': ' 3/16',
-
-        // Archaic fractions
-        '൘': ' 1/160', '൙': ' 1/40', '൚': ' 3/80',
-        '൛': ' 1/20', '൜': ' 1/10', '൝': ' 3/20', '൞': '⅕',
-
-        // Others
-        '।': '. ', '॥': '. ',
-        '൏': '¶',
-        ' ': ' '
-    };
-
-    // Mapping of Gurmukhi Unicode characters to ITRANS
-    const gurmukhiToITRANS = {
-        // Vowels
-        'ਅ': 'a', 'ਆ': 'A', 'ਇ': 'i', 'ਈ': 'I', 'ਉ': 'u', 'ਊ': 'U',
-        'ਏ': 'e', 'ਐ': 'ai', 'ਓ': 'o', 'ਔ': 'au',
-
-        // Carrier letters (silent base; following matra provides the vowel)
-        'ੳ': '', 'ੲ': '',
-
-        // Consonants
-        'ਕ': 'ka', 'ਖ': 'kha', 'ਗ': 'ga', 'ਘ': 'gha', 'ਙ': 'gna',
-        'ਚ': 'cha', 'ਛ': 'Cha', 'ਜ': 'ja', 'ਝ': 'jha', 'ਞ': 'jna',
-        'ਟ': 'Ta', 'ਠ': 'Tha', 'ਡ': 'Da', 'ਢ': 'Dha', 'ਣ': 'Na',
-        'ਤ': 'ta', 'ਥ': 'tha', 'ਦ': 'da', 'ਧ': 'dha', 'ਨ': 'na',
-        'ਪ': 'pa', 'ਫ': 'pha', 'ਬ': 'ba', 'ਭ': 'bha', 'ਮ': 'ma',
-        'ਯ': 'ya', 'ਰ': 'ra', 'ਲ': 'la', 'ਲ਼': 'La', '\u0A33': 'La', // \u0A33 = ਲ਼ precomposed
-        'ਵ': 'va', 'ਸ਼': 'sha', '\u0A36': 'sha', 'ਸ': 'sa', 'ਹ': 'ha', // \u0A36 = ਸ਼ precomposed
-
-        // Nukta consonants (loanwords from Persian/Arabic); decomposed and precomposed forms
-        'ਖ਼': 'qa', '\u0A59': 'qa',   // \u0A59 = ਖ਼ precomposed
-        'ਗ਼': 'Gha', '\u0A5A': 'Gha', // \u0A5A = ਗ਼ precomposed
-        'ਜ਼': 'za', '\u0A5B': 'za',   // \u0A5B = ਜ਼ precomposed
-        'ਰ਼': 'Ra', '\u0A5C': 'Ra',   // \u0A5C = ੜ precomposed
-        'ਫ਼': 'fa', '\u0A5E': 'fa',   // \u0A5E = ਫ਼ precomposed
-
-        // Matras (vowel signs)
-        'ਾ': 'A', 'ਿ': 'i', 'ੀ': 'I', 'ੁ': 'u', 'ੂ': 'U',
-        'ੇ': 'e', 'ੈ': 'ai', 'ੋ': 'o', 'ੌ': 'au',
-        '੍': '',
-
-        // Additional marks
-        'ਁ': 'ⁿ', 'ਂ': 'ⁿ', 'ਃ': 'H', 'ੰ': 'ⁿ',
-        'ੱ': '', // addak (gemination marker; doubling of following consonant not handled)
-        'ੑ': '', '\u0A75': '', '੶': '.', // udaat (tone mark), yakash, abbreviation sign
-
-        // Sacred symbol
-        // ੴ Gurmukhi Ek Onkar — auspicious symbol, passed through unchanged
-
-        // Numerals
-        '੦': '0', '੧': '1', '੨': '2', '੩': '3', '੪': '4',
-        '੫': '5', '੬': '6', '੭': '7', '੮': '8', '੯': '9',
-
-        // Others
-        '।': '. ', '॥': '. ',
-        ' ': ' '
-    };
-
-    // Mapping of Bengali Unicode characters to ITRANS
-    const bengaliToITRANS = {
-        // Vowels
-        'অ': 'a', 'আ': 'A', 'ই': 'i', 'ঈ': 'I', 'উ': 'u', 'ঊ': 'U',
-        'ঋ': 'ri', 'ৠ': 'ri', 'ঌ': 'li', 'ৡ': 'li',
-        'এ': 'e', 'ঐ': 'ai', 'ও': 'o', 'ঔ': 'au',
-
-        // Consonants
-        'ক': 'kₒ', 'খ': 'khₒ', 'গ': 'gₒ', 'ঘ': 'ghₒ', 'ঙ': 'ŋₒ',
-        'চ': 'chₒ', 'ছ': 'Chₒ', 'জ': 'jₒ', 'ঝ': 'jhₒ', 'ঞ': 'jnₒ',
-        'ট': 'Tₒ', 'ঠ': 'Thₒ', 'ড': 'Dₒ', 'ঢ': 'Dhₒ', 'ণ': 'Nₒ',
-        'ত': 'tₒ', 'থ': 'thₒ', 'দ': 'dₒ', 'ধ': 'dhₒ', 'ন': 'nₒ',
-        'প': 'pₒ', 'ফ': 'phₒ', 'ব': 'bₒ', 'ভ': 'bhₒ', 'ম': 'mₒ',
-        'য': 'yₒ', 'র': 'rₒ', 'ল': 'lₒ', 'শ': 'shₒ', 'ষ': 'Shₒ', 'স': 'sₒ', 'হ': 'hₒ',
-        '\u09A1\u09BC': 'Rₒ', '\u09A2\u09BC': 'Rhₒ', '\u09AF\u09BC': 'yₒ', // ড় ঢ় য়
-        'ৰ': 'rₒ', 'ৱ': 'wₒ', // Assamese ra, wa
-        'ৎ': 't', // khanda ta: terminal consonant without inherent vowel
-
-        // Matras (Vowel signs)
-        'া': 'A', 'ি': 'i', 'ী': 'I', 'ু': 'u', 'ূ': 'U',
-        'ৃ': 'ri', 'ৄ': 'ri',
-        'ে': 'e', 'ৈ': 'ai', 'ো': 'o', 'ৌ': 'au',
-
-        // Vocalic L matras (outside matra range, treated as discrete)
-        'ৢ': 'li', 'ৣ': 'li',
-
-        // Additional marks
-        '্': '', 'ং': 'ⁿ', 'ঃ': 'H', 'ঁ': 'ⁿ',
-        '়': '', // Nukta
-        'ঽ': "'", // Avagraha
-
-        // Numerals
-        '০': '0', '১': '1', '২': '2', '৩': '3', '৪': '4',
-        '৫': '5', '৬': '6', '৭': '7', '৮': '8', '৯': '9',
-
-        // Currency
-        '৲': 'Rs', '৳': 'INR',
-
-        // Fractions (anna subdivisions, denominator 16)
-        '৴': ' 1/16', '৵': '⅛', '৶': ' 3/16', '৷': '¼', '৸': ' 15/16', '৹': '16',
-
-        // Others
-        '।': '. ', '॥': '. ',
-        '৺': '¶',
-        ' ': ' '
-    };
-
-    // Mapping of Gujarati Unicode characters to ITRANS
-    const gujaratiToITRANS = {
-        // Vowels
-        'અ': 'a', 'આ': 'A', 'ઇ': 'i', 'ઈ': 'I', 'ઉ': 'u', 'ઊ': 'U',
-        'ઋ': 'ri', 'ૠ': 'ri', 'ઌ': 'li', 'ૡ': 'li',
-        'ઍ': 'e', 'એ': 'e', 'ઐ': 'ai', 'ઑ': 'o', 'ઓ': 'o', 'ઔ': 'au',
-
-        // Consonants
-        'ક': 'kₐ', 'ખ': 'khₐ', 'ગ': 'gₐ', 'ઘ': 'ghₐ', 'ઙ': 'gnₐ',
-        'ચ': 'chₐ', 'છ': 'Chₐ', 'જ': 'jₐ', 'ઝ': 'jhₐ', 'ઞ': 'jnₐ',
-        'ટ': 'Tₐ', 'ઠ': 'Thₐ', 'ડ': 'Dₐ', 'ઢ': 'Dhₐ', 'ણ': 'Nₐ',
-        'ત': 'tₐ', 'થ': 'thₐ', 'દ': 'dₐ', 'ધ': 'dhₐ', 'ન': 'nₐ',
-        'પ': 'pₐ', 'ફ': 'phₐ', 'બ': 'bₐ', 'ભ': 'bhₐ', 'મ': 'mₐ',
-        'ય': 'yₐ', 'ર': 'rₐ', 'લ': 'lₐ', 'ળ': 'Lₐ', 'વ': 'vₐ',
-        'શ': 'shₐ', 'ષ': 'Shₐ', 'સ': 'sₐ', 'હ': 'hₐ', 'ૹ': 'zhₐ',
-
-        // Matras (Vowel signs)
-        'ા': 'A', 'િ': 'i', 'ી': 'I', 'ુ': 'u', 'ૂ': 'U',
-        'ૃ': 'ri', 'ૄ': 'ri', 'ૅ': 'e', 'ૢ': 'li', 'ૣ': 'li',
-        'ે': 'e', 'ૈ': 'ai', 'ૉ': 'o', 'ો': 'o', 'ૌ': 'au',
-
-        // Additional marks
-        '્': '', 'ં': 'ⁿ', 'ઃ': 'H', 'ઁ': 'ⁿ',
-        '઼': '', // Nukta
-        'ઽ': "'", // Avagraha
-
-        // Numerals
-        '૦': '0', '૧': '1', '૨': '2', '૩': '3', '૪': '4',
-        '૫': '5', '૬': '6', '૭': '7', '૮': '8', '૯': '9',
-
-        // Others
-        '।': '. ', '॥': '. ',
-        ' ': ' '
-    };
-
-    let settings = { bengali: undefined, devanagari: undefined, gujarati: undefined, gurmukhi: undefined, kannada: undefined, sinhala: undefined, tamil: undefined, telugu: undefined, odia: undefined, malayalam: undefined, arabic: undefined, flipRtl: undefined, indicateScript: undefined };
+    let settings = { bengali: undefined, devanagari: undefined, gujarati: undefined, gurmukhi: undefined, kannada: undefined, sinhala: undefined, tamil: undefined, telugu: undefined, odia: undefined, malayalam: undefined, arabic: undefined, flipRtl: undefined, indicateScript: undefined, scheme: undefined };
     // When we had set the above to true, it was always transliterating some
     // sections of the page.The settings were not taking effect.
     // XXX: I'd like some explanation for this behaviour.
@@ -627,6 +115,11 @@
         return `<span class="transliterated-${script}">${word}</span>`;
     }
 
+    function getMap(scriptMaps, scheme) {
+        if (!scheme || scheme === 'itrans') return scriptMaps.itrans;
+        return Object.assign({}, scriptMaps.itrans, scriptMaps[scheme] || {});
+    }
+
     // Function to transliterate text to Latin
     function transliterateToLatin(text) {
         if (!text || typeof text !== 'string') {
@@ -641,6 +134,19 @@
             log('Skipping transliteration: all scripts disabled');
             return text;
         }
+
+        const scheme = settings.scheme || 'itrans';
+        const arabicMap = getMap(arabicMaps, scheme);
+        const devanagariMap = getMap(devanagariMaps, scheme);
+        const kannadaMap = getMap(kannadaMaps, scheme);
+        const teluguMap = getMap(teluguMaps, scheme);
+        const odiaMap = getMap(odiaMaps, scheme);
+        const malayalamMap = getMap(malayalamMaps, scheme);
+        const sinhalaMap = getMap(sinhalaMaps, scheme);
+        const gujaratiMap = getMap(gujaratiMaps, scheme);
+        const gurmukhiMap = getMap(gurmukhiMaps, scheme);
+        const tamilMap = getMap(tamilMaps, scheme);
+        const bengaliMap = getMap(bengaliMaps, scheme);
 
         let replacement = [];
         let currentScript = null;
@@ -667,73 +173,73 @@
                     // Shadda: gemination — repeat the previous consonant
                     currentWord.push(currentWord[currentWord.length - 1]);
                 } else {
-                    appendTransliteratedChar(text, i, currentWord, arabicToLatin, ARABIC_MODIFIER_START, ARABIC_MODIFIER_END, ARABIC_NUKTA);
+                    appendTransliteratedChar(text, i, currentWord, arabicMap, ARABIC_MODIFIER_START, ARABIC_MODIFIER_END, ARABIC_NUKTA);
                 }
             } else if (settings.devanagari !== false && text[i] >= DEVANAGARI_START && text[i] <= DEVANAGARI_END) {
                 if (currentScript !== 'devanagari') {
                     flushCurrentWord();
                     currentScript = 'devanagari';
                 }
-                appendTransliteratedChar(text, i, currentWord, devanagariToITRANS, DEVANAGARI_MODIFIER_START, DEVANAGARI_MODIFIER_END, DEVANAGARI_NUKTA);
+                appendTransliteratedChar(text, i, currentWord, devanagariMap, DEVANAGARI_MODIFIER_START, DEVANAGARI_MODIFIER_END, DEVANAGARI_NUKTA);
             } else if (settings.kannada !== false && text[i] >= KANNADA_START && text[i] <= KANNADA_END) {
                 if (currentScript !== 'kannada') {
                     flushCurrentWord();
                     currentScript = 'kannada';
                 }
-                appendTransliteratedChar(text, i, currentWord, kannadaToITRANS, KANNADA_MODIFIER_START, KANNADA_MODIFIER_END, KANNADA_NUKTA);
+                appendTransliteratedChar(text, i, currentWord, kannadaMap, KANNADA_MODIFIER_START, KANNADA_MODIFIER_END, KANNADA_NUKTA);
             } else if (settings.telugu !== false && text[i] >= TELUGU_START && text[i] <= TELUGU_END) {
                 if (currentScript !== 'telugu') {
                     flushCurrentWord();
                     currentScript = 'telugu';
                 }
-                appendTransliteratedChar(text, i, currentWord, teluguToITRANS, TELUGU_MODIFIER_START, TELUGU_MODIFIER_END, TELUGU_NUKTA);
+                appendTransliteratedChar(text, i, currentWord, teluguMap, TELUGU_MODIFIER_START, TELUGU_MODIFIER_END, TELUGU_NUKTA);
             } else if (settings.odia !== false && text[i] >= ODIA_START && text[i] <= ODIA_END) {
                 if (currentScript !== 'odia') {
                     flushCurrentWord();
                     currentScript = 'odia';
                 }
-                appendTransliteratedChar(text, i, currentWord, odiaToITRANS, ODIA_MODIFIER_START, ODIA_MODIFIER_END, ODIA_NUKTA);
+                appendTransliteratedChar(text, i, currentWord, odiaMap, ODIA_MODIFIER_START, ODIA_MODIFIER_END, ODIA_NUKTA);
             } else if (settings.malayalam !== false && text[i] >= MALAYALAM_START && text[i] <= MALAYALAM_END) {
                 if (currentScript !== 'malayalam') {
                     flushCurrentWord();
                     currentScript = 'malayalam';
                 }
-                appendTransliteratedChar(text, i, currentWord, malayalamToITRANS, MALAYALAM_MODIFIER_START, MALAYALAM_MODIFIER_END, MALAYALAM_NUKTA);
+                appendTransliteratedChar(text, i, currentWord, malayalamMap, MALAYALAM_MODIFIER_START, MALAYALAM_MODIFIER_END, MALAYALAM_NUKTA);
             } else if (settings.sinhala !== false && text[i] >= SINHALA_START && text[i] <= SINHALA_END) {
                 if (currentScript !== 'sinhala') {
                     flushCurrentWord();
                     currentScript = 'sinhala';
                 }
-                appendTransliteratedChar(text, i, currentWord, sinhalaToITRANS, SINHALA_MODIFIER_START, SINHALA_MODIFIER_END, SINHALA_NUKTA);
+                appendTransliteratedChar(text, i, currentWord, sinhalaMap, SINHALA_MODIFIER_START, SINHALA_MODIFIER_END, SINHALA_NUKTA);
             } else if (settings.gujarati !== false && text[i] >= GUJARATI_START && text[i] <= GUJARATI_END) {
                 if (currentScript !== 'gujarati') {
                     flushCurrentWord();
                     currentScript = 'gujarati';
                 }
-                appendTransliteratedChar(text, i, currentWord, gujaratiToITRANS, GUJARATI_MODIFIER_START, GUJARATI_MODIFIER_END, GUJARATI_NUKTA);
+                appendTransliteratedChar(text, i, currentWord, gujaratiMap, GUJARATI_MODIFIER_START, GUJARATI_MODIFIER_END, GUJARATI_NUKTA);
             } else if (settings.gurmukhi !== false && text[i] >= GURMUKHI_START && text[i] <= GURMUKHI_END) {
                 if (currentScript !== 'gurmukhi') {
                     flushCurrentWord();
                     currentScript = 'gurmukhi';
                 }
                 if (text[i] === GURMUKHI_ADDAK) {
-                    const next = gurmukhiToITRANS[text[i + 1]];
+                    const next = gurmukhiMap[text[i + 1]];
                     if (next) currentWord.push(next.slice(0, -1)); // strip inherent 'a', doubling the consonant
                 } else {
-                    appendTransliteratedChar(text, i, currentWord, gurmukhiToITRANS, GURMUKHI_MODIFIER_START, GURMUKHI_MODIFIER_END, GURMUKHI_NUKTA);
+                    appendTransliteratedChar(text, i, currentWord, gurmukhiMap, GURMUKHI_MODIFIER_START, GURMUKHI_MODIFIER_END, GURMUKHI_NUKTA);
                 }
             } else if (settings.tamil !== false && text[i] >= TAMIL_START && text[i] <= TAMIL_END) {
                 if (currentScript !== 'tamil') {
                     flushCurrentWord();
                     currentScript = 'tamil';
                 }
-                appendTransliteratedChar(text, i, currentWord, tamilToITRANS, TAMIL_MODIFIER_START, TAMIL_MODIFIER_END, TAMIL_NUKTA);
+                appendTransliteratedChar(text, i, currentWord, tamilMap, TAMIL_MODIFIER_START, TAMIL_MODIFIER_END, TAMIL_NUKTA);
             } else if (settings.bengali !== false && text[i] >= BENGALI_START && text[i] <= BENGALI_END) {
                 if (currentScript !== 'bengali') {
                     flushCurrentWord();
                     currentScript = 'bengali';
                 }
-                appendTransliteratedChar(text, i, currentWord, bengaliToITRANS, BENGALI_MODIFIER_START, BENGALI_MODIFIER_END, BENGALI_NUKTA);
+                appendTransliteratedChar(text, i, currentWord, bengaliMap, BENGALI_MODIFIER_START, BENGALI_MODIFIER_END, BENGALI_NUKTA);
             } else {
                 flushCurrentWord();
                 currentScript = null;
@@ -927,7 +433,8 @@
         arabic: true,
         flipRtl: true,
         indicateScript: true,
-        showStats: false
+        showStats: false,
+        scheme: 'itrans'
     }, (result) => {
         settings = {
             bengali: result.bengali,
@@ -943,7 +450,8 @@
             arabic: result.arabic,
             flipRtl: result.flipRtl,
             indicateScript: result.indicateScript,
-            showStats: result.showStats
+            showStats: result.showStats,
+            scheme: result.scheme
         };
         log('Settings initialized:', settings);
         applyDirectionOverride();
@@ -967,4 +475,3 @@
         }
     });
 
-})();

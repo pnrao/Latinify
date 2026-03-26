@@ -13,9 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const flipRtl = document.getElementById('flipRtl');
     const indicateScript = document.getElementById('indicateScript');
     const showStats = document.getElementById('showStats');
+    const schemeRadios = document.querySelectorAll('input[name="scheme"]');
 
     // Load saved settings (defaults to true, except stats which defaults to false)
-    chrome.storage.sync.get(['bengali', 'devanagari', 'gujarati', 'kannada', 'malayalam', 'odia', 'telugu', 'arabic', 'flipRtl', 'indicateScript', 'showStats'], (result) => {
+    chrome.storage.sync.get(['bengali', 'devanagari', 'gujarati', 'kannada', 'malayalam', 'odia', 'telugu', 'arabic', 'flipRtl', 'indicateScript', 'showStats', 'scheme'], (result) => {
         bengali.checked = result.bengali !== false;
         devanagari.checked = result.devanagari !== false;
         gujarati.checked = result.gujarati !== false;
@@ -30,11 +31,15 @@ document.addEventListener('DOMContentLoaded', () => {
         flipRtl.checked = result.flipRtl !== false;
         indicateScript.checked = result.indicateScript !== false;
         showStats.checked = result.showStats === true;
+        const scheme = result.scheme || 'itrans';
+        schemeRadios.forEach(r => { r.checked = r.value === scheme; });
     });
 
     // Save settings and notify tabs
     const updateSettings = () => {
+        const scheme = Array.from(schemeRadios).find(r => r.checked)?.value || 'itrans';
         const settings = {
+            scheme,
             bengali: bengali.checked,
             devanagari: devanagari.checked,
             gujarati: gujarati.checked,
@@ -81,6 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tamil.addEventListener('change', updateSettings);
     telugu.addEventListener('change', updateSettings);
     arabic.addEventListener('change', updateSettings);
+    schemeRadios.forEach(r => r.addEventListener('change', updateSettings));
     flipRtl.addEventListener('change', updateSettings);
     indicateScript.addEventListener('change', updateSettings);
     showStats.addEventListener('change', updateSettings);
