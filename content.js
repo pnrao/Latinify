@@ -295,6 +295,7 @@ const LOGGING_ENABLED = false;
                 });
 
                 if (processed) {
+                    applyDirectionOverride();
                     const mutationEndTime = performance.now();
                     updateOverlay(mutationEndTime - mutationStartTime);
                 }

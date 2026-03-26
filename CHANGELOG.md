@@ -2,6 +2,7 @@
 
 ## 2.0 - unreleased
 
+- NEW: ISO romanization scheme (ISO 15919 for Indic, ALA-LC style for Arabic) selectable in popup alongside ITRANS
 - NEW: Arabic script (Urdu, Persian, Pashto, Kashmiri, and more)
 - NEW: Flip Right-to-Left Pages toggle
 - CHANGE: Extension renamed to "Latinify: Indic & Arabic Romanizer"
@@ -15,6 +16,7 @@
 - FIX: YouTube closed captions now fully transliterated (previously only first word)
 - FIX: Auspicious symbols (Tamil OM ௐ, Gurmukhi Ek Onkar ੴ) now shown unaltered
 - CHANGE: Long vowels now uppercase: A (ā), I (ī), U (ū), E (ē), O (ō)
+- FIX: Flip RTL garbled on page load when page has dynamically added content
 
 ## 1.5 - 2026-03-25
 
