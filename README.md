@@ -1,8 +1,10 @@
 # Latinify
 
-Many written languages in India are hard for most Indians to understand due to their scripts. For example, many understand conversational Hindi but can't read Hindi written in the Devanagari script.
+Can you speak Hindi but struggle to read Devanagari? Understand Tamil but not the script? Follow Urdu conversations but can't read Arabic letters?
 
-This Chrome extension helps by converting text in Indic scripts to the Latin script using [ITRANS](https://en.wikipedia.org/wiki/ITRANS) conventions. Arabic script (Urdu, Persian, etc.) is also supported using standard romanization.
+Latinify automatically converts Arabic, Bengali, Gujarati, Hindi, Kannada, Malayalam, Marathi, Nepali, Odia, Pashto, Persian, Punjabi, Sinhala, Tamil, Telugu, Urdu, and more to familiar Latin letters — on any website, instantly, without sending your data anywhere.
+
+Works on news sites, Wikipedia, YouTube closed captions, social media, and anywhere else text appears in the browser.
 
 ## Supported Scripts
 
@@ -35,7 +37,7 @@ This Chrome extension helps by converting text in Indic scripts to the Latin scr
 
 - This extension does not detect the language. Doing so would require capabilities beyond a lightweight extension.
 - Schwa deletion for Bengali, Hindi and Marathi is left as an exercise to the reader. Sanskrit, often written in Devanagari, retains the schwa. For example, in Hindi, धड़कने → dhaD**a**kne (verb) or धड़कनें → dhaDk**a**neⁿ (noun). Without deeper linguistic analysis, it's not possible to determine which ₐ of धड़क should be deleted.
-- Terminal consonants in Kannada that are not affixed with a vowel sign should ideally be transliterated to 'aa', but are treated the same as non-terminal consonants.
+- Terminal consonants in Kannada that are not affixed with a vowel sign should ideally be transliterated to 'A', but are treated the same as non-terminal consonants.
 - There is no straightforward way to map anusvaras. They are sometimes pronounced as nasal vowels (आँखें), or 'n' (चिंता, ఉంది), or 'ŋ' (अंकुर, తెలంగాణ), or 'm' (संभव, దేశం), or dropped entirely (हैं in casual speech).
 
 ## Requesting More Scripts
