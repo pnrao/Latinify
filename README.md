@@ -40,7 +40,7 @@ Works on news sites, Wikipedia, YouTube closed captions, social media, and anywh
 ### ISO scheme
 
 - For Indic scripts, follows ISO 15919. The inherent vowel in consonants is written as plain `a` (e.g., `ka`), as the standard prescribes — contrast with `kₐ` in ITRANS and `kᵃ` in IPA.
-- For Arabic-script languages, follows ISO 233 and its extensions).
+- For Arabic-script languages, follows ISO 233 and its extensions.
 
 ### IPA scheme
 
