@@ -63,5 +63,8 @@ with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
     images_dir = os.path.join(root, 'images')
     for img in os.listdir(images_dir):
         zf.write(os.path.join(images_dir, img), os.path.join('images', img))
+    maps_dir = os.path.join(root, 'maps')
+    for m in os.listdir(maps_dir):
+        zf.write(os.path.join(maps_dir, m), os.path.join('maps', m))
 
 print(zip_path)

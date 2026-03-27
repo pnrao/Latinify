@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0 - unreleased
+## 2.0 - 2026-03-27
 
 - NEW: IPA romanization scheme selectable in popup
 - NEW: ISO romanization scheme (15919 for Indic, 233 for Arabic) selectable in popup
