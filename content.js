@@ -49,7 +49,14 @@ const LOGGING_ENABLED = false;
         { 'ka': 'qa', 'kha': 'qha', 'ja': 'za', 'pha': 'fa',
           'ḍa': 'ṛa', 'ḍha': 'ṛha', 'ra': 'ṛa', 'la': 'ḷa', 'sa': 'śa' },
         // IPA (2)
-        {}
+        { 'kᵃ': 'qᵃ', 'kʰᵃ': 'xᵃ', 'ɡᵃ': 'ɣᵃ', 'dʒᵃ': 'zᵃ', 'pʰᵃ': 'fᵃ',
+          'ɖᵃ': 'ɽᵃ', 'ɖʱᵃ': 'ɽʱᵃ', 'rᵃ': 'ɽᵃ', 'lᵃ': 'ɭᵃ', 'sᵃ': 'ʃᵃ',
+          'ka': 'qa', 'kʰa': 'xa', 'ɡa': 'ɣa', 'dʒa': 'za', 'pʰa': 'fa',
+          'ɖa': 'ɽa', 'ɖʱa': 'ɽʱa', 'ra': 'ɽa', 'la': 'ɭa', 'sa': 'ʃa',
+          'kᵓ': 'qᵓ', 'kʰᵓ': 'xᵓ', 'ɡᵓ': 'ɣᵓ', 'dʒᵓ': 'zᵓ', 'pʰᵓ': 'fᵓ',
+          'ɖᵓ': 'ɽᵓ', 'ɖʱᵓ': 'ɽʱᵓ', 'rᵓ': 'ɽᵓ', 'lᵓ': 'ɭᵓ', 'sᵓ': 'ʃᵓ',
+          'kɔ': 'qɔ', 'kʰɔ': 'xɔ', 'ɡɔ': 'ɣɔ', 'dʒɔ': 'zɔ', 'pʰɔ': 'fɔ',
+          'ɖɔ': 'ɽɔ', 'ɖʱɔ': 'ɽʱɔ', 'rɔ': 'ɽɔ', 'lɔ': 'ɭɔ', 'sɔ': 'ʃɔ' }
     ];
 
     function handleNukta(replacementText, schemeIdx) {
@@ -71,7 +78,7 @@ const LOGGING_ENABLED = false;
         const mapped = entry != null ? entry[schemeIdx] : null;
         if (sourceText[i] >= matraStart && sourceText[i] <= matraEnd && replacementText.length > 0) {
             const prev = replacementText[replacementText.length - 1];
-            if (prev.endsWith('ₐ') || prev.endsWith('ₒ') || prev.endsWith('a')) {
+            if (prev.endsWith('ₐ') || prev.endsWith('ₒ') || prev.endsWith('a') || prev.endsWith('ᵃ') || prev.endsWith('ᵓ') || prev.endsWith('ɔ')) {
                 replacementText[replacementText.length - 1] = prev.slice(0, -1);
             }
         }

@@ -2,12 +2,12 @@
 
 ## 2.0 - unreleased
 
-- NEW: ISO romanization scheme (ISO 15919 for Indic, ALA-LC style for Arabic) selectable in popup alongside ITRANS
+- NEW: IPA romanization scheme selectable in popup
+- NEW: ISO romanization scheme (15919 for Indic, 233 for Arabic) selectable in popup
 - NEW: Arabic script (Urdu, Persian, Pashto, Kashmiri, and more)
 - NEW: Flip Right-to-Left Pages toggle
 - CHANGE: Extension renamed to "Latinify: Indic & Arabic Romanizer"
-- FIX: Arabic ain (ع) now rendered as apostrophe instead of being silently dropped
-- FIX: Arabic shadda (ّ) now correctly doubles the preceding consonant
+- CHANGE: Long vowels now uppercase: A (ā), I (ī), U (ū), E (ē), O (ō)
 - FIX: Odia avagraha (ଽ) now rendered as apostrophe
 - FIX: Devanagari avagraha (ऽ) now rendered as apostrophe
 - FIX: Bengali Assamese letters (ৰ, ৱ) now transliterated
@@ -15,8 +15,6 @@
 - FIX: Kannada vocalic L and other rarely used characters now transliterated
 - FIX: YouTube closed captions now fully transliterated (previously only first word)
 - FIX: Auspicious symbols (Tamil OM ௐ, Gurmukhi Ek Onkar ੴ) now shown unaltered
-- CHANGE: Long vowels now uppercase: A (ā), I (ī), U (ū), E (ē), O (ō)
-- FIX: Flip RTL garbled on page load when page has dynamically added content
 
 ## 1.5 - 2026-03-25
 

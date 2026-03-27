@@ -9,7 +9,7 @@ Works on news sites, Wikipedia, YouTube closed captions, social media, and anywh
 ## Supported Scripts
 
 - Arabic (Urdu, Persian, Pashto, Kashmiri, etc.)
-- Bengali (Bengali, Assamese)
+- Bengali (Bengali, Assamese, etc.)
 - Devanagari (Hindi, Marathi, etc.)
 - Gujarati
 - Gurmukhi (Punjabi)
@@ -23,15 +23,31 @@ Works on news sites, Wikipedia, YouTube closed captions, social media, and anywh
 ## Features
 
 - All transliteration is done locally. Fast.
-- The goal of ITRANS is to convert Latin text faithfully to Indic scripts, whereas the goal of this extension is readability in the Latin script. At the expense of one-to-one correspondence (strict ITRANS), we prefer common conventions.
-- Avoids replacements like ǝ (schwa), ɔ (open o), ~, .N, RRi, etc., making the transliterated text easier for a lay reader.
+- Three romanization schemes: ITRANS, ISO (15919 for Indic, 233 for Arabic), and IPA.
+- For Arabic-script languages, unvowelled text (no harakat) will have short vowels missing, as they are not written. This is expected.
+- On right-to-left pages, the page layout can optionally be flipped to left-to-right. This is best-effort and some elements may remain RTL.
+
+### ITRANS scheme
+
+- At the expense of one-to-one correspondence (strict ITRANS), we prefer common conventions.
+- Avoids replacements like ǝ , ɔ , ~, .N, RRi, etc., making the transliterated text easier for a lay reader.
 - Schwa is denoted as ₐ in Devanagari and Gujarati, making it easier to ignore.
 - Schwa is denoted as 'a' in Gurmukhi, Kannada, Malayalam, Odia, Telugu, as it is usually pronounced.
 - In Bengali, the inherent vowel is ɔ, not ə. It is denoted as ₒ.
-- Long vowels are denoted with uppercase: A (ā), I (ī), U (ū), E (ē), O (ō). Examples: rAma (राम, ರಾಮ), sItA (सीता, ಸೀತಾ), Enu/En (ಏನು, ஏன்), ODu (ಓಡು, ஓடு).
+- Long vowels are denoted with uppercase: Examples: rAma (राम, ರಾಮ), sItA (सीता, ಸೀತಾ), Enu/En (ಏನು, ஏன்), ODu (ಓಡು, ஓடு).
 - Nasal signs are denoted as ⁿ or ᵐ, depending on the script and the letter.
-- For Arabic-script languages, unvowelled text (no harakat) will have short vowels missing, as they are not written. This is expected.
-- On right-to-left pages, the page layout can optionally be flipped to left-to-right. This is best-effort and some elements may remain RTL.
+
+### ISO scheme
+
+- For Indic scripts, follows ISO 15919. The inherent vowel in consonants is written as plain `a` (e.g., `ka`), as the standard prescribes — contrast with `kₐ` in ITRANS and `kᵃ` in IPA.
+- For Arabic-script languages, follows ISO 233 and its extensions).
+
+### IPA scheme
+
+- Aims for phonetic accuracy rather than lay readability.
+- The inherent vowel uses a modifier symbol rather than a full IPA vowel when it is frequently dropped and its elision is unpredictable: `ᵃ` (modifier a) for Devanagari, Gujarati, and Gurmukhi; `ᵓ` (modifier open-o) for /ɔ/ in Bengali.
+- When the inherent vowel is consistently pronounced, the full symbol is used: `ɔ` for Odia, `a` for Sinhala, Tamil, Telugu, Kannada, and Malayalam.
+- Short i, u, and the inherent schwa are written as `i`, `u`, and `a`, not `ɪ`, `ʊ`, and `ə`. Vowel quality distinctions (centralized/lowered vs close, mid-central vs open) are language-dependent and inconsistently applied even in academic sources; length (`iː`, `uː`, `aː`) is what matters cross-linguistically.
 
 ## Limitations
 
