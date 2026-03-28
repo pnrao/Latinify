@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.1 - unreleased
+
+- NEW: CLI (`cli.js`) for transliterating text via stdin or argument
+- FIX: Arabic ٿ ڐ ڙ (Old Hindustani retroflex T, D, R) now correctly transliterated
+- FIX: Transliteration no longer touches ARIA-role input areas, e.g. Twitter compose, WhatsApp message box
+- FIX: Stats overlay no longer appears when keystrokes in editable areas are the only activity
+- FIX: Script-name underlines in popup were missing (regression in 2.0)
+
 ## 2.0 - 2026-03-27
 
 - NEW: IPA romanization scheme selectable in popup

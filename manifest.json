@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Latinify: Indic & Arabic Romanizer",
-    "version": "2.0",
+    "version": "2.1",
     "description": "Transliterates Indic scripts (using ITRANS conventions) and Arabic script to the Latin alphabet",
     "permissions": [
         "storage"
@@ -40,6 +40,7 @@
                 "maps/tamil.js",
                 "maps/telugu.js",
                 "maps/indic.js",
+                "transliterate.js",
                 "content.js"
             ],
             "css": [

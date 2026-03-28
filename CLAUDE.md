@@ -29,11 +29,11 @@ The extension has two runtime contexts:
 
 **Settings keys** (stored in `chrome.storage.sync`): `arabic`, `bengali`, `devanagari`, `gujarati`, `gurmukhi`, `kannada`, `malayalam`, `odia`, `sinhala`, `tamil`, `telugu` (booleans, default `true`), `flipRtl` (boolean, default `true`), `indicateScript` (boolean, default `true`), `showStats` (boolean, default `false`), `scheme` (string `'itrans'`/`'iso'`/`'ipa'`, default `'itrans'`).
 
-## Transliteration Logic (`content.js`)
+## Transliteration Logic (`transliterate.js`)
 
 **Maps** live in the `maps/` directory. Each script has a file (`maps/devanagari.js`, `maps/kannada.js`, etc.) that exports a `{script}Table` — a flat array of 0x80 entries indexed by `(codepoint - scriptStart)`. Each non-null entry is a 3-element array `[itrans, iso, ipa]` for the three supported romanization schemes.
 
-`maps/indic.js` merges all ten per-script tables into a single `indicTable` (0x500 entries) covering U+0900–U+0DFF. Dispatch is via the `indicScripts` array in `content.js`: `indicScripts[(cp - 0x0900) >> 7]` gives the script descriptor (`{ key, matraStart, matraEnd, nukta, ... }`).
+`maps/indic.js` merges all ten per-script tables into a single `indicTable` (0x500 entries) covering U+0900–U+0DFF. Dispatch is via the `indicScripts` array in `transliterate.js`: `indicScripts[(cp - 0x0900) >> 7]` gives the script descriptor (`{ key, matraStart, matraEnd, nukta, ... }`).
 
 The active scheme index (`schemeIdx`) is derived from `settings.scheme`: `'iso'` → 1, `'ipa'` → 2, anything else → 0 (ITRANS).
 
@@ -42,15 +42,29 @@ The core function `appendTransliteratedChar(sourceText, i, replacementText, tabl
 - **Nukta**: modify the preceding consonant via `handleNukta(replacementText, schemeIdx)` using the `nuktaReplacements` array (one object per scheme).
 - **Virama** (`्`/`್`/`్`/`୍`): mapped to `''`, effectively joining consonants into conjuncts.
 
-The top-level function is `transliterateToLatin` (not `transliterateToITRANS`).
+The top-level function is `transliterateToLatin(text, settings)` (takes a settings object; derives schemeIdx internally).
 
 When `indicateScript` is on, transliterated words are wrapped in `<span class="transliterated-{script}">` which `styles.css` underlines in a script-specific color.
+
+`transliterate.js` has no Chrome or DOM dependencies — it is shared between the browser extension and the CLI. The browser loads it as a plain content script (globals); the CLI loads it via `vm.createContext`.
+
+## CLI (`cli.js`)
+
+A Node/Bun CLI for transliterating text. Reads from a positional argument or stdin.
+
+```
+echo "नमस्ते" | node cli.js
+node cli.js --iso "বাংলা"
+node cli.js --ipa --no-arabic < file.txt
+```
+
+Flags: `--itrans` (default), `--iso`, `--ipa`; `--no-<script>` to disable a script.
 
 ## Adding a New Script
 
 1. Create `maps/{script}.js` exporting a `{script}Table` (flat array, 0x80 entries, each `[itrans, iso, ipa]` or `null`).
 2. Register it in `maps/indic.js`: add to the `sources` array in Unicode order.
-3. Add a descriptor to the `indicScripts` array in `content.js` (in Unicode order): `{ key, matraStart, matraEnd, nukta }`.
+3. Add a descriptor to the `indicScripts` array in `transliterate.js` (in Unicode order): `{ key, matraStart, matraEnd, nukta }`.
 4. Add a branch guard in `transliterateToLatin`'s all-scripts-disabled check.
 5. Add a checkbox in `popup.html` (keep scripts in alphabetical order), wire it in `popup.js` (same order throughout).
 6. Add a `.transliterated-{script}` color class in `styles.css`.
