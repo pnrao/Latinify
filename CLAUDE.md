@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Published Extension
 
-https://chromewebstore.google.com/detail/indic-script-to-itrans-au/hkijmljcghoacjaacifcocadkikmakeg
+https://chromewebstore.google.com/detail/latinify-indic-arabic-rom/hkijmljcghoacjaacifcocadkikmakeg
 
 ## What This Is
 
