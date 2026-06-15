@@ -52,6 +52,7 @@ zip_path = os.path.join('/tmp', zip_name)
 EXTENSION_FILES = [
     'manifest.json',
     'content.js',
+    'transliterate.js',
     'popup.html',
     'popup.js',
     'styles.css',
